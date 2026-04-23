@@ -28,23 +28,46 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'lowercase', 'min:4', 'max:20', 'unique:'.User::class, 'regex:/^[a-z0-9_]+$/'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'avatar' => ['nullable', 'image', 'max:2048'], // Max 2MB
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'is_active' => true,
         ]);
+
+        // Assign default role
+        $user->assignRole('user');
+
+        // Handle Avatar using Spatie Media Library
+        if ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')
+                ->toMediaCollection('avatars');
+        }
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Registrasi berhasil! Menyiapkan dashboard...',
+                'redirect' => route('dashboard')
+            ]);
+        }
 
         return redirect(route('dashboard', absolute: false));
     }
