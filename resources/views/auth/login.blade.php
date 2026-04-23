@@ -237,13 +237,10 @@
                 <div class="auth-divider">atau masuk dengan</div>
 
                 {{-- Social login --}}
-                <div class="d-flex gap-3">
-                    <button type="button" class="btn-social">
-                        <i class="bi bi-google" style="color:#ea4335;"></i> Google
-                    </button>
-                    <button type="button" class="btn-social">
-                        <i class="bi bi-microsoft" style="color:#0078d4;"></i> Microsoft
-                    </button>
+                <div class="d-grid">
+                    <a href="{{ route('auth.google') }}" class="btn-social" style="text-decoration:none; justify-content:center;">
+                        <i class="bi bi-google" style="color:#ea4335;"></i> Masuk dengan menggunakan Email Google
+                    </a>
                 </div>
             </form>
 

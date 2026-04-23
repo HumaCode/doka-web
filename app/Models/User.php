@@ -13,8 +13,8 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 
-#[Fillable(['name', 'username', 'avatar', 'phone', 'gender', 'email', 'password', 'is_active', 'last_login_at', 'last_login_ip'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'username', 'avatar', 'phone', 'gender', 'email', 'password', 'is_active', 'last_login_at', 'last_login_ip', 'google_id', 'google_token', 'google_refresh_token'])]
+#[Hidden(['password', 'remember_token', 'google_token', 'google_refresh_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
