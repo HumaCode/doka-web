@@ -48,14 +48,72 @@
 
     @push('js')
         <script>
-            /* Loading state on submit */
-            document.getElementById('loginForm').addEventListener('submit', function() {
-                const btn = document.getElementById('btnLogin');
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memverifikasi...';
+            $(document).ready(function() {
+                const $loginForm = $('#loginForm');
+                const $btnLogin = $('#btnLogin');
+                const $errorContainer = $('#errorContainer');
+
+                $loginForm.on('submit', function(e) {
+                    e.preventDefault();
+
+                    // Reset state
+                    $errorContainer.fadeOut().empty();
+                    $('.form-ctrl').removeClass('is-error');
+                    $('.invalid-feedback').remove();
+                    
+                    $btnLogin.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Memverifikasi...');
+
+                    $.ajax({
+                        url: $loginForm.attr('action'),
+                        method: 'POST',
+                        data: $loginForm.serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    window.location.href = response.redirect;
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            $btnLogin.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right"></i> Masuk ke Sistem');
+
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                let errorHtml = '<div class="alert-auth alert-danger-auth"><i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i><div>';
+                                
+                                $.each(errors, function(key, messages) {
+                                    // Highlight input
+                                    const $input = $(`#${key}`);
+                                    $input.addClass('is-error');
+                                    $input.after(`<div class="invalid-feedback">${messages[0]}</div>`);
+                                    
+                                    // Build alert html
+                                    errorHtml += `<div>${messages[0]}</div>`;
+                                });
+                                
+                                errorHtml += '</div></div>';
+                                $errorContainer.html(errorHtml).fadeIn();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Terjadi kesalahan sistem. Silakan coba lagi nanti.'
+                                });
+                            }
+                        }
+                    });
+                });
             });
 
-            /* Custom checkbox */
+            /* Custom checkbox logic */
             document.querySelectorAll('.check-wrap').forEach(wrap => {
                 const cb = wrap.querySelector('input[type=checkbox]');
                 const box = wrap.querySelector('.check-box');
@@ -99,7 +157,7 @@
                 <div class="brand-tagline">
                     <h2>Catat Setiap<br />Momen Berharga</h2>
                     <p>Platform dokumentasi kegiatan modern — upload foto, tambahkan uraian, dan simpan kenangan dengan
-                        mudah.</p>
+102:                         mudah.</p>
                 </div>
             </div>
 
@@ -127,38 +185,19 @@
                 <p>Masuk ke akun Anda untuk mulai mendokumentasikan kegiatan</p>
             </div>
 
-            {{-- Laravel session errors --}}
-            @if ($errors->any())
-                <div class="alert-auth alert-danger-auth">
-                    <i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i>
-                    <div>
-                        @foreach ($errors->all() as $error)
-                            <div>{{ $error }}</div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            @if (session('status'))
-                <div class="alert-auth alert-success-auth">
-                    <i class="bi bi-check-circle-fill flex-shrink-0 mt-1"></i>
-                    <span>{{ session('status') }}</span>
-                </div>
-            @endif
+            {{-- AJAX Error Container --}}
+            <div id="errorContainer" style="display: none;"></div>
 
             <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
                 @csrf
 
-                {{-- Email --}}
-                <label class="form-label" for="email">Alamat Email</label>
+                {{-- Username --}}
+                <label class="form-label" for="username">Username</label>
                 <div class="field-wrap">
-                    <i class="bi bi-envelope-fill input-icon"></i>
-                    <input type="email" id="email" name="email"
-                        class="form-ctrl @error('email') is-error @enderror" value="{{ old('email') }}"
-                        placeholder="nama@instansi.go.id" autocomplete="email" required autofocus />
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <i class="bi bi-person-badge-fill input-icon"></i>
+                    <input type="text" id="username" name="username"
+                        class="form-ctrl" value="{{ old('username') }}"
+                        placeholder="Masukkan username" autocomplete="username" required autofocus />
                 </div>
 
                 {{-- Password --}}
@@ -166,15 +205,12 @@
                 <div class="field-wrap">
                     <i class="bi bi-lock-fill input-icon"></i>
                     <input type="password" id="password" name="password"
-                        class="form-ctrl @error('password') is-error @enderror" placeholder="Masukkan password"
+                        class="form-ctrl" placeholder="Masukkan password"
                         autocomplete="current-password" style="padding-right:42px;" required />
                     <button type="button" class="toggle-pw" data-target="password" data-icon="pwEyeIcon"
                         aria-label="Toggle password">
                         <i class="bi bi-eye-fill" id="pwEyeIcon"></i>
                     </button>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
 
                 {{-- Remember & Forgot --}}
