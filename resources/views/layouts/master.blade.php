@@ -1947,8 +1947,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         /* ═══════════════════════════════════════
-                                   SIDEBAR TOGGLE
-                                ═══════════════════════════════════════ */
+                                       SIDEBAR TOGGLE
+                                    ═══════════════════════════════════════ */
         const isMobile = () => window.innerWidth <= 768;
 
         function toggleSidebar() {
@@ -2155,11 +2155,10 @@
         /* ═══════════════════════════════════════
            NAV ACTIVE STATE
         ═══════════════════════════════════════ */
+        // Navigation is handled by Laravel routes. 
+        // Active state is handled by Blade in sidebar.blade.php.
         document.querySelectorAll('.nav-link-item').forEach(link => {
             link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-link-item').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
                 if (isMobile()) closeMobileSidebar();
             });
         });

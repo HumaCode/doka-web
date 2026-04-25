@@ -1,7 +1,7 @@
 <aside class="sidebar" id="sidebar">
 
     <!-- Brand -->
-    <a href="#" class="sidebar-brand">
+    <a href="{{ route('dashboard') }}" class="sidebar-brand">
         <div class="brand-icon-wrap">
             <i class="bi bi-camera-reels-fill"></i>
         </div>
@@ -17,7 +17,8 @@
         <!-- MAIN -->
         <div class="nav-category">MAIN</div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item active" data-label="Dashboard">
+            <a href="{{ route('dashboard') }}"
+                class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" data-label="Dashboard">
                 <i class="bi bi-grid-1x2-fill nav-icon"></i>
                 <span class="nav-label">Dashboard</span>
             </a>
@@ -26,7 +27,8 @@
         <!-- MASTER -->
         <div class="nav-category">MASTER</div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Pengguna">
+            <a href="{{ route('pengguna.index') }}"
+                class="nav-link-item {{ request()->routeIs('pengguna.index') ? 'active' : '' }}" data-label="Pengguna">
                 <i class="bi bi-people-fill nav-icon"></i>
                 <span class="nav-label">Pengguna</span>
                 <span class="nav-badge">5</span>
