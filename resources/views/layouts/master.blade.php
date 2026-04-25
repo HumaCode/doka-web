@@ -1947,8 +1947,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         /* ═══════════════════════════════════════
-                                           SIDEBAR TOGGLE
-                                        ═══════════════════════════════════════ */
+                                                       SIDEBAR TOGGLE
+                                                    ═══════════════════════════════════════ */
         const isMobile = () => window.innerWidth <= 768;
 
         function toggleSidebar() {
@@ -2027,6 +2027,7 @@
         ═══════════════════════════════════════ */
         function animateCounter(id, target, suffix = '') {
             const el = document.getElementById(id);
+            if (!el) return;
             const dur = 1400;
             const step = 16;
             const steps = dur / step;
@@ -2051,6 +2052,7 @@
         ═══════════════════════════════════════ */
         function buildSparkline(id, data) {
             const el = document.getElementById(id);
+            if (!el) return;
             const max = Math.max(...data);
             data.forEach((v, i) => {
                 const bar = document.createElement('div');
@@ -2070,6 +2072,7 @@
         ═══════════════════════════════════════ */
         (function buildBarChart() {
             const chart = document.getElementById('barChart');
+            if (!chart) return;
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Apr'];
             const vals = [8, 12, 10, 15, 9, 18, 14, 20, 13, 16, 11, 24];
             const max = Math.max(...vals);
@@ -2102,11 +2105,14 @@
         const EVENT_DAYS = [5, 12, 17, 21, 26]; // demo event dates
 
         function renderCalendar() {
+            const titleEl = document.getElementById('calTitle');
+            if (!titleEl) return;
+
             const y = calDate.getFullYear();
             const m = calDate.getMonth();
             const today = new Date();
 
-            document.getElementById('calTitle').textContent = `${MONTHS[m]} ${y}`;
+            titleEl.textContent = `${MONTHS[m]} ${y}`;
 
             const dayNames = document.getElementById('calDayNames');
             dayNames.innerHTML = '';
@@ -2164,6 +2170,7 @@
         });
     </script>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     @stack('js')
 </body>
 

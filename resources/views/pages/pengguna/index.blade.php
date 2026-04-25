@@ -188,6 +188,27 @@
                 background: #f5f3ff;
             }
 
+            .btn-reset {
+                background: #fff;
+                color: var(--c-muted);
+                border: 1.5px solid var(--c-border);
+                width: 42px;
+                height: 42px;
+                padding: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all var(--trans);
+            }
+
+            .btn-reset:hover {
+                border-color: var(--c-orange);
+                color: var(--c-orange);
+                background: #fff7ed;
+            }
+
             /* ── TABLE CARD ── */
             .table-card {
                 background: var(--c-surface);
@@ -610,14 +631,22 @@
     <div class="toolbar fade-up">
         <div class="toolbar-search">
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama, email..." oninput="renderTable()" />
+            <input type="text" id="searchInput" placeholder="Cari nama, email..." />
         </div>
-        <select class="toolbar-select" id="filterRole" onchange="renderTable()">
+        <select class="toolbar-select" id="filterRole">
             <option value="">Semua Role</option>
             <option value="admin">Admin</option>
             <option value="operator">Operator</option>
             <option value="user">User</option>
         </select>
+        <select class="toolbar-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="1">Aktif</option>
+            <option value="0">Tidak Aktif</option>
+        </select>
+        <button class="btn-toolbar btn-reset" onclick="resetFilters()" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
         <div class="toolbar-right">
             <button class="btn-toolbar btn-export" onclick="alert('Export data ke Excel/PDF')">
                 <i class="bi bi-download"></i> Export
@@ -716,139 +745,185 @@
 
     @push('js')
         <script>
-            let users = [{
-                    id: 1,
-                    name: 'Budi Santoso',
-                    email: 'budi@doka.id',
-                    instansi: 'Diskominfostandi',
-                    role: 'admin',
-                    status: 'active',
-                    color: 'var(--c-primary)'
-                },
-                {
-                    id: 2,
-                    name: 'Siti Aminah',
-                    email: 'siti@doka.id',
-                    instansi: 'Bappeda',
-                    role: 'operator',
-                    status: 'active',
-                    color: 'var(--c-green)'
-                },
-                {
-                    id: 3,
-                    name: 'Andi Wijaya',
-                    email: 'andi@doka.id',
-                    instansi: 'Dinas Pendidikan',
-                    role: 'user',
-                    status: 'inactive',
-                    color: 'var(--c-pink)'
-                },
-            ];
+            let currentPage = 1;
 
-            function renderTable() {
-                const search = document.getElementById('searchInput').value.toLowerCase();
-                const role = document.getElementById('filterRole').value;
-                const filtered = users.filter(u =>
-                    (u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search)) &&
-                    (role === '' || u.role === role)
+            function renderTable(page = 1) {
+                currentPage = page;
+                const search = $('#searchInput').val();
+                const role = $('#filterRole').val();
+                const status = $('#filterStatus')?.val() || '';
+
+                const body = $('#tableBody');
+                body.html(
+                    '<tr><td colspan="6" style="text-align:center; padding:40px;"><span class="spinner-border spinner-border-sm"></span> Memuat data...</td></tr>'
                 );
 
-                const body = document.getElementById('tableBody');
-                body.innerHTML = filtered.map(u => `
-                <tr>
-                    <td><input type="checkbox" class="row-check" data-id="${u.id}" onchange="updateBulk()"></td>
-                    <td>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:36px; height:36px; border-radius:50%; background:${u.color}; color:#fff; display:grid; place-items:center; font-weight:800;">${u.name[0]}</div>
-                            <div>
-                                <div style="font-weight:700; color:var(--c-text);">${u.name}</div>
-                                <div style="font-size:0.75rem; color:var(--c-muted);">${u.email}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${u.instansi}</td>
-                    <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
-                    <td><span class="status-badge status-${u.status}">${u.status === 'active' ? 'Aktif' : 'Non-aktif'}</span></td>
-                    <td style="text-align:center;">
-                        <div class="action-btns">
-                            <button class="btn-action btn-view" onclick="openDrawer(${u.id})"><i class="bi bi-eye"></i></button>
-                            <button class="btn-action btn-edit" onclick="openEditModal(${u.id})"><i class="bi bi-pencil-square"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteUser(${u.id})"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+                $.ajax({
+                    url: "{{ route('pengguna.getallpagination') }}",
+                    method: "GET",
+                    data: {
+                        page: page,
+                        search: search,
+                        role: role,
+                        status: status,
+                        per_page: 10
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const users = response.data;
+                            const meta = response.meta;
 
-                document.getElementById('tableMeta').textContent = `Menampilkan ${filtered.length} pengguna`;
-                updateStats();
+                            if (users.length === 0) {
+                                body.html(
+                                    '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--c-muted);">Tidak ada data pengguna ditemukan.</td></tr>'
+                                );
+                                updatePagination(meta);
+                                return;
+                            }
+
+                            body.empty();
+                            users.forEach(u => {
+                                const initial = u.name ? u.name[0].toUpperCase() : '?';
+                                const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
+                                const color = colors[u.id.length % colors.length] || '#4f46e5';
+
+                                body.append(`
+                                <tr>
+                                    <td><input type="checkbox" class="row-check" data-id="${u.id}" onchange="updateBulk()"></td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <div style="width:36px; height:36px; border-radius:50%; background:${color}; color:#fff; display:grid; place-items:center; font-weight:800;">${initial}</div>
+                                            <div>
+                                                <div style="font-weight:700; color:var(--c-text);">${u.name}</div>
+                                                <div style="font-size:0.75rem; color:var(--c-muted);">${u.email}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${u.username || '-'}</td>
+                                    <td><span class="role-badge role-${u.roles[0]?.name || 'user'}">${(u.roles[0]?.name || 'user').toUpperCase()}</span></td>
+                                    <td><span class="status-badge status-${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Aktif' : 'Non-aktif'}</span></td>
+                                    <td style="text-align:center;">
+                                        <div class="action-btns">
+                                            <button class="btn-action btn-view" onclick="openDrawer('${u.id}')"><i class="bi bi-eye"></i></button>
+                                            <button class="btn-action btn-edit" onclick="openEditModal('${u.id}')"><i class="bi bi-pencil-square"></i></button>
+                                            <button class="btn-action btn-delete" onclick="deleteUser('${u.id}')"><i class="bi bi-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `);
+                            });
+
+                            $('#tableMeta').text(`Menampilkan ${users.length} dari ${meta.total} pengguna`);
+                            updatePagination(meta);
+                            updateStats(meta);
+                        }
+                    },
+                    error: function() {
+                        body.html(
+                            '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--c-red);">Gagal memuat data. Silakan coba lagi.</td></tr>'
+                        );
+                    }
+                });
             }
 
-            function updateStats() {
-                document.getElementById('sc1').textContent = users.length;
-                document.getElementById('sc2').textContent = users.filter(u => u.status === 'active').length;
-                document.getElementById('sc3').textContent = users.filter(u => u.role === 'admin').length;
-                document.getElementById('sc4').textContent = users.filter(u => u.status === 'inactive').length;
+            function updatePagination(meta) {
+                let pagWrap = $('#paginationWrap');
+                if (pagWrap.length === 0) {
+                    $('.table-card').append(
+                        '<div id="paginationWrap" style="padding:16px 20px; border-top:1px solid var(--c-border); display:flex; justify-content:center; gap:5px;"></div>'
+                    );
+                    pagWrap = $('#paginationWrap');
+                }
+
+                pagWrap.empty();
+                if (meta.last_page <= 1) return;
+
+                pagWrap.append(
+                    `<button class="btn-pag" ${meta.current_page === 1 ? 'disabled' : ''} onclick="renderTable(${meta.current_page - 1})"><i class="bi bi-chevron-left"></i></button>`
+                );
+
+                for (let i = 1; i <= meta.last_page; i++) {
+                    if (i === 1 || i === meta.last_page || (i >= meta.current_page - 1 && i <= meta.current_page + 1)) {
+                        pagWrap.append(
+                            `<button class="btn-pag ${i === meta.current_page ? 'active' : ''}" onclick="renderTable(${i})">${i}</button>`
+                        );
+                    } else if (i === meta.current_page - 2 || i === meta.current_page + 2) {
+                        pagWrap.append('<span style="padding:8px; color:var(--c-muted);">...</span>');
+                    }
+                }
+
+                pagWrap.append(
+                    `<button class="btn-pag" ${meta.current_page === meta.last_page ? 'disabled' : ''} onclick="renderTable(${meta.current_page + 1})"><i class="bi bi-chevron-right"></i></button>`
+                );
             }
+
+            $('<style>')
+                .prop('type', 'text/css')
+                .html(`
+                .btn-pag { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--c-border); background: #fff; color: var(--c-text-2); font-size: .875rem; font-weight: 600; cursor: pointer; transition: all var(--trans); }
+                .btn-pag:hover:not(:disabled) { border-color: var(--c-primary); color: var(--c-primary); background: #f5f3ff; }
+                .btn-pag.active { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+                .btn-pag:disabled { opacity: .5; cursor: not-allowed; }
+            `)
+                .appendTo('head');
+
+            function updateStats(meta) {
+                $('#sc1').text(meta.total);
+            }
+
+            $(document).ready(function() {
+                renderTable();
+                let searchTimer;
+                $('#searchInput').on('input', function() {
+                    clearTimeout(searchTimer);
+                    searchTimer = setTimeout(() => renderTable(1), 500);
+                });
+                $('#filterRole').on('change', () => renderTable(1));
+                $('#filterStatus').on('change', () => renderTable(1));
+            });
 
             function openAddModal() {
-                document.getElementById('modalTitle').textContent = 'Tambah Pengguna';
-                document.getElementById('f-name').value = '';
-                document.getElementById('f-email').value = '';
-                document.getElementById('modalUser').classList.add('show');
+                $('#modalTitle').text('Tambah Pengguna');
+                $('#f-name').val('');
+                $('#f-email').val('');
+                $('#modalUser').addClass('show');
             }
 
             function openEditModal(id) {
-                const u = users.find(x => x.id === id);
-                document.getElementById('modalTitle').textContent = 'Edit Pengguna';
-                document.getElementById('f-name').value = u.name;
-                document.getElementById('f-email').value = u.email;
-                document.getElementById('f-role').value = u.role;
-                document.getElementById('f-status').value = u.status;
-                document.getElementById('modalUser').classList.add('show');
+                // Placeholder: normally you'd fetch user data first
+                alert('Edit user ID: ' + id);
+                $('#modalTitle').text('Edit Pengguna');
+                $('#modalUser').addClass('show');
             }
 
             function closeModal(id) {
-                document.getElementById(id).classList.remove('show');
+                $(`#${id}`).removeClass('show');
+            }
+
+            function resetFilters() {
+                $('#searchInput').val('');
+                $('#filterRole').val('');
+                $('#filterStatus').val('');
+                renderTable(1);
             }
 
             function openDrawer(id) {
-                const u = users.find(x => x.id === id);
-                document.getElementById('drawerBody').innerHTML = `
-                <div style="text-align:center; margin-bottom:20px;">
-                    <div style="width:80px; height:80px; border-radius:50%; background:${u.color}; color:#fff; display:grid; place-items:center; font-size:2rem; font-weight:900; margin:0 auto 10px;">${u.name[0]}</div>
-                    <div style="font-weight:900; font-size:1.2rem;">${u.name}</div>
-                    <div style="color:var(--c-muted); font-size:0.875rem;">${u.email}</div>
-                </div>
-                <hr style="border:0; border-top:1px solid var(--c-border); margin:20px 0;">
-                <div style="margin-bottom:15px;">
-                    <div style="font-size:0.75rem; color:var(--c-muted); font-weight:700; text-transform:uppercase;">Instansi</div>
-                    <div style="font-weight:600;">${u.instansi}</div>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <div style="font-size:0.75rem; color:var(--c-muted); font-weight:700; text-transform:uppercase;">Role</div>
-                    <div><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></div>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <div style="font-size:0.75rem; color:var(--c-muted); font-weight:700; text-transform:uppercase;">Status</div>
-                    <div><span class="status-badge status-${u.status}">${u.status === 'active' ? 'Aktif' : 'Non-aktif'}</span></div>
-                </div>
-            `;
-                document.getElementById('drawerOverlay').classList.add('show');
+                alert('Fitur detail untuk ID: ' + id);
             }
 
             function closeDrawer() {
-                document.getElementById('drawerOverlay').classList.remove('show');
+                $('#drawerOverlay').removeClass('show');
             }
 
             function toggleAll(el) {
-                document.querySelectorAll('.row-check').forEach(c => c.checked = el.checked);
+                $('.row-check').prop('checked', el.checked);
                 updateBulk();
             }
 
             function updateBulk() {
-                const checked = document.querySelectorAll('.row-check:checked').length;
-                document.getElementById('bulkCount').textContent = `${checked} dipilih`;
-                document.getElementById('bulkBar').classList.toggle('show', checked > 0);
+                const checked = $('.row-check:checked').length;
+                $('#bulkCount').text(`${checked} dipilih`);
+                $('#bulkBar').toggleClass('show', checked > 0);
             }
 
             function saveUser() {
@@ -858,12 +933,9 @@
 
             function deleteUser(id) {
                 if (confirm('Yakin ingin menghapus pengguna ini?')) {
-                    users = users.filter(u => u.id !== id);
-                    renderTable();
+                    renderTable(currentPage);
                 }
             }
-
-            document.addEventListener('DOMContentLoaded', renderTable);
         </script>
     @endpush
 </x-master-layout>
