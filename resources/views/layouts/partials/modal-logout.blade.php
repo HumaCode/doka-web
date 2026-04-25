@@ -9,7 +9,10 @@
              <button class="btn-modal-cancel" onclick="hideLogoutModal()">
                  <i class="bi bi-x-circle"></i> Batal
              </button>
-             <button class="btn-modal-logout" onclick="doLogout()">
+             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                 @csrf
+             </form>
+             <button class="btn-modal-logout" onclick="event.preventDefault(); doLogout();">
                  <i class="bi bi-box-arrow-right"></i> Ya, Keluar
              </button>
          </div>

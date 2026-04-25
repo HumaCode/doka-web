@@ -10,7 +10,7 @@
     <div class="page-header fade-up">
         <div class="page-header-left">
             <h1><i class="bi bi-grid-1x2-fill"></i> Dashboard</h1>
-            <p>Selamat datang kembali, Admin Doka! Berikut ringkasan aktivitas hari ini.</p>
+            <p>Selamat datang kembali, {{ auth()->user()->name }}! Berikut ringkasan aktivitas hari ini.</p>
         </div>
         <nav class="breadcrumb-nav">
             <a href="#"><i class="bi bi-house-fill"></i> Home</a>

@@ -60,8 +60,9 @@
                     $errorContainer.fadeOut().empty();
                     $('.form-ctrl').removeClass('is-error');
                     $('.invalid-feedback').remove();
-                    
-                    $btnLogin.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Memverifikasi...');
+
+                    $btnLogin.prop('disabled', true).html(
+                        '<span class="spinner-border spinner-border-sm"></span> Memverifikasi...');
 
                     $.ajax({
                         url: $loginForm.attr('action'),
@@ -83,22 +84,26 @@
                             }
                         },
                         error: function(xhr) {
-                            $btnLogin.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right"></i> Masuk ke Sistem');
+                            $btnLogin.prop('disabled', false).html(
+                                '<i class="bi bi-box-arrow-in-right"></i> Masuk ke Sistem');
 
                             if (xhr.status === 422) {
                                 let errors = xhr.responseJSON.errors;
-                                let errorHtml = '<div class="alert-auth alert-danger-auth"><i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i><div>';
-                                
+                                let errorHtml =
+                                    '<div class="alert-auth alert-danger-auth"><i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i><div>';
+
                                 $.each(errors, function(key, messages) {
                                     // Highlight input
                                     const $input = $(`#${key}`);
                                     $input.addClass('is-error');
-                                    $input.after(`<div class="invalid-feedback">${messages[0]}</div>`);
-                                    
+                                    $input.closest('.field-wrap').after(
+                                        `<div class="invalid-feedback" style="margin-top:-14px; margin-bottom:18px;">${messages[0]}</div>`
+                                        );
+
                                     // Build alert html
                                     errorHtml += `<div>${messages[0]}</div>`;
                                 });
-                                
+
                                 errorHtml += '</div></div>';
                                 $errorContainer.html(errorHtml).fadeIn();
                             } else {
@@ -157,7 +162,7 @@
                 <div class="brand-tagline">
                     <h2>Catat Setiap<br />Momen Berharga</h2>
                     <p>Platform dokumentasi kegiatan modern — upload foto, tambahkan uraian, dan simpan kenangan dengan
-102:                         mudah.</p>
+                        102: mudah.</p>
                 </div>
             </div>
 
@@ -195,8 +200,7 @@
                 <label class="form-label" for="username">Username</label>
                 <div class="field-wrap">
                     <i class="bi bi-person-badge-fill input-icon"></i>
-                    <input type="text" id="username" name="username"
-                        class="form-ctrl" value="{{ old('username') }}"
+                    <input type="text" id="username" name="username" class="form-ctrl" value="{{ old('username') }}"
                         placeholder="Masukkan username" autocomplete="username" required autofocus />
                 </div>
 
@@ -204,9 +208,9 @@
                 <label class="form-label" for="password">Password</label>
                 <div class="field-wrap">
                     <i class="bi bi-lock-fill input-icon"></i>
-                    <input type="password" id="password" name="password"
-                        class="form-ctrl" placeholder="Masukkan password"
-                        autocomplete="current-password" style="padding-right:42px;" required />
+                    <input type="password" id="password" name="password" class="form-ctrl"
+                        placeholder="Masukkan password" autocomplete="current-password" style="padding-right:42px;"
+                        required />
                     <button type="button" class="toggle-pw" data-target="password" data-icon="pwEyeIcon"
                         aria-label="Toggle password">
                         <i class="bi bi-eye-fill" id="pwEyeIcon"></i>
@@ -238,7 +242,8 @@
 
                 {{-- Social login --}}
                 <div class="d-grid">
-                    <a href="{{ route('auth.google') }}" class="btn-social" style="text-decoration:none; justify-content:center;">
+                    <a href="{{ route('auth.google') }}" class="btn-social"
+                        style="text-decoration:none; justify-content:center;">
                         <i class="bi bi-google" style="color:#ea4335;"></i> Masuk dengan menggunakan Email Google
                     </a>
                 </div>

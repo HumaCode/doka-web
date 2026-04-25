@@ -103,9 +103,9 @@
     <!-- Sidebar footer -->
     <div class="sidebar-footer">
         <div class="sidebar-user-mini">
-            <div class="sidebar-avatar-sm">A</div>
+            <div class="sidebar-avatar-sm">{{ auth()->user()->name[0] }}</div>
             <div class="sidebar-user-info">
-                <div class="sidebar-user-name">Admin User</div>
+                <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
                 <div class="sidebar-user-role">Administrator</div>
             </div>
         </div>

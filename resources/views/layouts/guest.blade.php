@@ -417,7 +417,8 @@
         .input-icon {
             position: absolute;
             left: 15px;
-            top: 50%;
+            top: 24px;
+            /* Fixed position relative to input box top */
             transform: translateY(-50%);
             color: #9ca3af;
             font-size: 1.05rem;
@@ -482,7 +483,8 @@
         .toggle-pw {
             position: absolute;
             right: 13px;
-            top: 50%;
+            top: 24px;
+            /* Fixed position relative to input box top */
             transform: translateY(-50%);
             background: none;
             border: none;

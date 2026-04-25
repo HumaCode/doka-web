@@ -30,19 +30,19 @@
          <!-- User dropdown -->
          <div class="user-dropdown-wrap">
              <button class="user-trigger" id="userTrigger" onclick="toggleUserDropdown()">
-                 <div class="user-avatar">A</div>
+                 <div class="user-avatar">{{ auth()->user()->name[0] }}</div>
                  <div class="user-info">
-                     <div class="user-name">Admin Doka</div>
-                     <div class="user-email">admin@dokaKegiatan.id</div>
+                     <div class="user-name">{{ auth()->user()->name }}</div>
+                     <div class="user-email">{{ auth()->user()->email }}</div>
                  </div>
                  <i class="bi bi-chevron-down"></i>
              </button>
 
              <div class="user-dropdown-menu" id="userDropdown">
                  <div class="dropdown-header">
-                     <div class="dropdown-avatar-lg">A</div>
-                     <div class="dropdown-name">Admin Doka</div>
-                     <div class="dropdown-email">admin@dokaKegiatan.id</div>
+                     <div class="dropdown-avatar-lg">{{ auth()->user()->name[0] }}</div>
+                     <div class="dropdown-name">{{ auth()->user()->name }}</div>
+                     <div class="dropdown-email">{{ auth()->user()->email }}</div>
                  </div>
                  <div class="dropdown-items">
                      <button class="dropdown-item-btn">

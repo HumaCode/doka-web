@@ -1947,8 +1947,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         /* ═══════════════════════════════════════
-                                       SIDEBAR TOGGLE
-                                    ═══════════════════════════════════════ */
+                                           SIDEBAR TOGGLE
+                                        ═══════════════════════════════════════ */
         const isMobile = () => window.innerWidth <= 768;
 
         function toggleSidebar() {
@@ -1998,8 +1998,8 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Keluar...';
             setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
+                document.getElementById('logout-form').submit();
+            }, 1000);
         }
         document.getElementById('logoutModal').addEventListener('click', function(e) {
             if (e.target === this) hideLogoutModal();
