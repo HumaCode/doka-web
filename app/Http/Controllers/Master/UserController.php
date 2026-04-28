@@ -41,13 +41,18 @@ class UserController extends Controller
 
         $users = $this->userService->getUsers($perPage, $filters);
 
+        // Single query for all stats (optimized from 4 separate queries)
+        $rawStats = \App\Models\User::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active,
+            SUM(CASE WHEN is_active = 0 THEN 1 ELSE 0 END) as inactive
+        ")->first();
+
         $stats = [
-            'total'    => \App\Models\User::count(),
-            'active'   => \App\Models\User::where('is_active', '1')->count(),
-            'inactive' => \App\Models\User::where('is_active', '0')->count(),
-            'admin'    => \App\Models\User::whereHas('roles', function ($q) {
-                $q->where('name', 'admin');
-            })->count(),
+            'total'    => (int) $rawStats->total,
+            'active'   => (int) $rawStats->active,
+            'inactive' => (int) $rawStats->inactive,
+            'admin'    => \App\Models\User::role('admin')->count(),
         ];
 
         return response()->json([

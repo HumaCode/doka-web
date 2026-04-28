@@ -64,7 +64,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function getByIds(array $ids)
     {
-        return User::whereIn('id', $ids)->get();
+        return User::with('roles')->whereIn('id', $ids)->get();
     }
 
     public function deleteBulk(array $ids)
