@@ -1,585 +1,6 @@
-<x-master-layout>
+﻿<x-master-layout>
     @push('css')
-        <style>
-            /* ── MINI STATS ── */
-            .mini-stats {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 14px;
-                margin-bottom: 22px;
-            }
-
-            .mini-stat {
-                background: var(--c-surface);
-                border: 1px solid var(--c-border);
-                border-radius: var(--radius-md);
-                padding: 16px 18px;
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                box-shadow: var(--shadow-sm);
-                transition: transform var(--trans), box-shadow var(--trans);
-                position: relative;
-                overflow: hidden;
-            }
-
-            .mini-stat:hover {
-                transform: translateY(-2px);
-                box-shadow: var(--shadow-md);
-            }
-
-            .mini-stat::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-            }
-
-            .mini-stat.ms1::after {
-                background: linear-gradient(90deg, var(--c-primary), var(--c-secondary));
-            }
-
-            .mini-stat.ms2::after {
-                background: linear-gradient(90deg, var(--c-green), #34d399);
-            }
-
-            .mini-stat.ms3::after {
-                background: linear-gradient(90deg, var(--c-accent), var(--c-orange));
-            }
-
-            .mini-stat.ms4::after {
-                background: linear-gradient(90deg, var(--c-red), #f87171);
-            }
-
-            .mini-stat-icon {
-                width: 42px;
-                height: 42px;
-                border-radius: 11px;
-                display: grid;
-                place-items: center;
-                font-size: 1.15rem;
-                color: #fff;
-                flex-shrink: 0;
-            }
-
-            .ms1 .mini-stat-icon {
-                background: linear-gradient(135deg, var(--c-primary), var(--c-secondary));
-                box-shadow: 0 3px 10px rgba(79, 70, 229, .28);
-            }
-
-            .ms2 .mini-stat-icon {
-                background: linear-gradient(135deg, var(--c-green), #34d399);
-                box-shadow: 0 3px 10px rgba(16, 185, 129, .28);
-            }
-
-            .ms3 .mini-stat-icon {
-                background: linear-gradient(135deg, var(--c-accent), var(--c-orange));
-                box-shadow: 0 3px 10px rgba(245, 158, 11, .28);
-            }
-
-            .ms4 .mini-stat-icon {
-                background: linear-gradient(135deg, var(--c-red), #f87171);
-                box-shadow: 0 3px 10px rgba(239, 68, 68, .28);
-            }
-
-            .mini-stat-val {
-                font-family: 'Nunito', sans-serif;
-                font-weight: 900;
-                font-size: 1.5rem;
-                color: var(--c-text);
-                line-height: 1;
-            }
-
-            .mini-stat-lbl {
-                font-size: .75rem;
-                color: var(--c-muted);
-                font-weight: 600;
-                margin-top: 2px;
-            }
-
-            /* ── TOOLBAR ── */
-            .toolbar {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                flex-wrap: wrap;
-                margin-bottom: 16px;
-            }
-
-            .toolbar-search {
-                flex: 1;
-                min-width: 200px;
-                max-width: 320px;
-                position: relative;
-            }
-
-            .toolbar-search input {
-                width: 100%;
-                padding: 10px 14px 10px 38px;
-                border: 1.5px solid var(--c-border);
-                border-radius: 10px;
-                font-size: .875rem;
-                font-family: 'Plus Jakarta Sans', sans-serif;
-                background: #fff;
-                color: var(--c-text);
-                outline: none;
-                transition: border-color var(--trans), box-shadow var(--trans);
-            }
-
-            .toolbar-search i {
-                position: absolute;
-                left: 12px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--c-muted);
-                pointer-events: none;
-            }
-
-            .toolbar-select {
-                padding: 10px 14px;
-                border: 1.5px solid var(--c-border);
-                border-radius: 10px;
-                font-size: .875rem;
-                font-family: 'Plus Jakarta Sans', sans-serif;
-                background: #fff;
-                color: var(--c-text-2);
-                outline: none;
-                cursor: pointer;
-                transition: border-color var(--trans);
-                min-width: 140px;
-            }
-
-            .toolbar-right {
-                margin-left: auto;
-                display: flex;
-                gap: 8px;
-            }
-
-            .btn-toolbar {
-                display: inline-flex;
-                align-items: center;
-                gap: 7px;
-                padding: 10px 16px;
-                border-radius: 10px;
-                font-size: .875rem;
-                font-weight: 700;
-                cursor: pointer;
-                border: none;
-                transition: transform var(--trans), box-shadow var(--trans), background var(--trans);
-            }
-
-            .btn-add {
-                background: linear-gradient(135deg, var(--c-primary), #7c3aed);
-                color: #fff;
-                box-shadow: 0 4px 12px rgba(79, 70, 229, .3);
-            }
-
-            .btn-export {
-                background: #fff;
-                color: var(--c-text-2);
-                border: 1.5px solid var(--c-border);
-            }
-
-            .btn-export:hover {
-                border-color: var(--c-primary);
-                color: var(--c-primary);
-                background: #f5f3ff;
-            }
-
-            .btn-reset {
-                background: #fff;
-                color: var(--c-muted);
-                border: 1.5px solid var(--c-border);
-                width: 42px;
-                height: 42px;
-                padding: 0;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: all var(--trans);
-            }
-
-            .btn-reset:hover {
-                border-color: var(--c-orange);
-                color: var(--c-orange);
-                background: #fff7ed;
-            }
-
-            /* ── TABLE CARD ── */
-            .table-card {
-                background: var(--c-surface);
-                border: 1px solid var(--c-border);
-                border-radius: var(--radius-md);
-                box-shadow: var(--shadow-sm);
-                overflow: hidden;
-            }
-
-            .table-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px 20px;
-                border-bottom: 1px solid var(--c-border);
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-
-            .table-title {
-                font-family: 'Nunito', sans-serif;
-                font-weight: 800;
-                font-size: .95rem;
-                color: var(--c-text);
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .table-title i {
-                color: var(--c-primary);
-            }
-
-            .table-meta {
-                font-size: .78rem;
-                color: var(--c-muted);
-            }
-
-            .table-responsive-wrap {
-                overflow-x: auto;
-            }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            thead th {
-                background: var(--c-surface2);
-                padding: 12px 16px;
-                font-size: .72rem;
-                font-weight: 800;
-                text-transform: uppercase;
-                letter-spacing: .8px;
-                color: var(--c-muted);
-                border-bottom: 1px solid var(--c-border);
-                white-space: nowrap;
-                cursor: pointer;
-                transition: color var(--trans);
-            }
-
-            thead th:hover {
-                color: var(--c-primary);
-            }
-
-            tbody tr {
-                border-bottom: 1px solid var(--c-border);
-                transition: background var(--trans);
-            }
-
-            tbody tr:last-child {
-                border-bottom: none;
-            }
-
-            tbody tr:hover {
-                background: rgba(79, 70, 229, .03);
-            }
-
-            tbody td {
-                padding: 14px 16px;
-                font-size: .875rem;
-                color: var(--c-text-2);
-                vertical-align: middle;
-            }
-
-            /* Role & Status badges */
-            .role-badge {
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                padding: 4px 10px;
-                border-radius: 99px;
-                font-size: .72rem;
-                font-weight: 800;
-            }
-
-            .role-admin {
-                background: rgba(79, 70, 229, .1);
-                color: var(--c-primary);
-                border: 1px solid rgba(79, 70, 229, .2);
-            }
-
-            .role-user {
-                background: rgba(6, 182, 212, .1);
-                color: #0891b2;
-                border: 1px solid rgba(6, 182, 212, .2);
-            }
-
-            .role-operator {
-                background: rgba(245, 158, 11, .1);
-                color: #d97706;
-                border: 1px solid rgba(245, 158, 11, .2);
-            }
-
-            .status-badge {
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                padding: 4px 10px;
-                border-radius: 99px;
-                font-size: .72rem;
-                font-weight: 700;
-            }
-
-            .status-badge::before {
-                content: '';
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-            }
-
-            .status-active {
-                background: #f0fdf4;
-                color: var(--c-green);
-                border: 1px solid #bbf7d0;
-            }
-
-            .status-active::before {
-                background: var(--c-green);
-            }
-
-            .status-inactive {
-                background: #fef2f2;
-                color: #ef4444;
-                border: 1px solid #fecaca;
-            }
-
-            .status-inactive::before {
-                background: #ef4444;
-            }
-
-            /* Actions */
-            .action-btns {
-                display: flex;
-                gap: 5px;
-            }
-
-            .btn-action {
-                width: 32px;
-                height: 32px;
-                border-radius: 8px;
-                border: none;
-                cursor: pointer;
-                display: grid;
-                place-items: center;
-                font-size: .9rem;
-                transition: transform var(--trans), color var(--trans);
-            }
-
-            .btn-view {
-                background: #eff6ff;
-                color: var(--c-primary);
-            }
-
-            .btn-edit {
-                background: #f0fdf4;
-                color: var(--c-green);
-            }
-
-            .btn-delete {
-                background: #fef2f2;
-                color: #ef4444;
-            }
-
-            .btn-action:hover {
-                transform: scale(1.1);
-                filter: brightness(0.9);
-            }
-
-            /* Bulk Bar */
-            .bulk-bar {
-                display: none;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 16px;
-                background: rgba(79, 70, 229, .05);
-                border-bottom: 1px solid var(--c-border);
-                flex-wrap: wrap;
-            }
-
-            .bulk-bar.show {
-                display: flex;
-            }
-
-            .bulk-count {
-                font-size: .82rem;
-                font-weight: 700;
-                color: var(--c-primary);
-            }
-
-            .btn-bulk {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                padding: 7px 13px;
-                border-radius: 8px;
-                font-size: .78rem;
-                font-weight: 700;
-                cursor: pointer;
-                border: none;
-            }
-
-            .btn-bulk-del {
-                background: #fef2f2;
-                color: #ef4444;
-            }
-
-            /* Modal specific */
-            .modal-box {
-                background: var(--c-surface);
-                border-radius: var(--radius-lg);
-                width: 100%;
-                max-width: 560px;
-                max-height: 90vh;
-                overflow-y: auto;
-                transform: translateY(24px) scale(.96);
-                transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
-            }
-
-            .modal-overlay.show .modal-box {
-                transform: translateY(0) scale(1);
-            }
-
-            .modal-head {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 20px 24px;
-                border-bottom: 1px solid var(--c-border);
-                position: sticky;
-                top: 0;
-                background: var(--c-surface);
-                z-index: 10;
-            }
-
-            .modal-body {
-                padding: 24px;
-            }
-
-            .modal-foot {
-                padding: 16px 24px;
-                border-top: 1px solid var(--c-border);
-                display: flex;
-                gap: 10px;
-                justify-content: flex-end;
-                background: var(--c-surface2);
-            }
-
-            .form-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 14px;
-            }
-
-            .form-label-m {
-                font-size: .8rem;
-                font-weight: 700;
-                color: var(--c-text);
-                margin-bottom: 6px;
-            }
-
-            .form-ctrl-m {
-                width: 100%;
-                padding: 11px 14px;
-                border: 1.5px solid var(--c-border);
-                border-radius: 10px;
-                font-size: .875rem;
-                background: #fff;
-                outline: none;
-                transition: border-color var(--trans);
-            }
-
-            .form-ctrl-m:focus {
-                border-color: var(--c-primary);
-                box-shadow: 0 0 0 3px rgba(79, 70, 229, .1);
-            }
-
-            /* Detail Drawer */
-            .drawer-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(15, 23, 42, .45);
-                backdrop-filter: blur(4px);
-                z-index: 900;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity .25s;
-            }
-
-            .drawer {
-                position: fixed;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 400px;
-                background: var(--c-surface);
-                box-shadow: var(--shadow-lg);
-                z-index: 950;
-                transform: translateX(100%);
-                transition: transform .35s cubic-bezier(.4, 0, .2, 1);
-                display: flex;
-                flex-direction: column;
-            }
-
-            .drawer-overlay.show {
-                opacity: 1;
-                pointer-events: all;
-            }
-
-            .drawer-overlay.show .drawer {
-                transform: translateX(0);
-            }
-
-            .drawer-head {
-                padding: 20px 24px;
-                border-bottom: 1px solid var(--c-border);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .drawer-body {
-                flex: 1;
-                overflow-y: auto;
-                padding: 24px;
-            }
-
-            .btn-primary-m {
-                background: linear-gradient(135deg, var(--c-primary), #7c3aed);
-                color: #fff;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 10px;
-                font-weight: 700;
-                cursor: pointer;
-            }
-
-            @media(max-width: 768px) {
-                .mini-stats {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-
-                .form-row {
-                    grid-template-columns: 1fr;
-                }
-
-                .drawer {
-                    width: 100vw;
-                }
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('assets/css/pengguna.css') }}">
     @endpush
 
     <!-- Page Header -->
@@ -697,31 +118,70 @@
                 <button class="btn-close-modal" onclick="closeModal('modalUser')"><i class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label-m">Nama Lengkap</label>
-                    <input type="text" class="form-ctrl-m" id="f-name" placeholder="John Doe">
-                </div>
-                <div class="form-group">
-                    <label class="form-label-m">Email</label>
-                    <input type="email" class="form-ctrl-m" id="f-email" placeholder="john@example.com">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label-m">Role</label>
-                        <select class="form-ctrl-m" id="f-role">
-                            <option value="user">User</option>
-                            <option value="operator">Operator</option>
-                            <option value="admin">Admin</option>
-                        </select>
+                <form id="formUser" enctype="multipart/form-data">
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label-m">Nama Lengkap</label>
+                        <input type="text" class="form-ctrl-m" id="f-name" name="name"
+                            placeholder="John Doe">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label-m">Status</label>
-                        <select class="form-ctrl-m" id="f-status">
-                            <option value="active">Aktif</option>
-                            <option value="inactive">Non-aktif</option>
-                        </select>
+                    <div class="form-row" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label-m">Username</label>
+                            <input type="text" class="form-ctrl-m" id="f-username" name="username"
+                                placeholder="johndoe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-m">Email</label>
+                            <input type="email" class="form-ctrl-m" id="f-email" name="email"
+                                placeholder="john@example.com">
+                        </div>
                     </div>
-                </div>
+                    <div class="form-row" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label-m">No. Handphone</label>
+                            <input type="text" class="form-ctrl-m" id="f-phone" name="phone"
+                                placeholder="0812... (opsional)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-m">Jenis Kelamin</label>
+                            <select class="form-ctrl-m" id="f-gender" name="gender">
+                                <option value="">Pilih Kelamin</option>
+                                <option value="l">Laki-laki (L)</option>
+                                <option value="p">Perempuan (P)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label-m">Password</label>
+                            <input type="password" class="form-ctrl-m" id="f-password" name="password"
+                                placeholder="Minimal 8 karakter">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-m">Konfirmasi Password</label>
+                            <input type="password" class="form-ctrl-m" id="f-password_confirmation"
+                                name="password_confirmation" placeholder="Ulangi password">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label-m">Role</label>
+                            <select class="form-ctrl-m" id="f-role" name="role">
+                                <option value="">Pilih Role</option>
+                                @foreach (\Spatie\Permission\Models\Role::all() as $role)
+                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-m">Status Aktif</label>
+                            <select class="form-ctrl-m" id="f-is_active" name="is_active">
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-foot">
                 <button class="btn-secondary-m"

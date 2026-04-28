@@ -1,51 +1,4 @@
 <x-guest-layout>
-    {{-- <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form> --}}
-
-
     @push('js')
         <script>
             $(document).ready(function() {
@@ -71,16 +24,23 @@
                         dataType: 'json',
                         success: function(response) {
                             if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 1500,
-                                    timerProgressBar: true
-                                }).then(() => {
-                                    window.location.href = response.redirect;
+                                const loader = DKA.loading({
+                                    title: 'Memproses...',
+                                    message: 'Sistem sedang bekerja.',
+                                    style: 'dots'
                                 });
+                                setTimeout(() => {
+                                    loader.close();
+                                    DKA.toast({
+                                        type: 'success',
+                                        title: 'Berhasil!',
+                                        message: response.message,
+                                        position: 'bottom-right'
+                                    });
+                                    setTimeout(() => {
+                                        window.location.href = response.redirect;
+                                    }, 1000);
+                                }, 1500);
                             }
                         },
                         error: function(xhr) {
@@ -98,7 +58,7 @@
                                     $input.addClass('is-error');
                                     $input.closest('.field-wrap').after(
                                         `<div class="invalid-feedback" style="margin-top:-14px; margin-bottom:18px;">${messages[0]}</div>`
-                                        );
+                                    );
 
                                     // Build alert html
                                     errorHtml += `<div>${messages[0]}</div>`;

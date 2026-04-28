@@ -17,6 +17,7 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;900&display=swap"
         rel="stylesheet" />
 
+    <link rel="stylesheet" href="{{ asset('assets/css/dka-alert.css') }}">
     @stack('css')
 
     <style>
@@ -1430,6 +1431,10 @@
             });
         });
     </script>
+
+    {{-- SweetAlert2 / DKA Alert API --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('assets/js/dka-alert.js') }}"></script>
 
     @stack('js')
 </body>
