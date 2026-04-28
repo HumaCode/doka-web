@@ -49,4 +49,12 @@ interface UserServiceInterface
      * @return bool
      */
     public function deleteUser($id);
+
+    /**
+     * Delete multiple users.
+     *
+     * @param array $ids
+     * @return mixed
+     */
+    public function deleteBulkUsers(array $ids);
 }

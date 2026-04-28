@@ -143,4 +143,25 @@ class UserController extends Controller
             return jsonError('Terjadi kesalahan sistem ketika menghapus data pengguna. ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete multiple users via AJAX.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroyBulk(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'exists:users,id'
+        ]);
+
+        try {
+            $this->userService->deleteBulkUsers($request->ids);
+            return jsonSuccess(count($request->ids) . ' akun pengguna berhasil dihapus dari sistem.');
+        } catch (\Exception $e) {
+            return jsonError('Terjadi kesalahan sistem ketika menghapus bulk pengguna. ' . $e->getMessage());
+        }
+    }
 }

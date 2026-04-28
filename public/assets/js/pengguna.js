@@ -359,3 +359,72 @@ function deleteUser(btn) {
         });
     });
 }
+
+function deleteBulk() {
+    const checked = $('.row-check:checked');
+    if (checked.length === 0) return;
+
+    const ids = [];
+    checked.each(function() {
+        ids.push($(this).data('id'));
+    });
+
+    DKA.deleteConfirm({
+        title: 'Hapus ' + ids.length + ' Pengguna?',
+        message: 'Pengguna yang dipilih akan dihapus permanen beserta seluruh datanya.',
+        itemName: ids.length + ' Akun Terpilih',
+    }).then(result => {
+        if (!result) return;
+
+        const l = DKA.loading({
+            title: 'Menghapus data...',
+            message: 'Membersihkan data terpilih.',
+            style: 'dots'
+        });
+
+        $.ajax({
+            url: "/pengguna/bulk-delete",
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                ids: ids
+            },
+            success: function(response) {
+                setTimeout(() => {
+                    l.close();
+                    if (response.success) {
+                        DKA.toast({
+                            type: 'success',
+                            title: 'Pengguna Dihapus',
+                            message: response.message,
+                            position: 'top-right'
+                        });
+                        
+                        $('#bulkBar').removeClass('show');
+                        $('.col-check input').prop('checked', false);
+                        renderTable(currentPage);
+                    } else {
+                        DKA.notify({
+                            type: 'danger',
+                            title: 'Gagal Menghapus',
+                            message: response.message,
+                            duration: 5000
+                        });
+                    }
+                }, 1000);
+            },
+            error: function() {
+                l.close();
+                DKA.notify({
+                    type: 'danger',
+                    title: 'Kesalahan Server',
+                    message: 'Koneksi terputus atau terjadi masalah server.',
+                    duration: 5000
+                });
+            }
+        });
+    });
+}
+

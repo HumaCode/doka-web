@@ -63,4 +63,15 @@ class UserService implements UserServiceInterface
 
         return $this->userRepository->delete($id);
     }
+
+    public function deleteBulkUsers(array $ids)
+    {
+        $users = $this->userRepository->getByIds($ids);
+        
+        foreach ($users as $user) {
+            $user->syncRoles([]);
+        }
+
+        return $this->userRepository->deleteBulk($ids);
+    }
 }

@@ -82,7 +82,7 @@
     <div class="table-card fade-up">
         <div class="bulk-bar" id="bulkBar">
             <span class="bulk-count" id="bulkCount">0 dipilih</span>
-            <button class="btn-bulk btn-bulk-del" onclick="alert('Hapus data terpilih')">
+            <button class="btn-bulk btn-bulk-del" onclick="deleteBulk()">
                 <i class="bi bi-trash3-fill"></i> Hapus Terpilih
             </button>
         </div>

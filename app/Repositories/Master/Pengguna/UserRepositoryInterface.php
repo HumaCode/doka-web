@@ -47,4 +47,20 @@ interface UserRepositoryInterface
      * @return bool
      */
     public function delete($id);
+
+    /**
+     * Get users by an array of IDs.
+     *
+     * @param array $ids
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getByIds(array $ids);
+
+    /**
+     * Delete multiple users.
+     *
+     * @param array $ids
+     * @return mixed
+     */
+    public function deleteBulk(array $ids);
 }

@@ -61,4 +61,14 @@ class UserRepository implements UserRepositoryInterface
         $user = $this->findById($id);
         return $user->delete();
     }
+
+    public function getByIds(array $ids)
+    {
+        return User::whereIn('id', $ids)->get();
+    }
+
+    public function deleteBulk(array $ids)
+    {
+        return User::whereIn('id', $ids)->delete();
+    }
 }
