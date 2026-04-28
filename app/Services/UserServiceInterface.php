@@ -14,4 +14,13 @@ interface UserServiceInterface
      * @return LengthAwarePaginator
      */
     public function getUsers(int $perPage = 10, array $filters = []): LengthAwarePaginator;
+
+    /**
+     * Create a new user.
+     *
+     * @param array $data
+     * @param string|int $roleId
+     * @return \App\Models\User
+     */
+    public function createUser(array $data, $roleId);
 }

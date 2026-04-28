@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Models\Shield\Role;
 use App\Services\UserServiceInterface;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,8 @@ class UserController extends Controller
 
     public function index()
     {
-        return view('pages.pengguna.index');
+        $roles = Role::all();
+        return view('pages.pengguna.index', compact('roles'));
     }
 
     /**
@@ -38,6 +40,15 @@ class UserController extends Controller
 
         $users = $this->userService->getUsers($perPage, $filters);
 
+        $stats = [
+            'total'    => \App\Models\User::count(),
+            'active'   => \App\Models\User::where('is_active', '1')->count(),
+            'inactive' => \App\Models\User::where('is_active', '0')->count(),
+            'admin'    => \App\Models\User::whereHas('roles', function ($q) {
+                $q->where('name', 'admin');
+            })->count(),
+        ];
+
         return response()->json([
             'success' => true,
             'data'    => UserResource::collection($users->items()),
@@ -47,7 +58,36 @@ class UserController extends Controller
                 'per_page'     => $users->perPage(),
                 'total'        => $users->total(),
             ],
+            'stats'   => $stats,
             'links'   => (string) $users->links(), // For pagination UI if needed
         ]);
+    }
+
+    /**
+     * Store a newly created user via AJAX.
+     *
+     * @param \App\Http\Requests\StoreUserRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(\App\Http\Requests\StoreUserRequest $request)
+    {
+        try {
+            $data = $request->validated();
+
+            $roleId = $data['role'];
+            unset($data['role']);
+
+            $this->userService->createUser($data, $roleId);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengguna berhasil ditambahkan.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem ketika menyimpan pengguna.'
+            ], 500);
+        }
     }
 }

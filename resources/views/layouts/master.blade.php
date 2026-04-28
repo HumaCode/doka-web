@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>DokaKegiatan — Dashboard</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
@@ -11,6 +12,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&display=swap"
         rel="stylesheet" />
+
+    <!-- DKA Alert Library -->
+    <link rel="stylesheet" href="{{ asset('assets/css/dka-alert.css') }}" />
 
     @stack('css')
 
@@ -1947,8 +1951,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         /* ═══════════════════════════════════════
-                                                       SIDEBAR TOGGLE
-                                                    ═══════════════════════════════════════ */
+                                                           SIDEBAR TOGGLE
+                                                        ═══════════════════════════════════════ */
         const isMobile = () => window.innerWidth <= 768;
 
         function toggleSidebar() {
@@ -2171,6 +2175,7 @@
     </script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('assets/js/dka-alert.js') }}"></script>
     @stack('js')
 </body>
 

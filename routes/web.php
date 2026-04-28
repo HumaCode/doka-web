@@ -11,6 +11,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/pengguna', [\App\Http\Controllers\UserController::class, 'index'])->name('pengguna.index');
+    Route::post('/pengguna', [\App\Http\Controllers\UserController::class, 'store'])->name('pengguna.store');
     Route::get('/pengguna/getallpagination', [\App\Http\Controllers\UserController::class, 'getAllPagination'])->name('pengguna.getallpagination');
 });
 

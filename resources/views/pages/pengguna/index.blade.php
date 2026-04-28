@@ -168,8 +168,8 @@
                             <label class="form-label-m">Role</label>
                             <select class="form-ctrl-m" id="f-role" name="role">
                                 <option value="">Pilih Role</option>
-                                @foreach (\Spatie\Permission\Models\Role::all() as $role)
-                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->name }}">{{ $role->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -232,12 +232,14 @@
                         if (response.success) {
                             const users = response.data;
                             const meta = response.meta;
+                            const stats = response.stats;
 
                             if (users.length === 0) {
                                 body.html(
                                     '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--c-muted);">Tidak ada data pengguna ditemukan.</td></tr>'
                                 );
                                 updatePagination(meta);
+                                updateStats(stats || meta);
                                 return;
                             }
 
@@ -275,7 +277,7 @@
 
                             $('#tableMeta').text(`Menampilkan ${users.length} dari ${meta.total} pengguna`);
                             updatePagination(meta);
-                            updateStats(meta);
+                            updateStats(stats || meta);
                         }
                     },
                     error: function() {
@@ -327,8 +329,13 @@
             `)
                 .appendTo('head');
 
-            function updateStats(meta) {
-                $('#sc1').text(meta.total);
+            function updateStats(stats) {
+                if (!stats) return;
+                $('#sc1').text(stats.total !== undefined ? stats.total : 0);
+
+                if (stats.active !== undefined) $('#sc2').text(stats.active);
+                if (stats.admin !== undefined) $('#sc3').text(stats.admin);
+                if (stats.inactive !== undefined) $('#sc4').text(stats.inactive);
             }
 
             $(document).ready(function() {
@@ -344,8 +351,9 @@
 
             function openAddModal() {
                 $('#modalTitle').text('Tambah Pengguna');
-                $('#f-name').val('');
-                $('#f-email').val('');
+                $('#formUser')[0].reset();
+                $('.form-ctrl-m').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
                 $('#modalUser').addClass('show');
             }
 
@@ -387,8 +395,81 @@
             }
 
             function saveUser() {
-                alert('Data berhasil disimpan!');
-                closeModal('modalUser');
+                $('.form-ctrl-m').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+
+                const formData = new FormData($('#formUser')[0]);
+
+                const steps = [
+                    'Memvalidasi data...',
+                    'Mengirim ke server...',
+                    'Menyimpan ke database...',
+                    'Selesai!'
+                ];
+
+                const loader = DKA.loading({
+                    title: 'Menyimpan Pengguna',
+                    message: 'Memulai proses...',
+                    style: 'ring',
+                });
+
+                steps.forEach((msg, i) => {
+                    setTimeout(() => loader.update(msg), (i + 1) * 800);
+                });
+
+                $.ajax({
+                    url: "{{ route('pengguna.store') }}",
+                    method: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        setTimeout(() => {
+                            loader.close();
+                            if (response.success) {
+                                DKA.notify({
+                                    type: 'success',
+                                    title: 'Pengguna Disimpan!',
+                                    message: response.message ||
+                                        'Pengguna baru berhasil ditambahkan.',
+                                    duration: 6000,
+                                });
+                                closeModal('modalUser');
+                                $('#formUser')[0].reset();
+                                renderTable(currentPage);
+                            }
+                        }, (steps.length) * 800);
+                    },
+                    error: function(xhr) {
+                        loader.close();
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, messages) {
+                                const $input = $(`#f-${key}`);
+                                $input.addClass('is-invalid');
+                                $input.after(
+                                    `<div class="invalid-feedback" style="color:#ef4444; font-size:12px; margin-top:4px;">${messages[0]}</div>`
+                                );
+                            });
+                            DKA.notify({
+                                type: 'danger',
+                                title: 'Validasi Gagal',
+                                message: 'Periksa kembali isian formulir Anda.',
+                                duration: 6000
+                            });
+                        } else {
+                            DKA.notify({
+                                type: 'danger',
+                                title: 'Koneksi Terputus / Error Server',
+                                message: 'Koneksi ke server terputus atau terjadi kesalahan. Beberapa fitur mungkin tidak tersedia. Coba refresh halaman.',
+                                duration: 6000
+                            });
+                        }
+                    }
+                });
             }
 
             function deleteUser(id) {

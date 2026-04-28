@@ -38,4 +38,9 @@ class UserRepository implements UserRepositoryInterface
 
         return $query->latest()->paginate($perPage);
     }
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
 }

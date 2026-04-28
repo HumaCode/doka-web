@@ -14,4 +14,12 @@ interface UserRepositoryInterface
      * @return LengthAwarePaginator
      */
     public function getAllPagination(int $perPage = 10, array $filters = []): LengthAwarePaginator;
+
+    /**
+     * Create a new user.
+     *
+     * @param array $data
+     * @return \App\Models\User
+     */
+    public function create(array $data);
 }

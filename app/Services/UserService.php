@@ -18,4 +18,18 @@ class UserService implements UserServiceInterface
     {
         return $this->userRepository->getAllPagination($perPage, $filters);
     }
+
+    public function createUser(array $data, $roleId)
+    {
+        if (isset($data['password'])) {
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+        }
+
+        $user = $this->userRepository->create($data);
+
+        // proses sync untuk role
+        $user->syncRoles([$roleId]);
+
+        return $user;
+    }
 }
