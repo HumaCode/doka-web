@@ -43,4 +43,16 @@ class UserRepository implements UserRepositoryInterface
     {
         return $this->model->create($data);
     }
+
+    public function findById($id)
+    {
+        return $this->model->with('roles')->findOrFail($id);
+    }
+
+    public function update($id, array $data)
+    {
+        $user = $this->findById($id);
+        $user->update($data);
+        return $user;
+    }
 }

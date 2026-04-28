@@ -32,4 +32,25 @@ class UserService implements UserServiceInterface
 
         return $user;
     }
+
+    public function getUserById($id)
+    {
+        return $this->userRepository->findById($id);
+    }
+
+    public function updateUser($id, array $data, $roleId)
+    {
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        $user = $this->userRepository->update($id, $data);
+
+        // Update role
+        $user->syncRoles([$roleId]);
+
+        return $user;
+    }
 }

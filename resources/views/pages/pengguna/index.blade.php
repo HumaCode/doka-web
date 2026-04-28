@@ -349,7 +349,10 @@
                 $('#filterStatus').on('change', () => renderTable(1));
             });
 
+            let editUserId = null;
+
             function openAddModal() {
+                editUserId = null;
                 $('#modalTitle').text('Tambah Pengguna');
                 $('#formUser')[0].reset();
                 $('.form-ctrl-m').removeClass('is-invalid');
@@ -358,10 +361,52 @@
             }
 
             function openEditModal(id) {
-                // Placeholder: normally you'd fetch user data first
-                alert('Edit user ID: ' + id);
-                $('#modalTitle').text('Edit Pengguna');
-                $('#modalUser').addClass('show');
+                editUserId = id;
+                $('.form-ctrl-m').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+                $('#formUser')[0].reset();
+
+                const loader = DKA.loading({
+                    title: 'Memuat Data',
+                    message: 'Mengambil informasi pengguna...',
+                    style: 'ring'
+                });
+
+                $.ajax({
+                    url: '/pengguna/' + id,
+                    method: 'GET',
+                    success: function(response) {
+                        loader.close();
+                        if (response.success) {
+                            const user = response.data;
+                            $('#f-name').val(user.name || '');
+                            $('#f-username').val(user.username || '');
+                            $('#f-email').val(user.email || '');
+                            $('#f-phone').val(user.phone || '');
+                            $('#f-gender').val(user.gender ? user.gender.toLowerCase() : '');
+
+                            if (user.roles && user.roles.length > 0) {
+                                $('#f-role').val(user.roles[0].name);
+                            } else {
+                                $('#f-role').val('');
+                            }
+
+                            $('#f-is_active').val(user.is_active ? "1" : "0");
+
+                            $('#modalTitle').text('Edit Pengguna');
+                            $('#modalUser').addClass('show');
+                        }
+                    },
+                    error: function() {
+                        loader.close();
+                        DKA.notify({
+                            type: 'danger',
+                            title: 'Gagal',
+                            message: 'Tidak dapat mengambil data pengguna.',
+                            duration: 4000
+                        });
+                    }
+                });
             }
 
             function closeModal(id) {
@@ -407,8 +452,11 @@
                     'Selesai!'
                 ];
 
+                const targetUrl = editUserId ? "/pengguna/update/" + editUserId : "{{ route('pengguna.store') }}";
+                const isEdit = !!editUserId;
+
                 const loader = DKA.loading({
-                    title: 'Menyimpan Pengguna',
+                    title: isEdit ? 'Memperbarui Pengguna' : 'Menyimpan Pengguna',
                     message: 'Memulai proses...',
                     style: 'ring',
                 });
@@ -418,7 +466,7 @@
                 });
 
                 $.ajax({
-                    url: "{{ route('pengguna.store') }}",
+                    url: targetUrl,
                     method: "POST",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

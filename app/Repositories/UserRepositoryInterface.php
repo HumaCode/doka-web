@@ -22,4 +22,21 @@ interface UserRepositoryInterface
      * @return \App\Models\User
      */
     public function create(array $data);
+
+    /**
+     * Find a user by ID.
+     *
+     * @param string|int $id
+     * @return \App\Models\User|null
+     */
+    public function findById($id);
+
+    /**
+     * Update an existing user.
+     *
+     * @param string|int $id
+     * @param array $data
+     * @return \App\Models\User
+     */
+    public function update($id, array $data);
 }

@@ -79,15 +79,51 @@ class UserController extends Controller
 
             $this->userService->createUser($data, $roleId);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Pengguna berhasil ditambahkan.',
-            ]);
+            return jsonSuccess('Pengguna berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan sistem ketika menyimpan pengguna.'
-            ], 500);
+            return jsonError('Terjadi kesalahan sistem ketika menyimpan pengguna. ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get details of a single user.
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        $user = $this->userService->getUserById($id);
+
+        if (!$user) {
+            return jsonError('Pengguna tidak ditemukan.', 404);
+        }
+
+        return jsonSuccess('Berhasil memuat data pengguna.', [
+            'data' => new UserResource($user)
+        ]);
+    }
+
+    /**
+     * Update an existing user via AJAX.
+     *
+     * @param \App\Http\Requests\UpdateUserRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(\App\Http\Requests\UpdateUserRequest $request, $id)
+    {
+        try {
+            $data = $request->validated();
+
+            $roleId = $data['role'];
+            unset($data['role']);
+
+            $this->userService->updateUser($id, $data, $roleId);
+
+            return jsonSuccess('Data pengguna berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return jsonError('Terjadi kesalahan sistem ketika memperbarui data. ' . $e->getMessage());
         }
     }
 }
