@@ -268,7 +268,7 @@
                                         <div class="action-btns">
                                             <button class="btn-action btn-view" onclick="openDrawer('${u.id}')"><i class="bi bi-eye"></i></button>
                                             <button class="btn-action btn-edit" onclick="openEditModal('${u.id}')"><i class="bi bi-pencil-square"></i></button>
-                                            <button class="btn-action btn-delete" onclick="deleteUser('${u.id}')"><i class="bi bi-trash"></i></button>
+                                            <button class="btn-action btn-delete" data-id="${u.id}" data-name="${u.name} — ${(u.roles[0]?.name || 'user').toUpperCase()}" onclick="deleteUser(this)"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -520,10 +520,61 @@
                 });
             }
 
-            function deleteUser(id) {
-                if (confirm('Yakin ingin menghapus pengguna ini?')) {
-                    renderTable(currentPage);
-                }
+            function deleteUser(btn) {
+                const id = $(btn).data('id');
+                const itemName = $(btn).data('name');
+
+                DKA.deleteConfirm({
+                    title: 'Hapus Akun Pengguna?',
+                    message: 'Pengguna ini akan dihapus dari sistem beserta seluruh datanya.',
+                    itemName: itemName,
+                }).then(result => {
+                    if (!result) return;
+
+                    const l = DKA.loading({
+                        title: 'Menghapus data...',
+                        message: 'Membersihkan data terkait.',
+                        style: 'dots'
+                    });
+
+                    $.ajax({
+                        url: "/pengguna/delete/" + id,
+                        method: "DELETE",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            setTimeout(() => {
+                                l.close();
+                                if (response.success) {
+                                    DKA.toast({
+                                        type: 'success',
+                                        title: 'Pengguna Dihapus',
+                                        message: response.message,
+                                        position: 'top-right'
+                                    });
+                                    renderTable(currentPage);
+                                } else {
+                                    DKA.notify({
+                                        type: 'danger',
+                                        title: 'Gagal Menghapus',
+                                        message: response.message,
+                                        duration: 5000
+                                    });
+                                }
+                            }, 1000); // give it a sec to show the dots animation gracefully
+                        },
+                        error: function() {
+                            l.close();
+                            DKA.notify({
+                                type: 'danger',
+                                title: 'Kesalahan Server',
+                                message: 'Koneksi terputus atau terjadi masalah server.',
+                                duration: 5000
+                            });
+                        }
+                    });
+                });
             }
         </script>
     @endpush

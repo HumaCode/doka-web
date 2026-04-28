@@ -126,4 +126,20 @@ class UserController extends Controller
             return jsonError('Terjadi kesalahan sistem ketika memperbarui data. ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete an existing user via AJAX.
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id)
+    {
+        try {
+            $this->userService->deleteUser($id);
+            return jsonSuccess('Akun pengguna berhasil dihapus dari sistem.');
+        } catch (\Exception $e) {
+            return jsonError('Terjadi kesalahan sistem ketika menghapus data pengguna. ' . $e->getMessage());
+        }
+    }
 }

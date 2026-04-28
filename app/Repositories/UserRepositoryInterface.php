@@ -39,4 +39,12 @@ interface UserRepositoryInterface
      * @return \App\Models\User
      */
     public function update($id, array $data);
+
+    /**
+     * Delete an existing user.
+     *
+     * @param string|int $id
+     * @return bool
+     */
+    public function delete($id);
 }

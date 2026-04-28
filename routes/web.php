@@ -15,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pengguna/getallpagination', [\App\Http\Controllers\UserController::class, 'getAllPagination'])->name('pengguna.getallpagination');
     Route::get('/pengguna/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('pengguna.show');
     Route::post('/pengguna/update/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('pengguna.update');
+    Route::delete('/pengguna/delete/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('pengguna.destroy');
 });
 
 Route::middleware('auth')->group(function () {

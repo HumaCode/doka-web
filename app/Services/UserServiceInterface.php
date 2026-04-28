@@ -41,4 +41,12 @@ interface UserServiceInterface
      * @return \App\Models\User
      */
     public function updateUser($id, array $data, $roleId);
+
+    /**
+     * Delete an existing user.
+     *
+     * @param string|int $id
+     * @return bool
+     */
+    public function deleteUser($id);
 }
