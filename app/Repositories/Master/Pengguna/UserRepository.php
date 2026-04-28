@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Master\Pengguna;
 
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;

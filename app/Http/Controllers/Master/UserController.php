@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Master;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\Shield\Role;
-use App\Services\UserServiceInterface;
+use App\Services\Master\Pengguna\UserServiceInterface;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -66,10 +67,10 @@ class UserController extends Controller
     /**
      * Store a newly created user via AJAX.
      *
-     * @param \App\Http\Requests\StoreUserRequest $request
+     * @param \App\Http\Requests\Master\Pengguna\StoreUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(\App\Http\Requests\StoreUserRequest $request)
+    public function store(\App\Http\Requests\Master\Pengguna\StoreUserRequest $request)
     {
         try {
             $data = $request->validated();
@@ -107,11 +108,11 @@ class UserController extends Controller
     /**
      * Update an existing user via AJAX.
      *
-     * @param \App\Http\Requests\UpdateUserRequest $request
+     * @param \App\Http\Requests\Master\Pengguna\UpdateUserRequest $request
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(\App\Http\Requests\UpdateUserRequest $request, $id)
+    public function update(\App\Http\Requests\Master\Pengguna\UpdateUserRequest $request, $id)
     {
         try {
             $data = $request->validated();

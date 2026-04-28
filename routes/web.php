@@ -10,12 +10,12 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/pengguna', [\App\Http\Controllers\UserController::class, 'index'])->name('pengguna.index');
-    Route::post('/pengguna', [\App\Http\Controllers\UserController::class, 'store'])->name('pengguna.store');
-    Route::get('/pengguna/getallpagination', [\App\Http\Controllers\UserController::class, 'getAllPagination'])->name('pengguna.getallpagination');
-    Route::get('/pengguna/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('pengguna.show');
-    Route::post('/pengguna/update/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('pengguna.update');
-    Route::delete('/pengguna/delete/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('pengguna.destroy');
+    Route::get('/pengguna', [\App\Http\Controllers\Master\UserController::class, 'index'])->name('pengguna.index');
+    Route::post('/pengguna', [\App\Http\Controllers\Master\UserController::class, 'store'])->name('pengguna.store');
+    Route::get('/pengguna/getallpagination', [\App\Http\Controllers\Master\UserController::class, 'getAllPagination'])->name('pengguna.getallpagination');
+    Route::get('/pengguna/{id}', [\App\Http\Controllers\Master\UserController::class, 'show'])->name('pengguna.show');
+    Route::post('/pengguna/update/{id}', [\App\Http\Controllers\Master\UserController::class, 'update'])->name('pengguna.update');
+    Route::delete('/pengguna/delete/{id}', [\App\Http\Controllers\Master\UserController::class, 'destroy'])->name('pengguna.destroy');
 });
 
 Route::middleware('auth')->group(function () {

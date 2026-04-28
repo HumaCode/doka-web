@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Master\Pengguna;
 
-use App\Repositories\UserRepositoryInterface;
+use App\Repositories\Master\Pengguna\UserRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserService implements UserServiceInterface
