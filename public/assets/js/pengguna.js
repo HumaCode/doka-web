@@ -1,5 +1,20 @@
+/**
+ * Reusable debounce function to limit the rate at which a function can fire.
+ * @param {Function} func - The function to be debounced.
+ * @param {number} wait - The delay in milliseconds.
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// --- GLOBAL VARIABLES & HELPERS --- //
 let currentPage = 1;
 
+// --- DATA LOADING & TABLE RENDERING --- //
 function renderTable(page = 1) {
     currentPage = page;
     const search = $('#searchInput').val();
@@ -121,17 +136,19 @@ function updateStats(stats) {
     if (stats.inactive !== undefined) $('#sc4').text(stats.inactive);
 }
 
+// --- INITIALIZATION --- //
 $(document).ready(function() {
     renderTable();
-    let searchTimer;
-    $('#searchInput').on('input', function() {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => renderTable(1), 500);
-    });
+
+    // Use debounced function for search input to reduce server load
+    const debouncedSearch = debounce(() => renderTable(1), 500);
+    $('#searchInput').on('input', debouncedSearch);
+
     $('#filterRole').on('change', () => renderTable(1));
     $('#filterStatus').on('change', () => renderTable(1));
 });
 
+// --- MODAL & FORM CONTROL --- //
 let editUserId = null;
 
 function openAddModal() {
@@ -203,6 +220,7 @@ function resetFilters() {
     renderTable(1);
 }
 
+// --- DETAIL VIEW --- //
 function openDetailModal(id) {
     const content = $('#detailUserContent');
     content.html(`
@@ -278,6 +296,7 @@ function openDetailModal(id) {
     });
 }
 
+// --- BULK ACTION CONTROL --- //
 function toggleAll(el) {
     $('.row-check').prop('checked', el.checked);
     updateBulk();
@@ -289,6 +308,7 @@ function updateBulk() {
     $('#bulkBar').toggleClass('show', checked > 0);
 }
 
+// --- CRUD OPERATIONS (SAVE) --- //
 function saveUser() {
     $('.form-ctrl-m').removeClass('is-invalid');
     $('.invalid-feedback').remove();
@@ -370,6 +390,7 @@ function saveUser() {
     });
 }
 
+// --- CRUD OPERATIONS (DELETE) --- //
 function deleteUser(btn) {
     const id = $(btn).data('id');
     const itemName = $(btn).data('name');
