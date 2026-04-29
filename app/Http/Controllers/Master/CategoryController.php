@@ -114,4 +114,39 @@ class CategoryController extends Controller
             return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Toggle status of the specified category.
+     *
+     * @param Kategori $kategori
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function toggleStatus(Kategori $kategori)
+    {
+        try {
+            $newStatus = $kategori->status === 'active' ? 'inactive' : 'active';
+            $kategori->update(['status' => $newStatus]);
+
+            $statusText = $newStatus === 'active' ? 'Aktif' : 'Nonaktif';
+            return $this->success("Status kategori berhasil diubah menjadi {$statusText}.");
+        } catch (\Exception $e) {
+            return $this->error('Gagal mengubah status: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified category from storage.
+     *
+     * @param Kategori $kategori
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Kategori $kategori)
+    {
+        try {
+            $kategori->delete();
+            return $this->success('Kategori berhasil dihapus.');
+        } catch (\Exception $e) {
+            return $this->error('Gagal menghapus kategori: ' . $e->getMessage());
+        }
+    }
 }

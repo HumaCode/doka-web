@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/kategori', [\App\Http\Controllers\Master\CategoryController::class, 'store'])->name('kategori.store');
     Route::get('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'show'])->name('kategori.show');
     Route::put('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'update'])->name('kategori.update');
+    Route::patch('/kategori/{kategori}/toggle', [\App\Http\Controllers\Master\CategoryController::class, 'toggleStatus'])->name('kategori.toggle');
+    Route::delete('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'destroy'])->name('kategori.destroy');
 });
 
 Route::middleware('auth')->group(function () {

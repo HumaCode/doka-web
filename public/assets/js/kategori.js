@@ -138,10 +138,10 @@ function renderCards(data, meta) {
                 </span>
                 <div class="kat-actions">
                     <button class="kat-action-btn kat-btn-edit" onclick="openEditModal('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                    <button class="kat-action-btn kat-btn-toggle" onclick="toggleStatus('${d.id}')" title="Toggle Status">
+                    <button class="kat-action-btn kat-btn-toggle" onclick="toggleStatus('${d.id}', '${d.nama_kategori}')" title="Toggle Status">
                         <i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i>
                     </button>
-                    <button class="kat-action-btn kat-btn-delete" onclick="deleteKategori('${d.id}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                    <button class="kat-action-btn kat-btn-delete" onclick="deleteKategori('${d.id}', '${d.nama_kategori}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
                 </div>
             </div>
         </div>`).join(''));
@@ -184,8 +184,8 @@ function renderTable(data, meta) {
             <td>
                 <div class="tbl-actions">
                     <button class="tbl-btn tbl-edit" onclick="openEditModal('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                    <button class="tbl-btn tbl-toggle" onclick="toggleStatus('${d.id}')" title="Toggle Status"><i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i></button>
-                    <button class="tbl-btn tbl-delete" onclick="deleteKategori('${d.id}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                    <button class="tbl-btn tbl-toggle" onclick="toggleStatus('${d.id}', '${d.nama_kategori}')" title="Toggle Status"><i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i></button>
+                    <button class="tbl-btn tbl-delete" onclick="deleteKategori('${d.id}', '${d.nama_kategori}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
                 </div>
             </td>
         </tr>`).join(''));
@@ -523,14 +523,98 @@ function saveKategori() {
     });
 }
 
-function deleteKategori(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
-        // Implementation for delete
-        alert('Fitur hapus akan segera hadir.');
-    }
+function deleteKategori(id, name) {
+    DKA.deleteConfirm({
+        title: 'Hapus Kategori?',
+        message: 'Kategori ini akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.',
+        itemName: name,
+    }).then(result => {
+        if (!result) return;
+
+        const loader = DKA.loading({
+            title: 'Menghapus...',
+            message: 'Membersihkan data kategori.',
+            style: 'dots'
+        });
+
+        $.ajax({
+            url: `/kategori/${id}`,
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                setTimeout(() => {
+                    loader.close();
+                    if (response.success) {
+                        DKA.toast({
+                            type: 'success',
+                            title: 'Dihapus',
+                            message: response.message,
+                            position: 'top-right'
+                        });
+                        loadData(currentPage);
+                    }
+                }, 800);
+            },
+            error: function() {
+                loader.close();
+                DKA.notify({
+                    type: 'danger',
+                    title: 'Gagal',
+                    message: 'Koneksi terputus atau terjadi kesalahan server.',
+                    duration: 5000
+                });
+            }
+        });
+    });
 }
 
-function toggleStatus(id) {
-    // Implementation for toggle
-    alert('Fitur toggle status akan segera hadir.');
+function toggleStatus(id, name) {
+    DKA.dialog({
+        type: 'question',
+        title: 'Ubah Status Kategori?',
+        message: `Apakah Anda yakin ingin mengubah status kategori <strong>${name}</strong>?`,
+        confirm: 'Ya, Ubah Status',
+        cancel: 'Batal'
+    }).then(result => {
+        if (!result) return;
+
+        const loader = DKA.loading({
+            title: 'Memproses...',
+            message: 'Memperbarui status kategori.',
+            style: 'dots'
+        });
+
+        $.ajax({
+            url: `/kategori/${id}/toggle`,
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                setTimeout(() => {
+                    loader.close();
+                    if (response.success) {
+                        DKA.toast({
+                            type: 'success',
+                            title: 'Berhasil',
+                            message: response.message,
+                            position: 'top-right'
+                        });
+                        loadData(currentPage);
+                    }
+                }, 800);
+            },
+            error: function() {
+                loader.close();
+                DKA.notify({
+                    type: 'danger',
+                    title: 'Gagal',
+                    message: 'Koneksi terputus atau terjadi kesalahan server.',
+                    duration: 5000
+                });
+            }
+        });
+    });
 }
