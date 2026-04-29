@@ -350,10 +350,65 @@ function openAddModal() {
 }
 
 function openEditModal(id) {
-    // This will be implemented fully when we have the 'show' route
-    // For now, it's a placeholder or I can implement it by finding in local data if needed
-    // But better to use AJAX like in User module
-    alert('Edit feature will be fully implemented after linking the API.');
+    editingId = id;
+    const loader = DKA.loading({
+        title: 'Memuat Data',
+        message: 'Mengambil informasi kategori...',
+        style: 'ring'
+    });
+
+    $.ajax({
+        url: `/kategori/${id}`,
+        method: 'GET',
+        success: function(response) {
+            loader.close();
+            if (response.success) {
+                const d = response.data;
+                
+                // Update Modal UI
+                $('#modalTitleText').text('Edit Kategori');
+                $('#btnSaveKat').html('<i class="bi bi-save-fill"></i> Simpan Perubahan');
+                
+                // Fill Form
+                $('#f-nama').val(d.nama_kategori);
+                $('#f-slug').val(d.slug);
+                $('#f-desc').val(d.deskripsi || '');
+                $('#f-status').val(d.status);
+                
+                // Set Icon & Color state
+                selIcon = d.icon || 'bi-tags-fill';
+                
+                // Find color ID by hex
+                const foundColor = COLORS.find(c => c.hex === d.warna) || COLORS[0];
+                selColor = foundColor.id;
+
+                // Refresh UI components
+                buildIconGrid();
+                buildColorGrid();
+                
+                // Update Previews
+                $('#modalHeadIcon').css('background', foundColor.grad);
+                $('#modalHeadIconI').attr('class', `bi ${selIcon}`);
+                $('#previewIcon').attr('class', `bi ${selIcon}`);
+                $('#previewBox').css('background', foundColor.grad);
+                $('#previewName').text(d.nama_kategori);
+                $('#previewSlug').text(d.slug);
+
+                $('.fgroup').removeClass('has-err');
+                $('#modalKat').addClass('show');
+                document.body.style.overflow='hidden';
+            }
+        },
+        error: function() {
+            loader.close();
+            DKA.notify({
+                type: 'danger',
+                title: 'Gagal',
+                message: 'Tidak dapat mengambil data kategori.',
+                duration: 4000
+            });
+        }
+    });
 }
 
 function closeModal(id) { 

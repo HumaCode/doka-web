@@ -84,4 +84,34 @@ class CategoryController extends Controller
             return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Display the specified category.
+     *
+     * @param Kategori $kategori
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(Kategori $kategori)
+    {
+        return $this->success(null, CategoryResource::make($kategori));
+    }
+
+    /**
+     * Update the specified category via AJAX.
+     *
+     * @param \App\Http\Requests\Master\Kategori\UpdateKategoriRequest $request
+     * @param Kategori $kategori
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(\App\Http\Requests\Master\Kategori\UpdateKategoriRequest $request, Kategori $kategori)
+    {
+        try {
+            $data = $request->validated();
+            $kategori->update($data);
+
+            return $this->success('Data kategori berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
+    }
 }

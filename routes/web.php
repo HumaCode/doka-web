@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/kategori', [\App\Http\Controllers\Master\CategoryController::class, 'index'])->name('kategori.index');
     Route::get('/kategori/getallpagination', [\App\Http\Controllers\Master\CategoryController::class, 'getAllPagination'])->name('kategori.getallpagination');
     Route::post('/kategori', [\App\Http\Controllers\Master\CategoryController::class, 'store'])->name('kategori.store');
+    Route::get('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'show'])->name('kategori.show');
+    Route::put('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'update'])->name('kategori.update');
 });
 
 Route::middleware('auth')->group(function () {
