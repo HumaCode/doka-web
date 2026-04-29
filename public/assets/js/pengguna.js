@@ -59,7 +59,7 @@ function renderTable(page = 1) {
 
                     body.append(`
                     <tr>
-                        <td><input type="checkbox" class="row-check" data-id="${u.id}" onchange="updateBulk()"></td>
+                        <td class="col-check"><input type="checkbox" class="row-check" data-id="${u.id}" onchange="updateBulk()"></td>
                         <td>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <div style="width:36px; height:36px; border-radius:50%; background:${color}; color:#fff; display:grid; place-items:center; font-weight:800;">${initial}</div>
