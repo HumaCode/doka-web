@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaginateResource;
 use App\Http\Resources\UserResource;
 use App\Models\Shield\Role;
 use App\Services\Master\Pengguna\UserServiceInterface;
@@ -55,18 +56,11 @@ class UserController extends Controller
             'admin'    => \App\Models\User::role('admin')->count(),
         ];
 
-        return response()->json([
-            'success' => true,
-            'data'    => UserResource::collection($users->items()),
-            'meta'    => [
-                'current_page' => $users->currentPage(),
-                'last_page'    => $users->lastPage(),
-                'per_page'     => $users->perPage(),
-                'total'        => $users->total(),
-            ],
-            'stats'   => $stats,
-            'links'   => (string) $users->links(), // For pagination UI if needed
-        ]);
+        return PaginateResource::make($users, UserResource::class)
+            ->additional([
+                'success' => true,
+                'stats'   => $stats,
+            ]);
     }
 
     /**
