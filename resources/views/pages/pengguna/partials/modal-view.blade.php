@@ -2,7 +2,13 @@
 <div class="modal-overlay" id="modalUser">
     <div class="modal-box">
         <div class="modal-head">
-            <div class="modal-head-title"><i class="bi bi-person-plus-fill"></i> <span id="modalTitle">Tambah Pengguna</span></div>
+            <div class="modal-head-title">
+                <div class="modal-title-icon" id="modalIcon"><i class="bi bi-person-plus-fill"></i></div>
+                <div class="modal-title-text">
+                    <span class="modal-title-main" id="modalTitle">Tambah Pengguna</span>
+                    <span class="modal-title-sub" id="modalSubTitle">Silakan lengkapi formulir di bawah ini.</span>
+                </div>
+            </div>
             <button class="btn-close-modal" onclick="closeModal('modalUser')"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="modal-body">
@@ -76,7 +82,13 @@
 <div class="modal-overlay" id="modalDetailUser">
     <div class="modal-box" style="max-width: 650px;">
         <div class="modal-head">
-            <div class="modal-head-title"><i class="bi bi-person-badge"></i> Detail Pengguna</div>
+            <div class="modal-head-title">
+                <div class="modal-title-icon"><i class="bi bi-person-badge"></i></div>
+                <div class="modal-title-text">
+                    <span class="modal-title-main">Detail Pengguna</span>
+                    <span class="modal-title-sub">Informasi lengkap data pengguna sistem.</span>
+                </div>
+            </div>
             <button class="btn-close-modal" onclick="closeModal('modalDetailUser')"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="modal-body" id="detailUserContent">

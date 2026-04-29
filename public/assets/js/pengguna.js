@@ -38,9 +38,10 @@ function renderTable(page = 1) {
         },
         success: function(response) {
             if (response.success) {
-                const users = response.data;
-                const meta = response.meta;
-                const stats = response.stats;
+                const result = response.data;
+                const users = result.data;
+                const meta = result.meta;
+                const stats = result.stats;
 
                 if (users.length === 0) {
                     body.html(
@@ -154,6 +155,8 @@ let editUserId = null;
 function openAddModal() {
     editUserId = null;
     $('#modalTitle').text('Tambah Pengguna');
+    $('#modalSubTitle').text('Silakan lengkapi formulir untuk menambah akun baru.');
+    $('#modalIcon').html('<i class="bi bi-person-plus-fill"></i>');
     $('#formUser')[0].reset();
     $('.form-ctrl-m').removeClass('is-invalid');
     $('.invalid-feedback').remove();
@@ -194,6 +197,8 @@ function openEditModal(id) {
                 $('#f-is_active').val(user.is_active ? "1" : "0");
 
                 $('#modalTitle').text('Edit Pengguna');
+                $('#modalSubTitle').text('Perbarui informasi akun pengguna ini.');
+                $('#modalIcon').html('<i class="bi bi-pencil-square"></i>');
                 $('#modalUser').addClass('show');
             }
         },

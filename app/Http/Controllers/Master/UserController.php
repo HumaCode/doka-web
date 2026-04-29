@@ -56,11 +56,9 @@ class UserController extends Controller
             'admin'    => \App\Models\User::role('admin')->count(),
         ];
 
-        return PaginateResource::make($users, UserResource::class)
-            ->additional([
-                'success' => true,
-                'stats'   => $stats,
-            ]);
+        return $this->success(null, PaginateResource::make($users, UserResource::class)->additional([
+            'stats' => $stats
+        ]));
     }
 
     /**
@@ -79,9 +77,9 @@ class UserController extends Controller
 
             $this->userService->createUser($data, $roleId);
 
-            return jsonSuccess('Pengguna berhasil ditambahkan.');
+            return $this->success('Pengguna berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return jsonError('Terjadi kesalahan sistem ketika menyimpan pengguna. ' . $e->getMessage());
+            return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
 
@@ -96,12 +94,10 @@ class UserController extends Controller
         $user = $this->userService->getUserById($id);
 
         if (!$user) {
-            return jsonError('Pengguna tidak ditemukan.', 404);
+            return $this->error('Pengguna tidak ditemukan.', 404);
         }
 
-        return jsonSuccess('Berhasil memuat data pengguna.', [
-            'data' => new UserResource($user)
-        ]);
+        return $this->success('Berhasil memuat data pengguna.', new UserResource($user));
     }
 
     /**
@@ -121,9 +117,9 @@ class UserController extends Controller
 
             $this->userService->updateUser($id, $data, $roleId);
 
-            return jsonSuccess('Data pengguna berhasil diperbarui.');
+            return $this->success('Data pengguna berhasil diperbarui.');
         } catch (\Exception $e) {
-            return jsonError('Terjadi kesalahan sistem ketika memperbarui data. ' . $e->getMessage());
+            return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
 
@@ -137,9 +133,9 @@ class UserController extends Controller
     {
         try {
             $this->userService->deleteUser($id);
-            return jsonSuccess('Akun pengguna berhasil dihapus dari sistem.');
+            return $this->success('Akun pengguna berhasil dihapus.');
         } catch (\Exception $e) {
-            return jsonError('Terjadi kesalahan sistem ketika menghapus data pengguna. ' . $e->getMessage());
+            return $this->error('Gagal menghapus data: ' . $e->getMessage());
         }
     }
 
@@ -158,9 +154,9 @@ class UserController extends Controller
 
         try {
             $this->userService->deleteBulkUsers($request->ids);
-            return jsonSuccess(count($request->ids) . ' akun pengguna berhasil dihapus dari sistem.');
+            return $this->success(count($request->ids) . ' akun pengguna berhasil dihapus.');
         } catch (\Exception $e) {
-            return jsonError('Terjadi kesalahan sistem ketika menghapus bulk pengguna. ' . $e->getMessage());
+            return $this->error('Gagal menghapus data: ' . $e->getMessage());
         }
     }
 }
