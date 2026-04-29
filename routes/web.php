@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Kategori
     Route::get('/kategori', [\App\Http\Controllers\Master\CategoryController::class, 'index'])->name('kategori.index');
+    Route::get('/kategori/getallpagination', [\App\Http\Controllers\Master\CategoryController::class, 'getAllPagination'])->name('kategori.getallpagination');
 });
 
 Route::middleware('auth')->group(function () {

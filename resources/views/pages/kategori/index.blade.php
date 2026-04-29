@@ -52,13 +52,16 @@
     <div class="toolbar fade-up">
         <div class="toolbar-search">
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama kategori..." oninput="filterData()" />
+            <input type="text" id="searchInput" placeholder="Cari nama kategori..." />
         </div>
-        <select class="toolbar-select" id="filterStatus" onchange="filterData()">
+        <select class="toolbar-select" id="filterStatus">
             <option value="">Semua Status</option>
             <option value="active">Aktif</option>
             <option value="inactive">Nonaktif</option>
         </select>
+        <button class="btn-toolbar btn-reset" onclick="resetFilters()" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
         <div class="toolbar-right">
             <div class="view-toggle">
                 <button class="view-btn active" id="btnCardView" onclick="setView('card')" title="Card View">
