@@ -35,7 +35,8 @@
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Kategori">
+            <a href="{{ route('kategori.index') }}"
+                class="nav-link-item {{ request()->routeIs('kategori.index') ? 'active' : '' }}" data-label="Kategori">
                 <i class="bi bi-tags-fill nav-icon"></i>
                 <span class="nav-label">Kategori</span>
             </a>
