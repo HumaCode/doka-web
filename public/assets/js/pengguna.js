@@ -59,7 +59,7 @@ function renderTable(page = 1) {
                         <td><span class="status-badge status-${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Aktif' : 'Non-aktif'}</span></td>
                         <td style="text-align:center;">
                             <div class="action-btns">
-                                <button class="btn-action btn-view" onclick="openDrawer('${u.id}')"><i class="bi bi-eye"></i></button>
+                                <button class="btn-action btn-view" onclick="openDetailModal('${u.id}')"><i class="bi bi-eye"></i></button>
                                 <button class="btn-action btn-edit" onclick="openEditModal('${u.id}')"><i class="bi bi-pencil-square"></i></button>
                                 <button class="btn-action btn-delete" data-id="${u.id}" data-name="${u.name} — ${(u.roles[0]?.name || 'user').toUpperCase()}" onclick="deleteUser(this)"><i class="bi bi-trash"></i></button>
                             </div>
@@ -203,12 +203,79 @@ function resetFilters() {
     renderTable(1);
 }
 
-function openDrawer(id) {
-    alert('Fitur detail untuk ID: ' + id);
-}
+function openDetailModal(id) {
+    const content = $('#detailUserContent');
+    content.html(`
+        <div style="text-align:center; padding:40px;">
+            <div class="spinner-border text-primary"></div>
+            <p style="margin-top:10px; color:var(--c-muted);">Mengambil data...</p>
+        </div>
+    `);
+    $('#modalDetailUser').addClass('show');
 
-function closeDrawer() {
-    $('#drawerOverlay').removeClass('show');
+    $.ajax({
+        url: '/pengguna/' + id,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                const u = response.data;
+                const initial = u.name ? u.name[0].toUpperCase() : '?';
+                const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
+                const color = colors[u.id.length % colors.length] || '#4f46e5';
+                
+                const gender = u.gender === 'l' ? 'Laki-laki' : (u.gender === 'p' ? 'Perempuan' : '-');
+                const status = u.is_active ? 
+                    '<span class="status-badge status-active">Aktif</span>' : 
+                    '<span class="status-badge status-inactive">Non-aktif</span>';
+                
+                const role = u.roles && u.roles.length > 0 ? 
+                    `<span class="role-badge role-${u.roles[0].name}">${u.roles[0].name.toUpperCase()}</span>` : 
+                    '<span class="role-badge role-user">USER</span>';
+
+                content.html(`
+                    <div class="detail-container">
+                        <div class="detail-header">
+                            <div class="detail-avatar" style="background:${color}">${initial}</div>
+                            <div class="detail-header-info">
+                                <div class="detail-name">${u.name}</div>
+                                <div class="detail-email">${u.email}</div>
+                                <div style="margin-top:8px; display:flex; gap:8px;">${role} ${status}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label class="detail-label">Username</label>
+                                <div class="detail-value">${u.username || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label class="detail-label">No. Handphone</label>
+                                <div class="detail-value">${u.phone || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label class="detail-label">Jenis Kelamin</label>
+                                <div class="detail-value">${gender}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label class="detail-label">ID Pengguna</label>
+                                <div class="detail-value" style="font-family:monospace; font-size:0.75rem;">${u.id}</div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                $('#btnEditFromDetail').attr('onclick', `closeModal('modalDetailUser'); openEditModal('${u.id}')`);
+            }
+        },
+        error: function() {
+            content.html(`
+                <div style="text-align:center; padding:40px; color:var(--c-red);">
+                    <i class="bi bi-exclamation-triangle" style="font-size:2rem;"></i>
+                    <p style="margin-top:10px;">Gagal memuat data pengguna.</p>
+                </div>
+            `);
+        }
+    });
 }
 
 function toggleAll(el) {

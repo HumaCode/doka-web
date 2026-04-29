@@ -1,4 +1,4 @@
-﻿<x-master-layout>
+<x-master-layout>
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/css/pengguna.css') }}">
     @endpush
@@ -192,14 +192,25 @@
         </div>
     </div>
 
-    <!-- Detail Drawer -->
-    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
-        <div class="drawer" onclick="event.stopPropagation()">
-            <div class="drawer-head">
-                <div style="font-weight:900; font-family:'Nunito';">Detail Pengguna</div>
-                <button class="btn-close-modal" onclick="closeDrawer()"><i class="bi bi-x-lg"></i></button>
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modalDetailUser">
+        <div class="modal-box" style="max-width: 650px;">
+            <div class="modal-head">
+                <div class="modal-head-title"><i class="bi bi-person-badge"></i> Detail Pengguna</div>
+                <button class="btn-close-modal" onclick="closeModal('modalDetailUser')"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div class="drawer-body" id="drawerBody"></div>
+            <div class="modal-body" id="detailUserContent">
+                <div style="text-align:center; padding:40px;">
+                    <span class="spinner-border text-primary"></span>
+                    <p style="margin-top:10px; color:var(--c-muted);">Memuat informasi...</p>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn-secondary-m"
+                    style="padding:10px 20px; border-radius:10px; border:1px solid var(--c-border); background:#fff;"
+                    onclick="closeModal('modalDetailUser')">Tutup</button>
+                <button class="btn-primary-m" id="btnEditFromDetail">Edit Data</button>
+            </div>
         </div>
     </div>
 
