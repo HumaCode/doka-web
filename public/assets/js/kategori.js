@@ -367,7 +367,7 @@ function openEditModal(id) {
                 
                 // Update Modal UI
                 $('#modalTitleText').text('Edit Kategori');
-                $('#btnSaveKat').html('<i class="bi bi-save-fill"></i> Simpan Perubahan');
+                $('#btnSaveKat').html('<i class="bi bi-check2-circle"></i> Simpan Perubahan');
                 
                 // Fill Form
                 $('#f-nama').val(d.nama_kategori);
