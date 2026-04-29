@@ -66,4 +66,22 @@ class CategoryController extends Controller
 
         return $this->success(null, $resource);
     }
+
+    /**
+     * Store a newly created category via AJAX.
+     *
+     * @param \App\Http\Requests\Master\Kategori\StoreKategoriRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(\App\Http\Requests\Master\Kategori\StoreKategoriRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            Kategori::create($data);
+
+            return $this->success('Kategori baru berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
+    }
 }

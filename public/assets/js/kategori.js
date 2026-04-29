@@ -361,6 +361,10 @@ function closeModal(id) {
     document.body.style.overflow=''; 
 }
 
+function clearErr(id) {
+    $(`#${id}`).removeClass('has-err');
+}
+
 window.onNamaInput = function(val) {
     const slug = val.toLowerCase().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
     $('#f-slug').val(slug);
@@ -372,12 +376,106 @@ window.updatePreview = function() {
     $('#previewSlug').text($('#f-slug').val() || 'nama-kategori');
 };
 
+function saveKategori() {
+    const btn = $('#btnSaveKat');
+    const isEdit = !!editingId;
+
+    // Data collection
+    const data = {
+        nama_kategori: $('#f-nama').val(),
+        slug: $('#f-slug').val(),
+        deskripsi: $('#f-desc').val(),
+        icon: selIcon,
+        warna: COLORS[selColor].hex, // We store the HEX color
+        status: $('#f-status').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Simple client-side validation
+    let hasErr = false;
+    $('.fgroup').removeClass('has-err');
+
+    if (!data.nama_kategori) { $('#grp-nama').addClass('has-err'); hasErr = true; }
+    if (!data.slug) { $('#grp-slug').addClass('has-err'); hasErr = true; }
+
+    if (hasErr) return;
+
+    // --- Loading Step (Consistency with Pengguna Module) ---
+    const steps = [
+        'Memvalidasi data...',
+        'Mengirim ke server...',
+        'Menyimpan ke database...',
+        'Selesai!'
+    ];
+
+    const loader = DKA.loading({
+        title: isEdit ? 'Memperbarui Kategori' : 'Menyimpan Kategori',
+        message: 'Memulai proses...',
+        style: 'ring',
+    });
+
+    steps.forEach((msg, i) => {
+        setTimeout(() => loader.update(msg), (i + 1) * 600);
+    });
+
+    $.ajax({
+        url: isEdit ? `/kategori/${editingId}` : '/kategori',
+        method: isEdit ? 'PUT' : 'POST',
+        data: data,
+        success: function(response) {
+            setTimeout(() => {
+                loader.close();
+                if (response.success) {
+                    DKA.notify({
+                        type: 'success',
+                        title: isEdit ? 'Kategori Diperbarui!' : 'Kategori Disimpan!',
+                        message: response.message,
+                        duration: 6000,
+                    });
+                    closeModal('modalKat');
+                    loadData(currentPage);
+                }
+            }, (steps.length) * 600);
+        },
+        error: function(err) {
+            loader.close();
+            if (err.status === 422) {
+                const errors = err.responseJSON.errors;
+                Object.keys(errors).forEach(key => {
+                    // Map backend key to frontend group id
+                    const groupId = key === 'nama_kategori' ? 'grp-nama' : `grp-${key}`;
+                    const group = $(`#${groupId}`);
+                    if (group.length) {
+                        group.addClass('has-err');
+                        group.find('.finvalid').text(errors[key][0]);
+                    }
+                });
+                DKA.notify({
+                    type: 'danger',
+                    title: 'Validasi Gagal',
+                    message: 'Periksa kembali isian formulir Anda.',
+                    duration: 6000
+                });
+            } else {
+                DKA.notify({
+                    type: 'danger',
+                    title: 'Error Server',
+                    message: 'Koneksi terputus atau terjadi masalah server.',
+                    duration: 6000
+                });
+            }
+        }
+    });
+}
+
 function deleteKategori(id) {
-    // Placeholder for delete logic
-    alert('Delete feature will be implemented soon.');
+    if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
+        // Implementation for delete
+        alert('Fitur hapus akan segera hadir.');
+    }
 }
 
 function toggleStatus(id) {
-    // Placeholder for status toggle
-    alert('Status toggle will be implemented soon.');
+    // Implementation for toggle
+    alert('Fitur toggle status akan segera hadir.');
 }

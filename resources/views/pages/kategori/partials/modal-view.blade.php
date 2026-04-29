@@ -42,7 +42,7 @@
                     <div class="fwrap">
                         <i class="bi bi-link-45deg ficon"></i>
                         <input type="text" class="fctrl" id="f-slug" placeholder="rapat-koordinasi"
-                            oninput="clearErr('grp-slug');updatePreview()" />
+                            readonly oninput="clearErr('grp-slug');updatePreview()" />
                     </div>
                     <div class="finvalid">Slug wajib diisi (huruf kecil, tanpa spasi).</div>
                     <div class="fhint">Otomatis dari nama. Gunakan huruf kecil & strip (-).</div>
@@ -52,7 +52,20 @@
             <!-- Deskripsi -->
             <div class="fgroup">
                 <div class="flabel"><i class="bi bi-card-text" style="color:var(--c-muted);font-size:.85rem;"></i> Deskripsi <span style="color:var(--c-muted);font-weight:500;font-size:.72rem;">(opsional)</span></div>
-                <textarea class="fctrl no-icon" id="f-desc" rows="3" placeholder="Deskripsi singkat kategori ini..."></textarea>
+                <textarea class="fctrl no-icon" id="f-desc" rows="3" placeholder="Deskripsi singkat..."></textarea>
+            </div>
+
+            <!-- Status -->
+            <div class="fgroup" id="grp-status">
+                <div class="flabel"><i class="bi bi-toggle-on" style="color:var(--c-muted);font-size:.85rem;"></i> Status <span class="req">*</span></div>
+                <div class="fwrap">
+                    <i class="bi bi-toggle-on ficon"></i>
+                    <select class="fctrl" id="f-status" onchange="clearErr('grp-status')">
+                        <option value="active">Aktif</option>
+                        <option value="inactive">Nonaktif</option>
+                    </select>
+                </div>
+                <div class="finvalid">Status wajib dipilih.</div>
             </div>
 
             <!-- Icon Picker -->
