@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Master\UnitKerja;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $unitKerjas = UnitKerja::where('status', 'active')->orderBy('nama_instansi')->get();
+        return view('auth.register', compact('unitKerjas'));
     }
 
     /**
@@ -35,6 +37,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'lowercase', 'min:4', 'max:20', 'unique:'.User::class, 'regex:/^[a-z0-9_]+$/'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'unit_kerja_id' => ['required', 'exists:unit_kerja,id'],
             'phone' => ['nullable', 'string', 'max:20'],
             'avatar' => ['nullable', 'image', 'max:2048'], // Max 2MB
         ]);
@@ -44,6 +47,7 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'phone' => $request->phone,
+            'unit_kerja_id' => $request->unit_kerja_id,
             'password' => Hash::make($request->password),
             'is_active' => true,
         ]);

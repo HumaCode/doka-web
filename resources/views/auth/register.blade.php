@@ -11,7 +11,83 @@
     @endsection
 
     @push('css')
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <style>
+            /* Custom Select2 for Register Page */
+            .select2-container--default .select2-selection--single {
+                height: 52px;
+                border: 2px solid var(--c-border);
+                border-radius: 12px;
+                background-color: #fff;
+                display: flex;
+                align-items: center;
+                padding: 0 12px 0 42px;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-weight: 600;
+                color: var(--c-text);
+                transition: all 0.3s ease;
+            }
+            .select2-container--default.select2-container--open .select2-selection--single {
+                border-color: var(--c-primary);
+                box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.1);
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: var(--c-text);
+                padding-left: 0;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__placeholder {
+                color: #94a3b8;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 50px;
+                right: 12px;
+            }
+            .select2-dropdown {
+                border: 1px solid var(--c-border);
+                border-radius: 12px;
+                box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1), 0 10px 15px -6px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+                z-index: 9999;
+                margin-top: 5px;
+                background: #fff;
+            }
+            .select2-container--default .select2-search--dropdown .select2-search__field {
+                border: 1px solid var(--c-border);
+                border-radius: 10px;
+                padding: 10px 14px;
+                outline: none;
+                margin: 8px;
+                width: calc(100% - 16px);
+            }
+            .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+                border-color: var(--c-primary);
+            }
+            .select2-results__option {
+                padding: 12px 18px;
+                font-size: 0.9rem;
+                color: var(--c-text);
+                transition: background 0.2s;
+            }
+            .select2-container--default .select2-results__option--highlighted[aria-selected] {
+                background-color: var(--c-primary);
+                color: #fff;
+            }
+            .select2-container--default .select2-results__option[aria-selected=true] {
+                background-color: #f1f5f9;
+                color: var(--c-primary);
+                font-weight: 700;
+            }
+            #wrap-unit_kerja_id { position: relative; }
+            #wrap-unit_kerja_id .input-icon {
+                position: absolute;
+                left: 18px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 5;
+                color: var(--c-primary);
+                font-size: 1.1rem;
+            }
+
             /* ── Register Card (wider for multi-field) ── */
             .register-card {
                 width: 100%;
@@ -23,7 +99,7 @@
                 box-shadow: 0 24px 64px rgba(79, 70, 229, .18), 0 4px 16px rgba(6, 182, 212, .10);
                 border: 1px solid rgba(255, 255, 255, 0.72);
                 display: grid;
-                grid-template-columns: 340px 1fr;
+                grid-template-columns: 300px 1fr;
                 overflow: hidden;
                 animation: cardIn .7s cubic-bezier(.22, 1, .36, 1) both;
             }
@@ -704,28 +780,22 @@
                             autocomplete="tel" />
                     </div>
 
-                    <!-- Two-column row (Commented out) -->
-                    {{-- <div class="row g-3">
-                        <div class="col-12 col-sm-6">
-                            <label class="form-label" for="instansi">
-                                Instansi / Unit Kerja <span class="required-dot">*</span>
-                            </label>
-                            <div class="field-wrap mb-0" id="wrap-instansi">
-                                <i class="bi bi-building input-icon"></i>
-                                <input type="text" id="instansi" name="instansi" class="form-ctrl"
-                                    placeholder="Nama instansi" />
-                            </div>
-                            <div class="field-error" id="err-instansi" style="display:none;font-size:.75rem;color:#ef4444;margin-top:4px; margin-bottom:18px;">Instansi wajib diisi.</div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <label class="form-label" for="jabatan">Jabatan / Posisi</label>
-                            <div class="field-wrap mb-0">
-                                <i class="bi bi-briefcase-fill input-icon"></i>
-                                <input type="text" id="jabatan" name="jabatan" class="form-ctrl"
-                                    placeholder="Jabatan Anda" />
-                            </div>
-                        </div>
-                    </div> --}}
+                    <div class="field-section" style="margin-top:24px;">Data Instansi</div>
+
+                    <!-- Unit Kerja -->
+                    <label class="form-label" for="unit_kerja_id">
+                        Instansi / Unit Kerja <span class="required-dot">*</span>
+                    </label>
+                    <div class="field-wrap" id="wrap-unit_kerja_id">
+                        <i class="bi bi-building-fill input-icon"></i>
+                        <select id="unit_kerja_id" name="unit_kerja_id" class="form-ctrl select2">
+                            <option value="">Pilih Instansi</option>
+                            @foreach ($unitKerjas as $uk)
+                                <option value="{{ $uk->id }}">{{ $uk->nama_instansi }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="field-error" id="err-unit_kerja_id" style="display:none;font-size:.75rem;color:#ef4444;margin-top:-14px; margin-bottom:18px;">Instansi wajib dipilih.</div>
 
                     <div class="d-flex gap-3 mt-4">
                         <button type="button" class="btn-outline-nav" onclick="goBack(2)">
@@ -839,7 +909,20 @@
     </div>
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
+            $(document).ready(function() {
+                $('.select2').select2({
+                    placeholder: "Pilih Instansi",
+                    width: '100%'
+                });
+                
+                // Re-validate select2 on change
+                $('#unit_kerja_id').on('change', function() {
+                    if ($(this).val()) clearErr('unit_kerja_id');
+                });
+            });
+
             /* ======================================================
                PASSWORD STRENGTH METER
                ====================================================== */
@@ -1065,13 +1148,13 @@
                     ok = false;
                 } else clearErr('fullname');
 
-                const insEl = document.getElementById('instansi');
-                if (insEl) {
-                    const ins = insEl.value.trim();
-                    if (!ins) {
-                        showErr('instansi', 'Instansi wajib diisi.');
+                const unitEl = document.getElementById('unit_kerja_id');
+                if (unitEl) {
+                    const unitId = unitEl.value;
+                    if (!unitId) {
+                        showErr('unit_kerja_id', 'Instansi wajib dipilih.');
                         ok = false;
-                    } else clearErr('instansi');
+                    } else clearErr('unit_kerja_id');
                 }
 
                 return ok;
@@ -1084,8 +1167,9 @@
                 document.getElementById('rvEmail').textContent = document.getElementById('email').value.trim() || '—';
                 document.getElementById('rvPhone').textContent = document.getElementById('phone').value.trim() || '—';
 
-                const insEl = document.getElementById('instansi');
-                document.getElementById('rvInstansi').textContent = insEl ? (insEl.value.trim() || '—') : '—';
+                const unitEl = document.getElementById('unit_kerja_id');
+                const unitName = unitEl && unitEl.selectedIndex > 0 ? unitEl.options[unitEl.selectedIndex].text : '—';
+                document.getElementById('rvInstansi').textContent = unitName;
 
                 const jabEl = document.getElementById('jabatan');
                 document.getElementById('rvJabatan').textContent = jabEl ? (jabEl.value.trim() || '—') : '—';
@@ -1196,7 +1280,7 @@
                             // If first error is on step 1/2, go back there
                             if (firstErrField === 'username' || firstErrField === 'email' || firstErrField === 'password') {
                                 setStep(1);
-                            } else if (firstErrField === 'name' || firstErrField === 'phone' || firstErrField === 'avatar') {
+                            } else if (firstErrField === 'name' || firstErrField === 'phone' || firstErrField === 'avatar' || firstErrField === 'unit_kerja_id') {
                                 setStep(2);
                             }
                         } else {
