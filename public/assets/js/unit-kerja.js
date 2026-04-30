@@ -279,8 +279,8 @@ function openAddModal() {
 }
 
 function openEditModal(id) {
-    currentId = id;
     resetForm();
+    currentId = id;
     $('#mTitleText').text('Edit Unit Kerja');
     $('#btnSave').html('<i class="bi bi-check2-circle"></i> Perbarui');
     
