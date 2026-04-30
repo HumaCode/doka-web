@@ -26,6 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'update'])->name('kategori.update');
     Route::patch('/kategori/{kategori}/toggle', [\App\Http\Controllers\Master\CategoryController::class, 'toggleStatus'])->name('kategori.toggle');
     Route::delete('/kategori/{kategori}', [\App\Http\Controllers\Master\CategoryController::class, 'destroy'])->name('kategori.destroy');
+
+    // Unit Kerja
+    Route::get('/unit-kerja', [\App\Http\Controllers\Master\UnitKerjaController::class, 'index'])->name('unit-kerja.index');
 });
 
 Route::middleware('auth')->group(function () {

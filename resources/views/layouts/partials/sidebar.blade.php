@@ -42,7 +42,8 @@
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Unit Kerja">
+            <a href="{{ route('unit-kerja.index') }}"
+                class="nav-link-item {{ request()->routeIs('unit-kerja.index') ? 'active' : '' }}" data-label="Unit Kerja">
                 <i class="bi bi-building-fill nav-icon"></i>
                 <span class="nav-label">Unit Kerja</span>
             </a>
