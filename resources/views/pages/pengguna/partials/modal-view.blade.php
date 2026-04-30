@@ -41,6 +41,15 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label-m">Instansi / Unit Kerja</label>
+                    <select class="form-ctrl-m select2" id="f-unit_kerja_id" name="unit_kerja_id">
+                        <option value="">Pilih Instansi</option>
+                        @foreach ($unitKerjas as $uk)
+                            <option value="{{ $uk->id }}">{{ $uk->nama_instansi }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="form-row" style="margin-bottom: 14px;">
                     <div class="form-group">
                         <label class="form-label-m">Password</label>

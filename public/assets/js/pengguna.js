@@ -70,7 +70,12 @@ function renderTable(page = 1) {
                                 </div>
                             </div>
                         </td>
-                        <td>${u.username || '-'}</td>
+                        <td>
+                            <div class="instansi-wrapper">
+                                <div class="instansi-name" title="${u.unit_kerja?.nama || ''}">${u.unit_kerja?.nama || '-'}</div>
+                                ${u.unit_kerja?.sing ? `<div class="instansi-badge">${u.unit_kerja.sing}</div>` : ''}
+                            </div>
+                        </td>
                         <td><span class="role-badge role-${u.roles[0]?.name || 'user'}">${(u.roles[0]?.name || 'user').toUpperCase()}</span></td>
                         <td><span class="status-badge status-${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Aktif' : 'Non-aktif'}</span></td>
                         <td style="text-align:center;">
@@ -147,6 +152,14 @@ $(document).ready(function() {
 
     $('#filterRole').on('change', () => renderTable(1));
     $('#filterStatus').on('change', () => renderTable(1));
+
+    // Initialize Select2 for Instansi
+    $('.select2').select2({
+        placeholder: "Pilih Instansi",
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('#modalUser')
+    });
 });
 
 // --- MODAL & FORM CONTROL --- //
@@ -158,6 +171,7 @@ function openAddModal() {
     $('#modalSubTitle').text('Silakan lengkapi formulir untuk menambah akun baru.');
     $('#modalIcon').html('<i class="bi bi-person-plus-fill"></i>');
     $('#formUser')[0].reset();
+    $('#f-unit_kerja_id').val(null).trigger('change');
     $('.form-ctrl-m').removeClass('is-invalid');
     $('.invalid-feedback').remove();
     $('#modalUser').addClass('show');
@@ -187,6 +201,7 @@ function openEditModal(id) {
                 $('#f-email').val(user.email || '');
                 $('#f-phone').val(user.phone || '');
                 $('#f-gender').val(user.gender ? user.gender.toLowerCase() : '');
+                $('#f-unit_kerja_id').val(user.unit_kerja?.id || '').trigger('change');
 
                 if (user.roles && user.roles.length > 0) {
                     $('#f-role').val(user.roles[0].name);
@@ -267,6 +282,13 @@ function openDetailModal(id) {
                         </div>
                         
                         <div class="detail-grid">
+                            <div class="detail-item" style="grid-column: span 2;">
+                                <label class="detail-label">Instansi / Unit Kerja</label>
+                                <div class="detail-value">
+                                    <div style="font-weight:700; color:var(--c-text);">${u.unit_kerja?.nama || '-'}</div>
+                                    <div style="font-size:0.7rem; color:var(--c-primary); font-weight:800;">${u.unit_kerja?.sing || ''}</div>
+                                </div>
+                            </div>
                             <div class="detail-item">
                                 <label class="detail-label">Username</label>
                                 <div class="detail-value">${u.username || '-'}</div>

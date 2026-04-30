@@ -21,6 +21,7 @@ class UpdateUserRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
             'phone' => 'nullable|string|max:20',
             'gender' => 'required|in:l,p',
+            'unit_kerja_id' => 'required|exists:unit_kerja,id',
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|exists:roles,name',
             'is_active' => 'required|boolean',

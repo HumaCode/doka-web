@@ -7,6 +7,7 @@ use App\Http\Resources\PaginateResource;
 use App\Http\Resources\UserResource;
 use App\Models\Shield\Role;
 use App\Services\Master\Pengguna\UserServiceInterface;
+use App\Models\Master\UnitKerja;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -21,7 +22,8 @@ class UserController extends Controller
     public function index()
     {
         $roles = Role::all();
-        return view('pages.pengguna.index', compact('roles'));
+        $unitKerjas = UnitKerja::where('status', 'active')->orderBy('nama_instansi')->get();
+        return view('pages.pengguna.index', compact('roles', 'unitKerjas'));
     }
 
     /**
@@ -45,8 +47,8 @@ class UserController extends Controller
         // Single query for all stats (optimized from 4 separate queries)
         $rawStats = \App\Models\User::selectRaw("
             COUNT(*) as total,
-            SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active,
-            SUM(CASE WHEN is_active = 0 THEN 1 ELSE 0 END) as inactive
+            SUM(CASE WHEN is_active = '1' THEN '1' ELSE '0' END) as active,
+            SUM(CASE WHEN is_active = '0' THEN '1' ELSE '0' END) as inactive
         ")->first();
 
         $stats = [
@@ -56,9 +58,10 @@ class UserController extends Controller
             'admin'    => \App\Models\User::role('admin')->count(),
         ];
 
-        return $this->success(null, PaginateResource::make($users, UserResource::class)->additional([
-            'stats' => $stats
-        ]));
+        $resource = PaginateResource::make($users, UserResource::class)->toArray(request());
+        $resource['stats'] = $stats;
+
+        return $this->success(null, $resource);
     }
 
     /**

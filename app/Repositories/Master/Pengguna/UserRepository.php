@@ -16,7 +16,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function getAllPagination(int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
-        $query = $this->model->with('roles');
+        $query = User::query()->with(['roles', 'unitKerja']);
 
         // Apply filters
         if (!empty($filters['search'])) {
@@ -46,7 +46,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function findById($id)
     {
-        return $this->model->with('roles')->findOrFail($id);
+        return $this->model->with(['roles', 'unitKerja'])->findOrFail($id);
     }
 
     public function update($id, array $data)
@@ -64,7 +64,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function getByIds(array $ids)
     {
-        return User::with('roles')->whereIn('id', $ids)->get();
+        return User::with(['roles', 'unitKerja'])->whereIn('id', $ids)->get();
     }
 
     public function deleteBulk(array $ids)

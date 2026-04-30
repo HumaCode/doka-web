@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Master\UnitKerja;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,14 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Ambil Unit Kerja
+        $unitKerjaIds = UnitKerja::pluck('id')->toArray();
+        
+        if (empty($unitKerjaIds)) {
+            $this->command->error("Tabel unit_kerja kosong! Jalankan UnitKerjaSeeder terlebih dahulu.");
+            return;
+        }
+
         // 1. Konfigurasi Awal
         $mainUsers = ['dev', 'admin', 'user'];
         $rawPassword = '123'; // Password sebelum di-hash
@@ -23,6 +32,7 @@ class UserSeeder extends Seeder
             'password'          => Hash::make($rawPassword),
             'remember_token'    => Str::random(10),
             'is_active'         => '1',
+            'unit_kerja_id'     => $unitKerjaIds[0], // Set default ke instansi pertama untuk user utama
         ];
 
         $this->command->warn("Sedang membuat user utama...");
@@ -44,7 +54,9 @@ class UserSeeder extends Seeder
 
         User::factory()
             ->count(1000)
-            ->create()
+            ->create([
+                'unit_kerja_id' => fn() => fake()->randomElement($unitKerjaIds)
+            ])
             ->each(function ($u) {
                 $u->assignRole('user');
             });

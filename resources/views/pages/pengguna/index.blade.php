@@ -1,6 +1,115 @@
 <x-master-layout>
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/css/pengguna.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <style>
+            /* Modal Scroll Fix */
+            .modal-box {
+                max-height: 90vh;
+                display: flex;
+                flex-direction: column;
+            }
+            .modal-body {
+                overflow-y: auto;
+                flex: 1;
+            }
+
+            /* Premium Select2 Styling */
+            .select2-container--default .select2-selection--single {
+                height: 48px;
+                border: 1px solid var(--c-border);
+                border-radius: 12px;
+                background-color: #fff;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                padding: 0 10px;
+            }
+            .select2-container--default.select2-container--open .select2-selection--single {
+                border-color: var(--c-primary);
+                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: var(--c-text);
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__placeholder {
+                color: #94a3b8;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 46px;
+                right: 10px;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__clear {
+                margin-right: 25px;
+                color: #ef4444;
+                font-size: 1.2rem;
+            }
+
+            /* Dropdown Styling */
+            .select2-dropdown {
+                border: 1px solid var(--c-border);
+                border-radius: 12px;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                z-index: 9999;
+                margin-top: 5px;
+            }
+            .select2-container--default .select2-search--dropdown .select2-search__field {
+                border: 1px solid var(--c-border);
+                border-radius: 8px;
+                padding: 8px 12px;
+                outline: none;
+            }
+            .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+                border-color: var(--c-primary);
+            }
+            .select2-results__option {
+                padding: 10px 15px;
+                font-size: 0.875rem;
+                color: var(--c-text);
+            }
+            .select2-container--default .select2-results__option--highlighted[aria-selected] {
+                background-color: var(--c-primary);
+                color: #fff;
+            }
+            .select2-container--default .select2-results__option[aria-selected=true] {
+                background-color: #f1f5f9;
+                color: var(--c-primary);
+                font-weight: 600;
+            }
+
+            /* Instansi Column Styling */
+            .instansi-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .instansi-name {
+                font-weight: 600;
+                color: var(--c-text);
+                font-size: 0.85rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 200px;
+            }
+            .instansi-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 2px 10px;
+                background-color: rgba(79, 70, 229, 0.08);
+                color: var(--c-primary);
+                border-radius: 6px;
+                font-size: 0.65rem;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                width: fit-content;
+                border: 1px solid rgba(79, 70, 229, 0.15);
+            }
+        </style>
     @endpush
 
     <!-- Page Header -->
@@ -112,6 +221,7 @@
     @include('pages.pengguna.partials.modal-view')
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="{{ asset('assets/js/pengguna.js') }}"></script>
     @endpush
 </x-master-layout>
