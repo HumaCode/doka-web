@@ -1,5 +1,6 @@
 <x-guest-layout>
     @push('js')
+        <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
         <script>
             $(document).ready(function() {
                 const $loginForm = $('#loginForm');
@@ -20,34 +21,39 @@
                     $btnLogin.prop('disabled', true).html(
                         '<span class="spinner-border spinner-border-sm"></span> Memverifikasi...');
 
-                    // Prepare data - map login_identifier to username for backend
-                    let formData = $loginForm.serializeArray();
-                    formData.push({name: 'username', value: $('#login_identifier').val()});
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", {action: 'login'}).then(function(token) {
+                            // Prepare data
+                            let formData = $loginForm.serializeArray();
+                            formData.push({name: 'username', value: $('#login_identifier').val()});
+                            formData.push({name: 'g_recaptcha_response', value: token});
 
-                    $.ajax({
-                        url: $loginForm.attr('action'),
-                        method: 'POST',
-                        data: formData,
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                window.location.href = response.redirect;
-                            }
-                        },
-                        error: function(xhr) {
-                            $btnLogin.prop('disabled', false).html(
-                                '<i class="bi bi-box-arrow-in-right"></i> Masuk ke Sistem');
+                            $.ajax({
+                                url: $loginForm.attr('action'),
+                                method: 'POST',
+                                data: formData,
+                                dataType: 'json',
+                                success: function(response) {
+                                    if (response.success) {
+                                        window.location.href = response.redirect;
+                                    }
+                                },
+                                error: function(xhr) {
+                                    $btnLogin.prop('disabled', false).html(
+                                        '<i class="bi bi-box-arrow-in-right"></i> Masuk ke Sistem');
 
-                            if (xhr.status === 422) {
-                                let errors = xhr.responseJSON.errors;
-                                let errorHtml = '<div class="alert-auth alert-danger-auth"><i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i><div>';
-                                $.each(errors, function(key, messages) {
-                                    errorHtml += `<div>${messages[0]}</div>`;
-                                });
-                                errorHtml += '</div></div>';
-                                $errorContainer.html(errorHtml).fadeIn();
-                            }
-                        }
+                                    if (xhr.status === 422) {
+                                        let errors = xhr.responseJSON.errors;
+                                        let errorHtml = '<div class="alert-auth alert-danger-auth"><i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i><div>';
+                                        $.each(errors, function(key, messages) {
+                                            errorHtml += `<div>${messages[0]}</div>`;
+                                        });
+                                        errorHtml += '</div></div>';
+                                        $errorContainer.html(errorHtml).fadeIn();
+                                    }
+                                }
+                            });
+                        });
                     });
                 });
 
@@ -116,30 +122,38 @@
                     const $btn = $('#btnSendOtp');
                     $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Mengirim...');
 
-                    $.ajax({
-                        url: "{{ route('auth.otp.send') }}",
-                        method: 'POST',
-                        data: { _token: "{{ csrf_token() }}", email: email },
-                        success: function(response) {
-                            DKA.toast({ type: 'success', title: 'Berhasil', message: response.message });
-                            $btn.prop('disabled', false).html('<i class="bi bi-send-fill"></i> Kirim Kode OTP');
-                            
-                            // Switch to OTP step
-                            $('#displayEmail').text(email);
-                            $('#emailStep').hide();
-                            $('#otpStep').fadeIn();
-                            
-                            // Reset & Focus OTP inputs
-                            $('.otp-input').val('');
-                            $('.otp-input').first().focus();
-                            
-                            // Start Timer
-                            startTimer(180); // 3 minutes
-                        },
-                        error: function(xhr) {
-                            $btn.prop('disabled', false).html('<i class="bi bi-send-fill"></i> Kirim Kode OTP');
-                            DKA.toast({ type: 'error', title: 'Gagal', message: xhr.responseJSON.message || 'Gagal mengirim OTP.' });
-                        }
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", {action: 'send_otp'}).then(function(token) {
+                            $.ajax({
+                                url: "{{ route('auth.otp.send') }}",
+                                method: 'POST',
+                                data: { 
+                                    _token: "{{ csrf_token() }}", 
+                                    email: email,
+                                    g_recaptcha_response: token
+                                },
+                                success: function(response) {
+                                    DKA.toast({ type: 'success', title: 'Berhasil', message: response.message });
+                                    $btn.prop('disabled', false).html('<i class="bi bi-send-fill"></i> Kirim Kode OTP');
+                                    
+                                    // Switch to OTP step
+                                    $('#displayEmail').text(email);
+                                    $('#emailStep').hide();
+                                    $('#otpStep').fadeIn();
+                                    
+                                    // Reset & Focus OTP inputs
+                                    $('.otp-input').val('');
+                                    $('.otp-input').first().focus();
+                                    
+                                    // Start Timer
+                                    startTimer(180); // 3 minutes
+                                },
+                                error: function(xhr) {
+                                    $btn.prop('disabled', false).html('<i class="bi bi-send-fill"></i> Kirim Kode OTP');
+                                    DKA.toast({ type: 'error', title: 'Gagal', message: xhr.responseJSON.message || 'Gagal mengirim OTP.' });
+                                }
+                            });
+                        });
                     });
                 }
 
@@ -166,22 +180,32 @@
                         return;
                     }
 
-                    $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Memverifikasi...');
+                    const $btn = $(this);
+                    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Memverifikasi...');
 
-                    $.ajax({
-                        url: "{{ route('auth.otp.verify') }}",
-                        method: 'POST',
-                        data: { _token: "{{ csrf_token() }}", email: email, otp: otp },
-                        success: function(response) {
-                            if (response.success) {
-                                DKA.toast({ type: 'success', title: 'Berhasil', message: response.message });
-                                setTimeout(() => window.location.href = response.redirect, 1000);
-                            }
-                        },
-                        error: function(xhr) {
-                            $('#btnVerifyOtp').prop('disabled', false).html('<i class="bi bi-check2-circle"></i> Verifikasi & Masuk');
-                            DKA.toast({ type: 'error', title: 'Gagal', message: xhr.responseJSON.message || 'Kode OTP salah.' });
-                        }
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", {action: 'verify_otp'}).then(function(token) {
+                            $.ajax({
+                                url: "{{ route('auth.otp.verify') }}",
+                                method: 'POST',
+                                data: { 
+                                    _token: "{{ csrf_token() }}", 
+                                    email: email, 
+                                    otp: otp,
+                                    g_recaptcha_response: token
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        DKA.toast({ type: 'success', title: 'Berhasil', message: response.message });
+                                        setTimeout(() => window.location.href = response.redirect, 1000);
+                                    }
+                                },
+                                error: function(xhr) {
+                                    $btn.prop('disabled', false).html('<i class="bi bi-check2-circle"></i> Verifikasi & Masuk');
+                                    DKA.toast({ type: 'error', title: 'Gagal', message: xhr.responseJSON.message || 'Kode OTP salah.' });
+                                }
+                            });
+                        });
                     });
                 });
             });

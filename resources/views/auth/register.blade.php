@@ -918,6 +918,7 @@
     </div>
 
     @push('js')
+        <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function() {
@@ -1216,6 +1217,8 @@
             /* ── Submit ── */
             document.getElementById('registerForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                let $regForm = $(this);
+                let $btnSubmit = $('#btnSubmit');
 
                 const agreed = document.getElementById('agreeTerms').checked;
                 const errTerms = document.getElementById('err-terms');
@@ -1226,11 +1229,8 @@
                 }
                 errTerms.style.display = 'none';
 
-                const btn = document.getElementById('btnSubmit');
-                const originalBtnHtml = btn.innerHTML;
-                
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Membuat akun...';
+                const originalBtnHtml = $btnSubmit.html();
+                $btnSubmit.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Membuat akun...');
                 
                 hideAlert();
                 
@@ -1238,64 +1238,63 @@
                 document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
                 document.querySelectorAll('.is-error').forEach(el => el.classList.remove('is-error'));
 
-                const formData = new FormData(this);
+                grecaptcha.ready(function() {
+                    grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", {action: 'register'}).then(function(token) {
+                        const formData = new FormData($regForm[0]);
+                        formData.append('g_recaptcha_response', token);
 
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            /* Hide form, show success */
-                            document.getElementById('registerForm').style.display = 'none';
-                            document.getElementById('formHeading').style.display = 'none';
-                            document.getElementById('formAlert').style.display = 'none';
-                            document.querySelector('.icon-ring-reg').style.display = 'none';
-                            document.querySelector('.progress-bar-wrap').style.display = 'none';
-                            document.getElementById('formFooter').style.display = 'none';
-                            document.getElementById('successScreen').classList.add('show');
-                            
-                            // Optional: redirect after some delay if success screen is just for show
-                            // setTimeout(() => window.location.href = response.redirect, 3000);
-                        }
-                    },
-                    error: function(xhr) {
-                        btn.disabled = false;
-                        btn.innerHTML = originalBtnHtml;
+                        $.ajax({
+                            url: $regForm.attr('action'),
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    /* Hide form, show success */
+                                    document.getElementById('registerForm').style.display = 'none';
+                                    document.getElementById('formHeading').style.display = 'none';
+                                    document.getElementById('formAlert').style.display = 'none';
+                                    document.querySelector('.icon-ring-reg').style.display = 'none';
+                                    document.querySelector('.progress-bar-wrap').style.display = 'none';
+                                    document.getElementById('formFooter').style.display = 'none';
+                                    document.getElementById('successScreen').classList.add('show');
+                                }
+                            },
+                            error: function(xhr) {
+                                $btnSubmit.prop('disabled', false).html(originalBtnHtml);
 
-                        if (xhr.status === 422) {
-                            const errors = xhr.responseJSON.errors;
-                            let firstErrField = null;
+                                if (xhr.status === 422) {
+                                    const errors = xhr.responseJSON.errors;
+                                    let firstErrField = null;
 
-                            for (const field in errors) {
-                                // Map field name to ID (some might be different like password_confirmation)
-                                let id = field;
-                                if (field === 'password') id = 'password';
-                                if (field === 'password_confirmation') id = 'confirmPassword';
-                                
-                                const msg = errors[field][0];
-                                showErr(id, msg);
-                                
-                                if (!firstErrField) firstErrField = id;
+                                    for (const field in errors) {
+                                        let id = field;
+                                        if (field === 'password') id = 'password';
+                                        if (field === 'password_confirmation') id = 'confirmPassword';
+                                        
+                                        const msg = errors[field][0];
+                                        showErr(id, msg);
+                                        
+                                        if (!firstErrField) firstErrField = id;
+                                    }
+
+                                    showAlert('Harap perbaiki kesalahan pendaftaran Anda.');
+                                    
+                                    if (firstErrField === 'username' || firstErrField === 'email' || firstErrField === 'password') {
+                                        setStep(1);
+                                    } else if (firstErrField === 'name' || firstErrField === 'phone' || firstErrField === 'avatar' || firstErrField === 'unit_kerja_id') {
+                                        setStep(2);
+                                    }
+                                } else {
+                                    showAlert(xhr.responseJSON.message || 'Terjadi kesalahan sistem. Silakan coba beberapa saat lagi.');
+                                }
                             }
-
-                            showAlert('Harap perbaiki kesalahan pendaftaran Anda.');
-                            
-                            // If first error is on step 1/2, go back there
-                            if (firstErrField === 'username' || firstErrField === 'email' || firstErrField === 'password') {
-                                setStep(1);
-                            } else if (firstErrField === 'name' || firstErrField === 'phone' || firstErrField === 'avatar' || firstErrField === 'unit_kerja_id') {
-                                setStep(2);
-                            }
-                        } else {
-                            showAlert('Terjadi kesalahan sistem. Silakan coba beberapa saat lagi.');
-                        }
-                    }
+                        });
+                    });
                 });
             });
         </script>

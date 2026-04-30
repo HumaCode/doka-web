@@ -150,44 +150,17 @@
     </div>
 
     @push('js')
+        <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
         <script>
-            const LEVELS = [{
-                    min: 0,
-                    c: '#e5e7eb',
-                    l: 'Belum diisi',
-                    p: '0%'
-                },
-                {
-                    min: 1,
-                    c: '#f87171',
-                    l: 'Sangat lemah',
-                    p: '20%'
-                },
-                {
-                    min: 4,
-                    c: '#fb923c',
-                    l: 'Lemah',
-                    p: '40%'
-                },
-                {
-                    min: 6,
-                    c: '#facc15',
-                    l: 'Sedang',
-                    p: '60%'
-                },
-                {
-                    min: 8,
-                    c: '#4ade80',
-                    l: 'Kuat',
-                    p: '80%'
-                },
-                {
-                    min: 10,
-                    c: '#10b981',
-                    l: 'Sangat kuat 💪',
-                    p: '100%'
-                },
+            const LEVELS = [
+                { min: 0,  c: '#e5e7eb', l: 'Belum diisi', p: '0%' },
+                { min: 1,  c: '#f87171', l: 'Sangat lemah', p: '20%' },
+                { min: 4,  c: '#fb923c', l: 'Lemah', p: '40%' },
+                { min: 6,  c: '#facc15', l: 'Sedang', p: '60%' },
+                { min: 8,  c: '#4ade80', l: 'Kuat', p: '80%' },
+                { min: 10, c: '#10b981', l: 'Sangat kuat 💪', p: '100%' },
             ];
+
             document.getElementById('password').addEventListener('input', function() {
                 const v = this.value;
                 let s = v.length;
@@ -195,13 +168,14 @@
                 if (/[0-9]/.test(v)) s++;
                 if (/[^A-Za-z0-9]/.test(v)) s += 2;
                 let lv = LEVELS[0];
-                for (const l of LEVELS)
-                    if (s >= l.min) lv = l;
+                for (const l of LEVELS) if (s >= l.min) lv = l;
+                
                 document.getElementById('pwFill').style.width = lv.p;
                 document.getElementById('pwFill').style.background = lv.c;
                 const lb = document.getElementById('pwLabel');
                 lb.textContent = lv.l;
                 lb.style.color = lv.c === '#e5e7eb' ? 'var(--c-muted)' : lv.c;
+
                 const toggle = (id, ok) => {
                     const el = document.getElementById(id);
                     el.classList.toggle('ok', ok);
@@ -213,23 +187,55 @@
             });
 
             document.getElementById('resetForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
                 const pw = document.getElementById('password').value;
                 const cpw = document.getElementById('password_confirmation').value;
                 const err = document.getElementById('err-cpw');
                 const wrap = document.getElementById('wrap-cpw');
+                
                 if (pw !== cpw) {
-                    e.preventDefault();
                     err.style.display = 'block';
                     wrap.classList.add('has-error');
                     return;
                 }
+                
                 err.style.display = 'none';
                 wrap.classList.remove('has-error');
+                
                 const btn = document.getElementById('btnReset');
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+
+                grecaptcha.ready(function() {
+                    grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", {action: 'reset_password'}).then(function(token) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'g_recaptcha_response';
+                        input.value = token;
+                        form.appendChild(input);
+                        form.submit();
+                    });
+                });
+            });
+
+            /* Password toggle logic */
+            document.querySelectorAll('.toggle-pw').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const iconId = this.getAttribute('data-icon');
+                    const input = document.getElementById(targetId);
+                    const icon = document.getElementById(iconId);
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
+                    }
+                });
             });
         </script>
     @endpush
 </x-guest-layout>
-

@@ -28,7 +28,12 @@ class PasswordResetLinkController extends Controller
     {
         $request->validate([
             'email' => ['required', 'email'],
+            'g_recaptcha_response' => ['required'],
         ]);
+
+        if (!\App\Helpers\ReCaptchaHelper::verify($request->g_recaptcha_response)) {
+            return back()->withErrors(['email' => 'Terdeteksi aktivitas mencurigakan (reCAPTCHA gagal).']);
+        }
 
         // We will send the password reset link to this user. Once we have attempted
         // to send the link, we will examine the response then see the message we

@@ -116,11 +116,30 @@
     </div>
 
     @push('js')
+        <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
         <script>
-            document.getElementById('fpForm').addEventListener('submit', function() {
+            document.getElementById('fpForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
                 const btn = document.getElementById('btnSend');
+                const originalHtml = btn.innerHTML;
+                
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengirim...';
+
+                grecaptcha.ready(function() {
+                    grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", {action: 'forgot_password'}).then(function(token) {
+                        // Add token to form
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'g_recaptcha_response';
+                        input.value = token;
+                        form.appendChild(input);
+                        
+                        // Submit form
+                        form.submit();
+                    });
+                });
             });
         </script>
     @endpush

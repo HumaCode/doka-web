@@ -31,8 +31,15 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
+        if (!\App\Helpers\ReCaptchaHelper::verify($request->g_recaptcha_response)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terdeteksi aktivitas mencurigakan (reCAPTCHA gagal).',
+            ], 403);
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'lowercase', 'min:4', 'max:20', 'unique:'.User::class, 'regex:/^[a-z0-9_]+$/'],

@@ -20,8 +20,13 @@ class OTPController extends Controller
     public function sendOTP(Request $request)
     {
         $request->validate([
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'g_recaptcha_response' => 'required'
         ]);
+
+        if (!\App\Helpers\ReCaptchaHelper::verify($request->g_recaptcha_response)) {
+            return response()->json(['success' => false, 'message' => 'Terdeteksi aktivitas mencurigakan (reCAPTCHA gagal).'], 403);
+        }
 
         $email = $request->email;
 
@@ -72,8 +77,13 @@ class OTPController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'otp' => 'required|numeric'
+            'otp' => 'required|numeric',
+            'g_recaptcha_response' => 'required'
         ]);
+
+        if (!\App\Helpers\ReCaptchaHelper::verify($request->g_recaptcha_response)) {
+            return response()->json(['success' => false, 'message' => 'Terdeteksi aktivitas mencurigakan (reCAPTCHA gagal).'], 403);
+        }
 
         $email = $request->email;
         $otpRecord = EmailOtp::where('email', $email)->first();

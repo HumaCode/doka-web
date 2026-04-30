@@ -42,6 +42,12 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        if (!\App\Helpers\ReCaptchaHelper::verify($this->g_recaptcha_response)) {
+            throw ValidationException::withMessages([
+                'username' => 'Terdeteksi aktivitas mencurigakan (reCAPTCHA gagal).',
+            ]);
+        }
+
         if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
