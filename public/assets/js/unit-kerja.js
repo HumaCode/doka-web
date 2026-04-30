@@ -51,6 +51,7 @@ const ICONS = [
 let currentPage = 1;
 let selectedIcon = 'bi-building-fill';
 let selectedColorIdx = 0;
+let currentId = null; // null for add, string ID for edit
 
 // --- DATA LOADING --- //
 function renderTable(page = 1) {
@@ -269,11 +270,60 @@ function clearErr(id) { $(`#${id}`).removeClass('has-error'); }
 
 // --- MODAL CONTROL --- //
 function openAddModal() {
+    currentId = null;
     resetForm();
     $('#mTitleText').text('Tambah Unit Kerja');
     $('#btnSave').html('<i class="bi bi-check2-circle"></i> Simpan');
     $('#modalUK').addClass('show');
     document.body.style.overflow = 'hidden';
+}
+
+function openEditModal(id) {
+    currentId = id;
+    resetForm();
+    $('#mTitleText').text('Edit Unit Kerja');
+    $('#btnSave').html('<i class="bi bi-check2-circle"></i> Perbarui');
+    
+    const loader = DKA.loading({ title: 'Memuat Data', message: 'Sedang mengambil data unit kerja...', style: 'ring' });
+
+    $.ajax({
+        url: `/unit-kerja/${id}`,
+        method: "GET",
+        success: function(res) {
+            loader.close();
+            if (res.success) {
+                const d = res.data;
+                $('#f-nama').val(d.nama);
+                $('#f-sing').val(d.singkatan);
+                $('#f-jenis').val(d.jenis).trigger('change');
+                $('#f-kepala').val(d.kepala);
+                $('#f-telp').val(d.telp);
+                $('#f-email').val(d.email);
+                $('#f-web').val(d.website);
+                $('#f-alamat').val(d.alamat);
+                $('#f-desc').val(d.deskripsi);
+                
+                selectedIcon = d.icon || 'bi-building-fill';
+                selectedColorIdx = parseInt(d.warna) || 0;
+                
+                buildIconGrid();
+                initColorSwatches();
+                onNamaInput(d.nama);
+                updatePreviewSubtitle();
+                
+                // Update preview icons/colors
+                $('#mPreviewIcon, #mHeadIconI').attr('class', 'bi ' + selectedIcon);
+                $('#mPreviewLogo, #mHeadIcon').css('background', GRADS[selectedColorIdx % GRADS.length]);
+
+                $('#modalUK').addClass('show');
+                document.body.style.overflow = 'hidden';
+            }
+        },
+        error: function() {
+            loader.close();
+            DKA.notify({ type: 'danger', title: 'Error', message: 'Gagal memuat data unit kerja.' });
+        }
+    });
 }
 
 function closeModal() {
@@ -282,6 +332,7 @@ function closeModal() {
 }
 
 function resetForm() {
+    currentId = null;
     $('#f-nama, #f-sing, #f-kepala, #f-telp, #f-email, #f-web, #f-alamat, #f-desc').val('');
     $('#f-jenis').val('').trigger('change');
     $('.fgroup').removeClass('has-err');
@@ -343,7 +394,7 @@ function saveUK() {
     ];
 
     const loader = DKA.loading({ 
-        title: 'Menyimpan Unit Kerja', 
+        title: currentId ? 'Memperbarui Unit Kerja' : 'Menyimpan Unit Kerja', 
         message: 'Memulai proses...', 
         style: 'ring' 
     });
@@ -353,8 +404,8 @@ function saveUK() {
     });
 
     $.ajax({
-        url: "/unit-kerja",
-        method: "POST",
+        url: currentId ? `/unit-kerja/${currentId}` : "/unit-kerja",
+        method: currentId ? "PUT" : "POST",
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         data: data,
         success: function(res) {
@@ -410,4 +461,3 @@ function closeDrawer() { $('#drawerOverlay').removeClass('show'); }
 function openDrawer(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Buka Detail ID: ' + id }); }
 function doExport() { DKA.notify({ type: 'success', title: 'Export', message: 'Mengekspor data...' }); }
 function toggleStatus(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Toggle Status ID: ' + id }); }
-function openEditModal(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Edit ID: ' + id }); }

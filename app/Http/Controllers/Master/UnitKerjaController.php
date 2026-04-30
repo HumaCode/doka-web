@@ -8,6 +8,7 @@ use App\Http\Resources\PaginateResource;
 use App\Http\Resources\Master\UnitKerjaResource;
 use App\Services\Master\UnitKerja\UnitKerjaServiceInterface;
 use App\Http\Requests\Master\UnitKerja\StoreUnitKerjaRequest;
+use App\Http\Requests\Master\UnitKerja\UpdateUnitKerjaRequest;
 use App\Models\Master\UnitKerja;
 use App\Models\User;
 
@@ -72,6 +73,36 @@ class UnitKerjaController extends Controller
             return $this->success('Unit Kerja berhasil ditambahkan.');
         } catch (\Exception $e) {
             return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display the specified unit kerja for editing.
+     */
+    public function show($id)
+    {
+        try {
+            $unitKerja = $this->unitKerjaService->getUnitKerjaById($id);
+            if (!$unitKerja) return $this->error('Unit Kerja tidak ditemukan.', 404);
+
+            return $this->success('Data berhasil dimuat.', new UnitKerjaResource($unitKerja));
+        } catch (\Exception $e) {
+            return $this->error('Gagal memuat data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the specified unit kerja via AJAX.
+     */
+    public function update(UpdateUnitKerjaRequest $request, $id)
+    {
+        try {
+            $data = $request->validated();
+            $this->unitKerjaService->updateUnitKerja($id, $data);
+
+            return $this->success('Unit Kerja berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return $this->error('Gagal memperbarui data: ' . $e->getMessage());
         }
     }
 }
