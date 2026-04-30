@@ -458,6 +458,113 @@ function updateBulk() {
 function toggleAllCheck(el) { $('.row-check').prop('checked', el.checked); updateBulk(); }
 function resetFilters() { $('#searchInput').val(''); $('#filterStatus').val(''); $('#filterJenis').val(''); renderTable(1); }
 function closeDrawer() { $('#drawerOverlay').removeClass('show'); }
-function openDrawer(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Buka Detail ID: ' + id }); }
+function openDrawer(id) {
+    const overlay = $('#drawerOverlay');
+    const body = $('#drawerBody');
+    
+    // Reset body and show loader
+    body.html('<div style="padding:50px; text-align:center;"><span class="spinner-border text-primary"></span><br><small class="text-muted mt-2 d-block">Memuat Detail...</small></div>');
+    overlay.addClass('show');
+    document.body.style.overflow = 'hidden';
+
+    $.ajax({
+        url: `/unit-kerja/${id}`,
+        method: "GET",
+        success: function(res) {
+            if (res.success) {
+                renderDrawerBody(res.data);
+                
+                // Bind buttons
+                $('#drawerEditBtn').off('click').on('click', function() {
+                    closeDrawer();
+                    openEditModal(id);
+                });
+                $('#drawerDeleteBtn').off('click').on('click', function() {
+                    deleteUK(id, res.data.nama);
+                });
+            }
+        },
+        error: function() {
+            body.html('<div style="padding:50px; text-align:center; color:var(--c-red);">Gagal memuat data.</div>');
+        }
+    });
+}
+
+function renderDrawerBody(d) {
+    const gradStr = GRADS[d.warna % GRADS.length] || GRADS[0];
+    const jClass = JENIS_MAP[d.jenis] || 'jb-default';
+    const inits = d.singkatan.replace(/[^A-Za-z0-9]/g,'').slice(0,3).toUpperCase();
+    
+    let html = `
+        <div class="d-hero" style="background:${gradStr};">
+            <div class="d-hero-watermark">${inits}</div>
+            <div class="d-hero-logo"><i class="bi ${d.icon || 'bi-building-fill'}"></i></div>
+            <div class="d-hero-info">
+                <div class="d-hero-name">${d.nama}</div>
+                <div class="d-hero-sing">${d.singkatan} · ${d.jenis}</div>
+            </div>
+        </div>
+
+        <div class="d-section">
+            <!-- Stat grid -->
+            <div class="d-stat-grid">
+                <div class="d-stat-box"><div class="d-stat-val">${d.kegiatan || 0}</div><div class="d-stat-lbl">Kegiatan</div></div>
+                <div class="d-stat-box"><div class="d-stat-val">${d.pengguna || 0}</div><div class="d-stat-lbl">Pengguna</div></div>
+                <div class="d-stat-box"><div class="d-stat-val">${d.foto || 0}</div><div class="d-stat-lbl">Foto</div></div>
+            </div>
+
+            <!-- Status & Badge -->
+            <div style="margin-bottom:14px;">
+                <span class="status-pill ${d.status === 'active' ? 'sp-active' : 'sp-inactive'}">
+                    ${d.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                </span>
+                &nbsp;
+                <span class="jenis-badge ${jClass}">${d.jenis}</span>
+            </div>
+
+            <div class="d-divider"></div>
+            <div class="d-sec-title">Informasi Utama</div>
+
+            ${d.kepala ? `
+            <div class="d-row">
+                <div class="d-icon"><i class="bi bi-person-fill"></i></div>
+                <div><div class="d-lbl">Kepala / Pimpinan</div><div class="d-val">${d.kepala}</div></div>
+            </div>` : ''}
+
+            ${d.alamat ? `
+            <div class="d-row">
+                <div class="d-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <div><div class="d-lbl">Alamat</div><div class="d-val">${d.alamat}</div></div>
+            </div>` : ''}
+
+            ${d.telp ? `
+            <div class="d-row">
+                <div class="d-icon"><i class="bi bi-telephone-fill"></i></div>
+                <div><div class="d-lbl">Telepon</div><div class="d-val">${d.telp}</div></div>
+            </div>` : ''}
+
+            ${d.email ? `
+            <div class="d-row">
+                <div class="d-icon"><i class="bi bi-envelope-fill"></i></div>
+                <div><div class="d-lbl">Email</div><div class="d-val"><a href="mailto:${d.email}" class="d-link">${d.email}</a></div></div>
+            </div>` : ''}
+
+            ${d.web ? `
+            <div class="d-row">
+                <div class="d-icon"><i class="bi bi-globe"></i></div>
+                <div><div class="d-lbl">Website</div><div class="d-val"><a href="${d.web}" target="_blank" class="d-link">${d.web}</a></div></div>
+            </div>` : ''}
+
+            ${d.deskripsi ? `
+            <div class="d-divider"></div>
+            <div class="d-sec-title">Tupoksi / Deskripsi</div>
+            <div style="font-size:.855rem;color:var(--c-text-2);line-height:1.78;background:var(--c-surface2);border:1px solid var(--c-border);border-radius:10px;padding:14px;">
+                ${d.deskripsi}
+            </div>` : ''}
+        </div>
+    `;
+    
+    $('#drawerBody').html(html);
+}
 function doExport() { DKA.notify({ type: 'success', title: 'Export', message: 'Mengekspor data...' }); }
 function toggleStatus(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Toggle Status ID: ' + id }); }
