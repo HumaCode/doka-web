@@ -11,4 +11,5 @@ interface UnitKerjaRepositoryInterface
     public function delete($id);
     public function deleteBulk(array $ids);
     public function toggleStatus($id);
+    public function toggleBulkStatus(array $ids);
 }

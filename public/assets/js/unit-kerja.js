@@ -440,11 +440,29 @@ function saveUK() {
 function deleteUK(id, nama) {
     DKA.deleteConfirm({
         title: 'Hapus Unit Kerja?',
-        message: 'Data unit kerja akan dihapus permanen.',
+        message: 'Data unit kerja akan dihapus permanen dari sistem.',
         itemName: nama
     }).then(res => {
         if (res) {
-            DKA.notify({ type: 'info', title: 'Simulasi', message: 'Fungsi hapus ID: ' + id });
+            const loader = DKA.loading({ title: 'Menghapus...', message: 'Sedang membersihkan data.', style: 'dots' });
+            
+            $.ajax({
+                url: `/unit-kerja/${id}`,
+                method: "DELETE",
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(res) {
+                    loader.close();
+                    if (res.success) {
+                        DKA.notify({ type: 'success', title: 'Terhapus', message: res.message });
+                        closeDrawer();
+                        renderTable(currentPage);
+                    }
+                },
+                error: function() {
+                    loader.close();
+                    DKA.notify({ type: 'danger', title: 'Error', message: 'Gagal menghapus data.' });
+                }
+            });
         }
     });
 }
@@ -567,4 +585,119 @@ function renderDrawerBody(d) {
     $('#drawerBody').html(html);
 }
 function doExport() { DKA.notify({ type: 'success', title: 'Export', message: 'Mengekspor data...' }); }
-function toggleStatus(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Toggle Status ID: ' + id }); }
+function bulkToggle() {
+    const selected = $('.row-check:checked');
+    if (selected.length === 0) return;
+
+    const ids = [];
+    selected.each(function() { ids.push($(this).data('id')); });
+
+    DKA.dialog({
+        type: 'warning',
+        title: 'Ubah Status Massal?',
+        message: `Apakah Anda yakin ingin mengubah status aktif/nonaktif untuk <b>${selected.length}</b> unit kerja terpilih?`,
+        confirm: 'Ya, Ubah Semua'
+    }).then(res => {
+        if (res) {
+            const loader = DKA.loading({ title: 'Memproses...', message: 'Memperbarui status massal.', style: 'dots' });
+            
+            $.ajax({
+                url: `/unit-kerja/bulk-toggle`,
+                method: "PATCH",
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { ids: ids },
+                success: function(res) {
+                    loader.close();
+                    if (res.success) {
+                        DKA.notify({ type: 'success', title: 'Berhasil', message: res.message });
+                        renderTable(currentPage);
+                        $('#checkAll').prop('checked', false);
+                        updateBulk();
+                    }
+                },
+                error: function() {
+                    loader.close();
+                    DKA.notify({ type: 'danger', title: 'Error', message: 'Gagal mengubah status massal.' });
+                }
+            });
+        }
+    });
+}
+
+function bulkDelete() {
+    const selected = $('.row-check:checked');
+    if (selected.length === 0) return;
+
+    const ids = [];
+    selected.each(function() { ids.push($(this).data('id')); });
+
+    DKA.deleteConfirm({
+        title: `Hapus ${selected.length} Unit Kerja?`,
+        message: 'Data yang tidak sedang digunakan oleh pengguna akan dihapus permanen. Unit kerja yang memiliki pengguna aktif akan dilewati secara otomatis.',
+        itemName: `${selected.length} unit kerja terpilih`
+    }).then(res => {
+        if (res) {
+            const loader = DKA.loading({ title: 'Menghapus Massal...', message: 'Memproses validasi dan penghapusan.', style: 'dots' });
+            
+            $.ajax({
+                url: `/unit-kerja/bulk-delete`,
+                method: "DELETE",
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { ids: ids },
+                success: function(res) {
+                    loader.close();
+                    if (res.success) {
+                        DKA.notify({ type: 'success', title: 'Berhasil', message: res.message });
+                        renderTable(currentPage);
+                        $('#checkAll').prop('checked', false);
+                        updateBulk();
+                    }
+                },
+                error: function(xhr) {
+                    loader.close();
+                    const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Gagal menghapus data massal.';
+                    DKA.notify({ type: 'danger', title: 'Gagal Hapus', message: msg });
+                }
+            });
+        }
+    });
+}
+
+function toggleStatus(id) {
+    DKA.dialog({
+        type: 'warning',
+        title: 'Ubah Status?',
+        message: 'Apakah Anda yakin ingin mengubah status aktif/nonaktif unit kerja ini?',
+        confirm: 'Ya, Ubah Status'
+    }).then(res => {
+        if (res) {
+            const loader = DKA.loading({ title: 'Memproses...', message: 'Mengubah status unit kerja.', style: 'dots' });
+            
+            $.ajax({
+                url: `/unit-kerja/${id}/toggle`,
+                method: "PATCH",
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(res) {
+                    loader.close();
+                    if (res.success) {
+                        DKA.notify({ type: 'success', title: 'Berhasil', message: res.message });
+                        renderTable(currentPage);
+                    }
+                },
+                error: function() {
+                    loader.close();
+                    DKA.notify({ type: 'danger', title: 'Error', message: 'Gagal mengubah status.' });
+                }
+            });
+        }
+    });
+}
+
+function updateStats(stats) {
+    if (!stats) return;
+    
+    $('#sc1').text(stats.total || 0);
+    $('#sc2').text(stats.active || 0);
+    $('#sc3').text(stats.kegiatan || 0);
+    $('#sc4').text(stats.pengguna || 0);
+}

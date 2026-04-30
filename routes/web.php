@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/unit-kerja', [\App\Http\Controllers\Master\UnitKerjaController::class, 'store'])->name('unit-kerja.store');
     Route::get('/unit-kerja/{id}', [\App\Http\Controllers\Master\UnitKerjaController::class, 'show'])->name('unit-kerja.show');
     Route::put('/unit-kerja/{id}', [\App\Http\Controllers\Master\UnitKerjaController::class, 'update'])->name('unit-kerja.update');
+    Route::patch('/unit-kerja/{id}/toggle', [\App\Http\Controllers\Master\UnitKerjaController::class, 'toggleStatus'])->name('unit-kerja.toggle');
+    Route::patch('/unit-kerja/bulk-toggle', [\App\Http\Controllers\Master\UnitKerjaController::class, 'bulkToggleStatus'])->name('unit-kerja.bulk-toggle');
+    Route::delete('/unit-kerja/bulk-delete', [\App\Http\Controllers\Master\UnitKerjaController::class, 'bulkDelete'])->name('unit-kerja.bulk-delete');
+    Route::delete('/unit-kerja/{id}', [\App\Http\Controllers\Master\UnitKerjaController::class, 'destroy'])->name('unit-kerja.destroy');
 });
 
 Route::middleware('auth')->group(function () {

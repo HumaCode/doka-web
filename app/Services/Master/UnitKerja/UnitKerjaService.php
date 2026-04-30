@@ -47,4 +47,9 @@ class UnitKerjaService implements UnitKerjaServiceInterface
     {
         return $this->unitKerjaRepository->toggleStatus($id);
     }
+
+    public function bulkToggleStatus(array $ids)
+    {
+        return $this->unitKerjaRepository->toggleBulkStatus($ids);
+    }
 }

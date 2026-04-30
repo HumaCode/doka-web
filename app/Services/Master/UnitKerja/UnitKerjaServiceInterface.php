@@ -11,4 +11,5 @@ interface UnitKerjaServiceInterface
     public function deleteUnitKerja($id);
     public function deleteBulkUnitKerjas(array $ids);
     public function toggleUnitKerjaStatus($id);
+    public function bulkToggleStatus(array $ids);
 }

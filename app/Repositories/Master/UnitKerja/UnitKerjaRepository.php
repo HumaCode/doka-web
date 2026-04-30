@@ -55,7 +55,21 @@ class UnitKerjaRepository implements UnitKerjaRepositoryInterface
 
     public function deleteBulk(array $ids)
     {
-        return UnitKerja::whereIn('id', $ids)->delete();
+        $allSelected = UnitKerja::whereIn('id', $ids)->withCount('users')->get();
+        
+        $toDelete = $allSelected->filter(function($uk) {
+            return $uk->users_count == 0;
+        })->pluck('id')->toArray();
+
+        $deletedCount = 0;
+        if (!empty($toDelete)) {
+            $deletedCount = UnitKerja::whereIn('id', $toDelete)->delete();
+        }
+
+        return [
+            'deleted_count' => $deletedCount,
+            'skipped_count' => count($ids) - $deletedCount
+        ];
     }
 
     public function toggleStatus($id)
@@ -66,5 +80,14 @@ class UnitKerjaRepository implements UnitKerjaRepositoryInterface
             $unitKerja->save();
         }
         return $unitKerja;
+    }
+
+    public function toggleBulkStatus(array $ids)
+    {
+        // Use CASE to toggle status efficiently in one query
+        return UnitKerja::whereIn('id', $ids)
+            ->update([
+                'status' => \DB::raw("CASE WHEN status = 'active' THEN 'inactive' ELSE 'active' END")
+            ]);
     }
 }

@@ -137,8 +137,10 @@
 .table-title i { color:var(--c-primary); }
 .table-count-badge { font-size:.72rem; font-weight:800; padding:3px 9px; border-radius:99px; background:rgba(79,70,229,.08); color:var(--c-primary); border:1px solid rgba(79,70,229,.15); }
 .per-page-select { font-size:.8rem; color:var(--c-text-2); font-weight:600; padding:5px 10px; border:1.5px solid var(--c-border); border-radius:8px; background:#fff; outline:none; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; }
-.bulk-bar { display:none; align-items:center; gap:10px; padding:10px 16px; background:rgba(79,70,229,.05); border-bottom:1px solid var(--c-border); flex-wrap:wrap; }
+.bulk-bar { display:none; align-items:center; gap:12px; padding:12px 20px; background:rgba(79,70,229,.05); border-bottom:1px solid var(--c-border); flex-wrap:wrap; animation: fadeDown .3s ease forwards; }
 .bulk-bar.show { display:flex; }
+.bulk-count { font-size:.82rem; font-weight:800; color:var(--c-primary); background:#fff; padding:5px 14px; border-radius:10px; border:1px solid rgba(79,70,229,0.2); box-shadow: 0 2px 5px rgba(79,70,229,0.05); }
+@keyframes fadeDown { from { transform: translateY(-10px); opacity:0; } to { transform: translateY(0); opacity:1; } }
 .btn-bulk { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px; font-size:.75rem; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; border:none; transition:all var(--trans); }
 .btn-bulk-toggle { background:#fffbeb; color:#d97706; border:1.5px solid rgba(245,158,11,.2); }
 .btn-bulk-toggle:hover { background:#fef3c7; }
@@ -223,7 +225,7 @@ table.uk-table { width:100%; border-collapse:collapse; }
 .tbl-view:hover   { background:var(--c-primary); color:#fff; }
 .tbl-edit:hover   { background:var(--c-green);   color:#fff; }
 .tbl-toggle:hover { background:#d97706; color:#fff; }
-.tbl-delete:hover { background:var(--c-red);     color:#fff; }
+.tbl-delete:hover { background:#ef4444; color:#fff; }
 
 .empty-state { padding:64px 24px; text-align:center; }
 .empty-icon { font-size:3.5rem; color:var(--c-border); margin-bottom:16px; animation:emptyFloat 3s ease-in-out infinite; }
