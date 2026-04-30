@@ -696,7 +696,7 @@
                     <div class="field-wrap" id="wrap-email">
                         <i class="bi bi-envelope-fill input-icon"></i>
                         <input type="email" id="email" name="email" class="form-ctrl"
-                            placeholder="nama@instansi.go.id" autocomplete="email" />
+                            placeholder="nama@instansi.go.id" value="{{ $verifiedEmail ?? old('email') }}" {{ isset($verifiedEmail) ? 'readonly' : '' }} autocomplete="email" />
                     </div>
                     <div class="field-hint" style="margin-top:-14px; margin-bottom:18px; font-size:.75rem; color:var(--c-muted);">Gunakan email aktif — akan digunakan untuk verifikasi.</div>
                     <div class="field-error" id="err-email" style="display:none;font-size:.75rem;color:#ef4444;margin-top:-14px; margin-bottom:18px;">Email tidak valid.</div>
@@ -741,6 +741,15 @@
                     <button type="button" class="btn-next" onclick="goNext(1)" style="width:100%;margin-top:8px;">
                         Lanjutkan <i class="bi bi-arrow-right"></i>
                     </button>
+
+                    <div class="auth-divider">atau daftar dengan</div>
+
+                    <div class="d-grid">
+                        <a href="{{ route('auth.google') }}" class="btn-social"
+                            style="text-decoration:none; justify-content:center; border: 2px solid var(--c-border); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--c-text);">
+                            <i class="bi bi-google" style="color:#ea4335;"></i> Daftar menggunakan Email Google
+                        </a>
+                    </div>
                 </div>
 
                 <!-- ════ STEP 2: Data Pribadi ════ -->

@@ -22,7 +22,8 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         $unitKerjas = UnitKerja::where('status', 'active')->orderBy('nama_instansi')->get();
-        return view('auth.register', compact('unitKerjas'));
+        $verifiedEmail = session('register_email');
+        return view('auth.register', compact('unitKerjas', 'verifiedEmail'));
     }
 
     /**
