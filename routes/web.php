@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Unit Kerja
     Route::get('/unit-kerja', [\App\Http\Controllers\Master\UnitKerjaController::class, 'index'])->name('unit-kerja.index');
     Route::get('/unit-kerja/getallpagination', [\App\Http\Controllers\Master\UnitKerjaController::class, 'getAllPagination'])->name('unit-kerja.getallpagination');
+    Route::post('/unit-kerja', [\App\Http\Controllers\Master\UnitKerjaController::class, 'store'])->name('unit-kerja.store');
 });
 
 Route::middleware('auth')->group(function () {

@@ -440,7 +440,8 @@
                 width: 100%;
                 max-width: 560px;
                 max-height: 90vh;
-                overflow-y: auto;
+                overflow: hidden;
+                position: relative;
                 transform: translateY(24px) scale(.96);
                 transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
             }
@@ -459,6 +460,17 @@
                 top: 0;
                 background: var(--c-surface);
                 z-index: 10;
+            }
+
+            .modal-head::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--c-primary), var(--c-secondary), var(--c-pink));
+                z-index: 11;
             }
 
             .modal-head-title {

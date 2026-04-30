@@ -38,8 +38,19 @@ const JENIS_MAP = {
     'RSUD'       : 'jb-rsud',
 };
 
+const ICONS = [
+    'bi-building', 'bi-building-fill', 'bi-cpu-fill', 'bi-journal-bookmark-fill', 'bi-hospital-fill',
+    'bi-heart-fill', 'bi-building-gear', 'bi-tree-fill', 'bi-bus-front-fill', 'bi-trophy-fill',
+    'bi-graph-up-arrow', 'bi-people-fill', 'bi-shield-fill', 'bi-building-lock', 'bi-journal-text',
+    'bi-shield-check-fill', 'bi-megaphone-fill', 'bi-briefcase-fill', 'bi-gear-fill', 'bi-cash-coin',
+    'bi-tools', 'bi-bank', 'bi-mortarboard-fill', 'bi-droplet-fill', 'bi-lightning-charge-fill',
+    'bi-reception-4', 'bi-broadcast-pin', 'bi-camera-reels-fill', 'bi-cart-fill', 'bi-chat-dots-fill'
+];
+
 // --- GLOBAL VARIABLES --- //
 let currentPage = 1;
+let selectedIcon = 'bi-building-fill';
+let selectedColorIdx = 0;
 
 // --- DATA LOADING --- //
 function renderTable(page = 1) {
@@ -82,7 +93,6 @@ function renderTable(page = 1) {
                     const jClass = JENIS_MAP[d.jenis] || 'jb-default';
                     const init = d.kepala ? d.kepala.split(' ').filter(v => !v.includes('.')).map(w => w[0]).join('').slice(0, 2).toUpperCase() : '—';
                     
-                    // Avatar colors logic
                     const avColors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
                     const avGrad = avColors[i % avColors.length];
 
@@ -190,33 +200,80 @@ $(document).ready(function() {
     $('#searchInput').on('input', debouncedSearch);
     $('#filterStatus, #filterJenis, #perPageSelect').on('change', () => renderTable(1));
 
-    // Modal overlay close
-    $('#modalUK').on('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-    
-    $('#drawerOverlay').on('click', function(e) {
-        if (e.target === this) closeDrawer();
-    });
+    // Modal logic
+    $('#modalUK').on('click', function(e) { if (e.target === this) closeModal(); });
+    $('#drawerOverlay').on('click', function(e) { if (e.target === this) closeDrawer(); });
+
+    buildIconGrid();
+    initColorSwatches();
+    initSelect2();
 });
 
-// --- HELPER FUNCTIONS --- //
-function updateBulk() {
-    const checked = $('.row-check:checked').length;
-    $('#selectedCountText').text(`${checked} dipilih`);
-    $('#bulkActions').toggleClass('show', checked > 0);
+function initSelect2() {
+    $('#f-jenis').select2({
+        dropdownParent: $('#modalUK'),
+        placeholder: '-- Pilih Jenis --',
+        width: '100%'
+    }).on('change', function() {
+        const val = $(this).val();
+        onJenisInput(val);
+        clearErr('grp-jenis');
+    });
 }
 
-function toggleAllCheck(el) {
-    $('.row-check').prop('checked', el.checked);
-    updateBulk();
+// --- UI HELPERS --- //
+function buildIconGrid(query = '') {
+    const grid = $('#iconGrid');
+    grid.empty();
+    const filtered = ICONS.filter(i => i.includes(query.toLowerCase()));
+    filtered.forEach(icon => {
+        const active = icon === selectedIcon ? 'selected' : '';
+        grid.append(`<div class="icon-btn ${active}" onclick="selectIcon('${icon}', this)"><i class="bi ${icon}"></i></div>`);
+    });
 }
 
-function resetFilters() {
-    $('#searchInput').val('');
-    $('#filterStatus').val('');
-    $('#filterJenis').val('');
-    renderTable(1);
+function selectIcon(icon, el) {
+    selectedIcon = icon;
+    $('.icon-btn').removeClass('selected');
+    $(el).addClass('selected');
+    $('#mPreviewIcon, #mHeadIconI').attr('class', 'bi ' + icon);
+}
+
+function initColorSwatches() {
+    const container = $('#colorSwatches');
+    container.empty();
+    GRADS.forEach((grad, i) => {
+        const active = i === selectedColorIdx ? 'selected' : '';
+        container.append(`<div class="c-swatch ${active}" style="background:${grad}" onclick="selectColor(${i}, this)"></div>`);
+    });
+}
+
+function selectColor(idx, el) {
+    selectedColorIdx = idx;
+    $('.c-swatch').removeClass('selected');
+    $(el).addClass('selected');
+    const grad = GRADS[idx];
+    $('#mPreviewLogo, #mHeadIcon').css('background', grad);
+}
+
+// --- FORM INPUT EVENTS --- //
+function onNamaInput(val) { $('#mPreviewName').text(val || 'Nama Unit Kerja'); }
+function onSingInput(val) { updatePreviewSubtitle(); }
+function onJenisInput(val) { updatePreviewSubtitle(); }
+function updatePreviewSubtitle() {
+    const s = $('#f-sing').val() || 'Singkatan';
+    const j = $('#f-jenis').val() || 'Jenis';
+    $('#mPreviewSing').text(`${s} · ${j}`);
+}
+function clearErr(id) { $(`#${id}`).removeClass('has-error'); }
+
+// --- MODAL CONTROL --- //
+function openAddModal() {
+    resetForm();
+    $('#mTitleText').text('Tambah Unit Kerja');
+    $('#btnSave').html('<i class="bi bi-check2-circle"></i> Simpan');
+    $('#modalUK').addClass('show');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
@@ -224,21 +281,109 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-function closeDrawer() {
-    $('#drawerOverlay').removeClass('show');
+function resetForm() {
+    $('#f-nama, #f-sing, #f-kepala, #f-telp, #f-email, #f-web, #f-alamat, #f-desc').val('');
+    $('#f-jenis').val('').trigger('change');
+    $('.fgroup').removeClass('has-err');
+    selectedIcon = 'bi-building-fill';
+    selectedColorIdx = 0;
+    buildIconGrid();
+    initColorSwatches();
+    onNamaInput('');
+    updatePreviewSubtitle();
+    
+    // Reset preview icons/colors
+    $('#mPreviewIcon, #mHeadIconI').attr('class', 'bi ' + selectedIcon);
+    $('#mPreviewLogo, #mHeadIcon').css('background', GRADS[0]);
 }
 
-// --- PLACEHOLDERS FOR CRUD --- //
-function openAddModal() {
-    DKA.notify({ type: 'info', title: 'Info', message: 'Fungsi Tambah akan segera diimplementasikan.' });
-}
+// --- AJAX OPERATIONS --- //
+function saveUK() {
+    const nama = $('#f-nama').val();
+    const sing = $('#f-sing').val();
+    const jenis = $('#f-jenis').val();
 
-function openEditModal(id) {
-    DKA.notify({ type: 'info', title: 'Info', message: 'Fungsi Edit ID: ' + id });
-}
+    let hasError = false;
+    $('.fgroup').removeClass('has-err');
+    
+    if (!nama) { $('#grp-nama').addClass('has-err'); hasError = true; }
+    if (!sing) { $('#grp-sing').addClass('has-err'); hasError = true; }
+    if (!jenis) { $('#grp-jenis').addClass('has-err'); hasError = true; }
+    
+    if (hasError) {
+        DKA.notify({
+            type: 'danger',
+            title: 'Validasi Gagal',
+            message: 'Harap lengkapi semua kolom yang wajib diisi (*).',
+            duration: 3000
+        });
+        return;
+    }
 
-function toggleStatus(id) {
-    DKA.notify({ type: 'info', title: 'Info', message: 'Toggle Status ID: ' + id });
+    const data = {
+        nama_instansi: nama,
+        singkatan: sing,
+        jenis_opd: jenis,
+        nama_kepala: $('#f-kepala').val(),
+        telp: $('#f-telp').val(),
+        email: $('#f-email').val(),
+        website: $('#f-web').val(),
+        alamat: $('#f-alamat').val(),
+        deskripsi: $('#f-desc').val(),
+        icon: selectedIcon,
+        warna: selectedColorIdx,
+        status: 'active'
+    };
+
+    const steps = [
+        'Memvalidasi data...',
+        'Mengirim ke server...',
+        'Menyimpan ke database...',
+        'Selesai!'
+    ];
+
+    const loader = DKA.loading({ 
+        title: 'Menyimpan Unit Kerja', 
+        message: 'Memulai proses...', 
+        style: 'ring' 
+    });
+
+    steps.forEach((msg, i) => {
+        setTimeout(() => loader.update(msg), (i + 1) * 600);
+    });
+
+    $.ajax({
+        url: "/unit-kerja",
+        method: "POST",
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        data: data,
+        success: function(res) {
+            setTimeout(() => {
+                loader.close();
+                if (res.success) {
+                    DKA.notify({ 
+                        type: 'success', 
+                        title: 'Berhasil', 
+                        message: res.message,
+                        duration: 5000 
+                    });
+                    closeModal();
+                    renderTable(1);
+                }
+            }, steps.length * 600);
+        },
+        error: function(xhr) {
+            loader.close();
+            if (xhr.status === 422) {
+                const errs = xhr.responseJSON.errors;
+                let msg = '';
+                $.each(errs, (k, v) => msg += v[0] + '<br>');
+                DKA.notify({ type: 'danger', title: 'Validasi Gagal', message: msg });
+            } else {
+                DKA.notify({ type: 'danger', title: 'Error', message: 'Terjadi kesalahan sistem.' });
+            }
+        }
+    });
 }
 
 function deleteUK(id, nama) {
@@ -247,14 +392,22 @@ function deleteUK(id, nama) {
         message: 'Data unit kerja akan dihapus permanen.',
         itemName: nama
     }).then(res => {
-        if (res) DKA.notify({ type: 'success', title: 'Berhasil', message: 'Data berhasil dihapus (Simulasi)' });
+        if (res) {
+            DKA.notify({ type: 'info', title: 'Simulasi', message: 'Fungsi hapus ID: ' + id });
+        }
     });
 }
 
-function openDrawer(id) {
-    DKA.notify({ type: 'info', title: 'Info', message: 'Buka Detail ID: ' + id });
+// Other helpers...
+function updateBulk() {
+    const checked = $('.row-check:checked').length;
+    $('#selectedCountText').text(`${checked} dipilih`);
+    $('#bulkActions').toggleClass('show', checked > 0);
 }
-
-function doExport() {
-    DKA.notify({ type: 'success', title: 'Export', message: 'Mengekspor data...' });
-}
+function toggleAllCheck(el) { $('.row-check').prop('checked', el.checked); updateBulk(); }
+function resetFilters() { $('#searchInput').val(''); $('#filterStatus').val(''); $('#filterJenis').val(''); renderTable(1); }
+function closeDrawer() { $('#drawerOverlay').removeClass('show'); }
+function openDrawer(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Buka Detail ID: ' + id }); }
+function doExport() { DKA.notify({ type: 'success', title: 'Export', message: 'Mengekspor data...' }); }
+function toggleStatus(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Toggle Status ID: ' + id }); }
+function openEditModal(id) { DKA.notify({ type: 'info', title: 'Info', message: 'Edit ID: ' + id }); }

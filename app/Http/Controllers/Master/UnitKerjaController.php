@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\Master\UnitKerjaResource;
 use App\Services\Master\UnitKerja\UnitKerjaServiceInterface;
+use App\Http\Requests\Master\UnitKerja\StoreUnitKerjaRequest;
+use App\Models\Master\UnitKerja;
+use App\Models\User;
 
 class UnitKerjaController extends Controller
 {
@@ -38,23 +41,37 @@ class UnitKerjaController extends Controller
         $unitKerjas = $this->unitKerjaService->getUnitKerjas($perPage, $filters);
 
         // Stats calculation
-        $rawStats = \App\Models\Master\UnitKerja::selectRaw("
+        $rawStats = UnitKerja::selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active
         ")->first();
 
-        // Optional: Count total users and activities if needed
-        $totalUsers = \App\Models\User::count();
+        $totalUsers = User::count();
 
         $stats = [
             'total'    => (int) $rawStats->total,
             'active'   => (int) $rawStats->active,
-            'kegiatan' => 0, // Placeholder
+            'kegiatan' => 0,
             'pengguna' => $totalUsers,
         ];
 
         return $this->success(null, PaginateResource::make($unitKerjas, UnitKerjaResource::class)->additional([
             'stats' => $stats
         ]));
+    }
+
+    /**
+     * Store a newly created unit kerja via AJAX.
+     */
+    public function store(StoreUnitKerjaRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            $this->unitKerjaService->createUnitKerja($data);
+
+            return $this->success('Unit Kerja berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 }

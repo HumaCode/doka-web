@@ -1,6 +1,7 @@
 <x-master-layout>
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/css/unit-kerja.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     @endpush
 
     <!-- Page Header -->
@@ -282,6 +283,7 @@
     </div>
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="{{ asset('assets/js/unit-kerja.js') }}"></script>
     @endpush
 </x-master-layout>
