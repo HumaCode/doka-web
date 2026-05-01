@@ -41,7 +41,8 @@ Proses login dan registrasi di DokaWeb menggunakan standar keamanan tinggi:
 2.  **Google reCAPTCHA v3**: Setiap form publik (Login, Register, Forgot Password) **WAJIB** menggunakan reCAPTCHA v3.
     *   Gunakan `ReCaptchaHelper::verify($token)` di Backend.
     *   Eksekusi `grecaptcha.execute` di Frontend tepat sebelum submit.
-3.  **OTP Input UI**: Gunakan 6 kotak input terpisah dengan fitur *auto-focus* ke kotak berikutnya untuk pengalaman user yang premium.
+3.  **Account Activation**: Setiap pendaftaran baru memiliki status `is_active = 0`. Middleware `active` wajib diterapkan pada rute dashboard dan fitur internal lainnya untuk memastikan hanya user terverifikasi yang bisa masuk.
+4.  **OTP Input UI**: Gunakan 6 kotak input terpisah dengan fitur *auto-focus* ke kotak berikutnya untuk pengalaman user yang premium.
 
 ## 🎨 Standar UI/UX (Premium Feel)
 

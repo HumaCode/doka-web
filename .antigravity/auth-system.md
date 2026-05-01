@@ -55,5 +55,19 @@ grecaptcha.ready(function() {
 
 ---
 
-## 🏗️ Pendaftaran dengan Google (Socialite)
-Tombol login Google diletakkan pada **Langkah 1** form registrasi untuk memudahkan user baru mendaftar tanpa harus mengisi form manual.
+## ⏳ Sistem Aktivasi Akun (Pending)
+
+Setiap akun baru yang terdaftar (manual maupun Google) memiliki status default **Nonaktif** (`is_active = 0`).
+
+### Komponen Sistem
+- **Middleware**: `App\Http\Middleware\EnsureAccountIsActive` (Alias: `active`).
+- **Status Database**: Kolom `is_active` (enum `0, 1`) pada tabel `users`.
+- **Halaman Penangguhan**: `/pending-activation` (`resources/views/auth/pending.blade.php`).
+
+### Alur Kerja
+1. User login (baik via OTP maupun Google).
+2. Middleware `active` memeriksa status `is_active`.
+3. Jika `is_active == 0`, user diarahkan ke halaman `/pending-activation`.
+4. User mengisi data instansi tambahan (NIP, Jabatan, dll).
+5. Administrator memverifikasi dan mengubah status menjadi `1`.
+6. User dapat mengakses dashboard dan fitur lainnya.
