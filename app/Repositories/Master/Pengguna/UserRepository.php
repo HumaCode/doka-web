@@ -72,4 +72,27 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::whereIn('id', $ids)->delete();
     }
+
+    public function toggleStatus(string $id)
+    {
+        $user = $this->findById($id);
+        
+        // Gunakan perbandingan eksplisit dan set nilai sebagai string '0' atau '1'
+        // agar sesuai dengan tipe data ENUM di MySQL
+        $newStatus = ($user->is_active == '1' || $user->is_active === true) ? '0' : '1';
+        
+        $user->is_active = $newStatus;
+
+        if ($newStatus == '1') {
+            // Jika diaktifkan, pastikan email dianggap terverifikasi agar bisa login
+            $user->email_verified_at = $user->email_verified_at ?? now();
+            $user->keterangan = "Akun diaktifkan oleh " . auth()->user()->name;
+        } else {
+            $user->keterangan = "Akun dinonaktifkan oleh " . auth()->user()->name;
+        }
+
+        $user->save();
+        
+        return $user;
+    }
 }

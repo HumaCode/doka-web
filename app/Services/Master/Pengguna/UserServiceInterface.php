@@ -57,4 +57,12 @@ interface UserServiceInterface
      * @return mixed
      */
     public function deleteBulkUsers(array $ids);
+
+    /**
+     * Toggle active status of a user.
+     *
+     * @param string $id
+     * @return \App\Models\User
+     */
+    public function toggleUserStatus(string $id);
 }

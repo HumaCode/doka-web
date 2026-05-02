@@ -74,4 +74,11 @@ class UserService implements UserServiceInterface
 
         return $this->userRepository->deleteBulk($ids);
     }
+
+    public function toggleUserStatus(string $id)
+    {
+        $user = $this->userRepository->toggleStatus($id);
+        cache()->forget('user_stats_global');
+        return $user;
+    }
 }

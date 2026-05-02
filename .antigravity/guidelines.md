@@ -20,6 +20,8 @@ Setiap modul baru **WAJIB** mengikuti struktur 4-layer:
 4.  **Interface**: Digunakan untuk binding Service dan Repository agar mendukung *Dependency Injection*.
 5.  **Performance Layer (Caching)**: Implementasikan caching pada level Service untuk data statistik atau data statis yang jarang berubah guna mengurangi beban query database.
 6.  **Database Scalability**: Gunakan **FULLTEXT Index** pada kolom yang sering dicari (nama, deskripsi, alamat) untuk menjamin kecepatan pencarian meskipun data mencapai jutaan baris.
+7.  **ENUM Type Handling**: Jika menggunakan kolom `enum('0', '1')` untuk status (bukan boolean), **WAJIB** menggunakan nilai string eksplisit `'1'` atau `'0'` di level Repository/Service. Hindari negasi boolean langsung (`!$user->is_active`) karena dapat menyebabkan error *Data Truncated* di MySQL.
+8.  **Simple Audit Trail**: Untuk aksi sensitif seperti aktivasi/nonaktifkan akun, wajib mencatat pelaku aksi di kolom `keterangan` (misal: "Akun diaktifkan oleh [Nama Admin]").
 
 ## 📁 Struktur Folder Modul
 

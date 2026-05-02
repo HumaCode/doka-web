@@ -63,4 +63,12 @@ interface UserRepositoryInterface
      * @return mixed
      */
     public function deleteBulk(array $ids);
+
+    /**
+     * Toggle active status of a user.
+     *
+     * @param string $id
+     * @return \App\Models\User
+     */
+    public function toggleStatus(string $id);
 }

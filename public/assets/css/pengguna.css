@@ -385,6 +385,11 @@
                 color: var(--c-green);
             }
 
+            .btn-toggle {
+                background: #fffbeb;
+                color: var(--c-accent);
+            }
+
             .btn-delete {
                 background: #fef2f2;
                 color: #ef4444;
@@ -392,8 +397,12 @@
 
             .btn-action:hover {
                 transform: scale(1.1);
-                filter: brightness(0.9);
             }
+
+            .btn-view:hover { background: var(--c-primary); color: #fff; }
+            .btn-edit:hover { background: var(--c-green); color: #fff; }
+            .btn-toggle:hover { background: var(--c-accent); color: #fff; }
+            .btn-delete:hover { background: #ef4444; color: #fff; }
 
             /* Bulk Bar */
             .bulk-bar {

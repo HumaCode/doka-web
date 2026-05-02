@@ -85,6 +85,9 @@ function renderTable(page = 1) {
                             <div class="action-btns">
                                 <button class="btn-action btn-view" onclick="openDetailModal('${u.id}')" title="Lihat Detail" aria-label="Lihat detail ${u.name}"><i class="bi bi-eye"></i></button>
                                 <button class="btn-action btn-edit" onclick="openEditModal('${u.id}')" title="Edit Data" aria-label="Edit data ${u.name}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn-action btn-toggle" onclick="toggleStatus('${u.id}', '${u.name}')" title="Ubah Status" aria-label="Ubah status ${u.name}">
+                                    <i class="bi ${u.is_active == '1' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i>
+                                </button>
                                 <button class="btn-action btn-delete" data-id="${u.id}" data-name="${u.name} — ${(u.roles[0]?.name || 'user').toUpperCase()}" onclick="deleteUser(this)" title="Hapus Akun" aria-label="Hapus akun ${u.name}"><i class="bi bi-trash"></i></button>
                             </div>
                         </td>
@@ -596,6 +599,60 @@ function deleteBulk() {
                     type: 'danger',
                     title: 'Kesalahan Server',
                     message: 'Koneksi terputus atau terjadi masalah server.',
+                    duration: 5000
+                });
+            }
+        });
+    });
+}
+
+/**
+ * Toggle active status of a user.
+ * @param {string} id - The ID of the user.
+ * @param {string} name - The name of the user for the dialog.
+ */
+function toggleStatus(id, name) {
+    DKA.dialog({
+        type: 'question',
+        title: 'Ubah Status Akun?',
+        message: `Apakah Anda yakin ingin mengubah status aktif akun <strong>${name}</strong>?`,
+        confirm: 'Ya, Ubah Status',
+        cancel: 'Batal'
+    }).then(result => {
+        if (!result) return;
+
+        const loader = DKA.loading({
+            title: 'Memproses...',
+            message: 'Memperbarui status akun pengguna.',
+            style: 'dots'
+        });
+
+        $.ajax({
+            url: `/pengguna/${id}/toggle`,
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                setTimeout(() => {
+                    loader.close();
+                    if (response.success) {
+                        DKA.toast({
+                            type: 'success',
+                            title: 'Berhasil',
+                            message: response.message,
+                            position: 'top-right'
+                        });
+                        renderTable(currentPage);
+                    }
+                }, 800);
+            },
+            error: function() {
+                loader.close();
+                DKA.notify({
+                    type: 'danger',
+                    title: 'Gagal',
+                    message: 'Koneksi terputus atau terjadi kesalahan server.',
                     duration: 5000
                 });
             }

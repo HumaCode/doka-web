@@ -168,4 +168,22 @@ class UserController extends Controller
             return $this->error('Gagal menghapus data: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Toggle status of the specified user.
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function toggleStatus(string $id)
+    {
+        try {
+            $user = $this->userService->toggleUserStatus($id);
+            $statusText = $user->is_active ? 'Aktif' : 'Nonaktif';
+            
+            return $this->success("Status akun {$user->name} berhasil diubah menjadi {$statusText}.");
+        } catch (\Exception $e) {
+            return $this->error('Gagal mengubah status: ' . $e->getMessage());
+        }
+    }
 }

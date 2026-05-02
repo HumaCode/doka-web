@@ -35,4 +35,5 @@ Gunakan checklist ini saat membuat modul baru untuk memastikan tidak ada layer y
 - [ ] Implementasi `loadData()` dengan pagination & search.
 - [ ] Implementasi `saveData()` (Add & Edit).
 - [ ] Implementasi `deleteData()` dengan `DKA.deleteConfirm`.
-- [ ] Implementasi `toggleStatus()` (jika ada).
+- [ ] Implementasi `toggleStatus()` dengan nilai string eksplisit (`'1'`/`'0'`) dan pencatatan keterangan (audit).
+- [ ] Gunakan `withCount(['relation'])` di Repository untuk performa tampilan jumlah data terkait.
