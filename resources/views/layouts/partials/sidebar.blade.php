@@ -53,7 +53,7 @@
         <div class="nav-category">KEGIATAN</div>
         <div class="nav-item-wrap">
             <a href="{{ route('kegiatan.index') }}"
-                class="nav-link-item {{ request()->routeIs('kegiatan.index') ? 'active' : '' }}" data-label="Semua Kegiatan">
+                class="nav-link-item {{ request()->routeIs('kegiatan.*') ? 'active' : '' }}" data-label="Semua Kegiatan">
                 <i class="bi bi-calendar3-fill nav-icon"></i>
                 <span class="nav-label">Semua Kegiatan</span>
                 <span class="nav-badge" style="background:var(--c-green);">24</span>

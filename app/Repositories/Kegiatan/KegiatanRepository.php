@@ -13,7 +13,7 @@ class KegiatanRepository implements KegiatanRepositoryInterface
      */
     public function getAllPagination(int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
-        $query = Kegiatan::with(['kategori', 'unitKerja', 'petugas']);
+        $query = Kegiatan::with(['kategori', 'unitKerja', 'petugas', 'media']);
 
         if (!empty($filters['search'])) {
             $query->where(function ($q) use ($filters) {
@@ -50,7 +50,7 @@ class KegiatanRepository implements KegiatanRepositoryInterface
      */
     public function findById($id)
     {
-        return Kegiatan::with(['kategori', 'unitKerja', 'petugas'])->findOrFail($id);
+        return Kegiatan::with(['kategori', 'unitKerja', 'petugas', 'media'])->findOrFail($id);
     }
 
     /**
@@ -86,6 +86,20 @@ class KegiatanRepository implements KegiatanRepositoryInterface
     public function deleteBulk(array $ids)
     {
         return Kegiatan::whereIn('id', $ids)->get()->each->delete();
+    }
+
+    /**
+     * Get related activities.
+     */
+    public function getRelated($id, int $limit = 6)
+    {
+        $kegiatan = Kegiatan::findOrFail($id);
+        return Kegiatan::with(['kategori', 'media'])
+            ->where('kategori_id', $kegiatan->kategori_id)
+            ->where('id', '!=', $id)
+            ->latest()
+            ->take($limit)
+            ->get();
     }
 
     /**

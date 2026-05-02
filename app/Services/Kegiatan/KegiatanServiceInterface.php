@@ -37,6 +37,11 @@ interface KegiatanServiceInterface
     public function deleteBulkActivities(array $ids);
 
     /**
+     * Get related activities.
+     */
+    public function getRelatedActivities($id, int $limit = 6);
+
+    /**
      * Get dashboard statistics.
      */
     public function getDashboardStats();

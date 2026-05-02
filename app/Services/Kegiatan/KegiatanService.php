@@ -23,6 +23,9 @@ class KegiatanService implements KegiatanServiceInterface
 
     public function createActivity(array $data, array $files = [])
     {
+        if (isset($data['tags']) && is_string($data['tags'])) {
+            $data['tags'] = array_map('trim', explode(',', $data['tags']));
+        }
         $kegiatan = $this->kegiatanRepository->create($data);
 
         // Handle Photos
@@ -51,6 +54,9 @@ class KegiatanService implements KegiatanServiceInterface
 
     public function updateActivity($id, array $data, array $files = [], array $deletedMedia = [])
     {
+        if (isset($data['tags']) && is_string($data['tags'])) {
+            $data['tags'] = array_map('trim', explode(',', $data['tags']));
+        }
         $kegiatan = $this->kegiatanRepository->update($id, $data);
 
         // Handle Media Deletion
@@ -91,6 +97,11 @@ class KegiatanService implements KegiatanServiceInterface
     {
         Cache::forget('kegiatan_stats_global');
         return $this->kegiatanRepository->deleteBulk($ids);
+    }
+
+    public function getRelatedActivities($id, int $limit = 6)
+    {
+        return $this->kegiatanRepository->getRelated($id, $limit);
     }
 
     public function getDashboardStats()

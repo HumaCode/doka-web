@@ -42,6 +42,11 @@ interface KegiatanRepositoryInterface
     public function deleteBulk(array $ids);
     
     /**
+     * Get related activities.
+     */
+    public function getRelated($id, int $limit = 6);
+
+    /**
      * Get global statistics.
      */
     public function getStats();

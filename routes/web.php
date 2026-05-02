@@ -49,6 +49,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::prefix('kegiatan')->name('kegiatan.')->group(function() {
         Route::get('/', [KegiatanController::class, 'index'])->name('index');
         Route::get('/data', [KegiatanController::class, 'getAllPagination'])->name('getData');
+        Route::get('/show/{id}', [KegiatanController::class, 'show'])->name('show');
         Route::get('/tambah', [KegiatanController::class, 'create'])->name('create');
         Route::post('/store', [KegiatanController::class, 'store'])->name('store');
         Route::get('/download/{uuid}', [KegiatanController::class, 'download'])->name('download');

@@ -30,6 +30,20 @@ class KegiatanController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $kegiatan = $this->kegiatanService->getActivityById($id);
+        $data = (new KegiatanResource($kegiatan))->toArray(request());
+        
+        $related = $this->kegiatanService->getRelatedActivities($id, 8);
+        $relatedData = KegiatanResource::collection($related)->toArray(request());
+
+        return view('pages.kegiatan.show', compact('data', 'relatedData'));
+    }
+
+    /**
      * Get all activities with pagination for AJAX.
      *
      * @param Request $request
@@ -60,9 +74,9 @@ class KegiatanController extends Controller
      */
     public function create()
     {
-        $categories = \App\Models\Master\Kategori::where('status', 'active')->get();
-        $units = \App\Models\Master\UnitKerja::all();
-        $users = \App\Models\User::all();
+        $categories = \App\Models\Master\Kategori::select('id', 'nama_kategori')->where('status', 'active')->get();
+        $units = \App\Models\Master\UnitKerja::select('id', 'nama_instansi')->get();
+        $users = \App\Models\User::select('id', 'name')->get();
 
         return view('pages.kegiatan.create', compact('categories', 'units', 'users'));
     }
@@ -94,9 +108,9 @@ class KegiatanController extends Controller
     public function edit($id)
     {
         $kegiatan = $this->kegiatanService->getActivityById($id);
-        $categories = \App\Models\Master\Kategori::where('status', 'active')->get();
-        $units = \App\Models\Master\UnitKerja::all();
-        $users = \App\Models\User::all();
+        $categories = \App\Models\Master\Kategori::select('id', 'nama_kategori')->where('status', 'active')->get();
+        $units = \App\Models\Master\UnitKerja::select('id', 'nama_instansi')->get();
+        $users = \App\Models\User::select('id', 'name')->get();
 
         return view('pages.kegiatan.edit', compact('kegiatan', 'categories', 'units', 'users'));
     }

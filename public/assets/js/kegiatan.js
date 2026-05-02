@@ -176,7 +176,7 @@ function renderCards(data) {
                         <div class="kc-uploader-avatar" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">${d.petugas.initials}</div>
                         <span class="kc-uploader-name">${d.petugas.name}</span>
                     </div>
-                    <button class="kc-action-btn view" onclick="openDrawer('${d.id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
+                    <button class="kc-action-btn view" onclick="viewKegiatan('${d.id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
                     <button class="kc-action-btn edit" onclick="editKegiatan('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
                     <button class="kc-action-btn delete" onclick="deleteKegiatan('${d.id}', '${d.judul}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
                 </div>
@@ -213,7 +213,7 @@ function renderTable(data) {
                 <td><div style="font-weight:600;font-size:.82rem;">${d.petugas.name}</div></td>
                 <td>
                     <div class="tbl-actions">
-                        <button class="tbl-btn tbl-view" onclick="openDrawer('${d.id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
+                        <button class="tbl-btn tbl-view" onclick="viewKegiatan('${d.id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
                         <button class="tbl-btn tbl-edit" onclick="editKegiatan('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
                         <button class="tbl-btn tbl-delete" onclick="deleteKegiatan('${d.id}', '${d.judul}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
                     </div>
@@ -398,9 +398,20 @@ function openDrawer(id) {
 }
 
 function closeDrawer() { $('#drawerOverlay').removeClass('show'); $('body').css('overflow', ''); }
-function editKegiatan(id) { window.location.href = `/kegiatan/${id}/edit`; }
+function viewKegiatan(id) {
+    window.location.href = `/kegiatan/show/${id}`;
+}
+
+function editKegiatan(id) {
+    window.location.href = `/kegiatan/${id}/edit`;
+}
+
 function deleteKegiatan(id, title) {
-    DKA.deleteConfirm({ title: 'Hapus Kegiatan?', message: `Hapus "<strong>${title}</strong>"?`, itemName: title }).then(res => {
+    DKA.deleteConfirm({ 
+        title: 'Hapus Kegiatan?', 
+        message: `Hapus "<strong>${title}</strong>"?`, 
+        itemName: title 
+    }).then(res => {
         if (res) { 
             const loader = DKA.loading({ title: 'Menghapus Kegiatan', message: 'Sedang memproses...', style: 'ring' });
             $.ajax({ 
@@ -420,4 +431,16 @@ function deleteKegiatan(id, title) {
         }
     });
 }
-function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function exportData() {
+    DKA.notify({ 
+        type: 'info', 
+        title: 'Fitur Export', 
+        message: 'Fitur ini sedang dalam pengembangan (Segera Hadir).',
+        duration: 3000 
+    });
+}
