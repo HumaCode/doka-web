@@ -41,6 +41,11 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::patch('/unit-kerja/bulk-toggle', [\App\Http\Controllers\Master\UnitKerjaController::class, 'bulkToggleStatus'])->name('unit-kerja.bulk-toggle');
     Route::delete('/unit-kerja/bulk-delete', [\App\Http\Controllers\Master\UnitKerjaController::class, 'bulkDelete'])->name('unit-kerja.bulk-delete');
     Route::delete('/unit-kerja/{id}', [\App\Http\Controllers\Master\UnitKerjaController::class, 'destroy'])->name('unit-kerja.destroy');
+
+    // Kegiatan
+    Route::get('/kegiatan', [\App\Http\Controllers\Master\KegiatanController::class, 'index'])->name('kegiatan.index');
+    Route::get('/kegiatan/tambah', [\App\Http\Controllers\Master\KegiatanController::class, 'create'])->name('kegiatan.create');
+    Route::get('/kegiatan/getallpagination', [\App\Http\Controllers\Master\KegiatanController::class, 'getAllPagination'])->name('kegiatan.getallpagination');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

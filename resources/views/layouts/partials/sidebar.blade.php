@@ -52,14 +52,16 @@
         <!-- KEGIATAN -->
         <div class="nav-category">KEGIATAN</div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Semua Kegiatan">
+            <a href="{{ route('kegiatan.index') }}"
+                class="nav-link-item {{ request()->routeIs('kegiatan.index') ? 'active' : '' }}" data-label="Semua Kegiatan">
                 <i class="bi bi-calendar3-fill nav-icon"></i>
                 <span class="nav-label">Semua Kegiatan</span>
                 <span class="nav-badge" style="background:var(--c-green);">24</span>
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Tambah Kegiatan">
+            <a href="{{ route('kegiatan.create') }}"
+                class="nav-link-item {{ request()->routeIs('kegiatan.create') ? 'active' : '' }}" data-label="Tambah Kegiatan">
                 <i class="bi bi-plus-circle-fill nav-icon"></i>
                 <span class="nav-label">Tambah Kegiatan</span>
             </a>
