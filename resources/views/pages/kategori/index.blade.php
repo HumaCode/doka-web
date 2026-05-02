@@ -51,23 +51,25 @@
     <!-- Toolbar -->
     <div class="toolbar fade-up">
         <div class="toolbar-search">
+            <label for="searchInput" class="visually-hidden">Cari Kategori</label>
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama kategori..." />
+            <input type="text" id="searchInput" placeholder="Cari nama kategori..." aria-label="Cari kategori" />
         </div>
-        <select class="toolbar-select" id="filterStatus">
+        <label for="filterStatus" class="visually-hidden">Filter Status</label>
+        <select class="toolbar-select" id="filterStatus" aria-label="Filter berdasarkan status">
             <option value="">Semua Status</option>
             <option value="active">Aktif</option>
             <option value="inactive">Nonaktif</option>
         </select>
-        <button class="btn-toolbar btn-reset" onclick="resetFilters()" title="Reset Filter">
+        <button class="btn-toolbar btn-reset" onclick="resetFilters()" title="Reset Filter" aria-label="Reset semua filter">
             <i class="bi bi-arrow-counterclockwise"></i>
         </button>
         <div class="toolbar-right">
             <div class="view-toggle">
-                <button class="view-btn active" id="btnCardView" onclick="setView('card')" title="Card View">
+                <button class="view-btn active" id="btnCardView" onclick="setView('card')" title="Card View" aria-label="Tampilan Card">
                     <i class="bi bi-grid-3x2-gap-fill"></i>
                 </button>
-                <button class="view-btn" id="btnTableView" onclick="setView('table')" title="Table View">
+                <button class="view-btn" id="btnTableView" onclick="setView('table')" title="Table View" aria-label="Tampilan Tabel">
                     <i class="bi bi-table"></i>
                 </button>
             </div>

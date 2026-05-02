@@ -160,21 +160,24 @@
     <!-- Toolbar -->
     <div class="toolbar fade-up">
         <div class="toolbar-search">
+            <label for="searchInput" class="visually-hidden">Cari Pengguna</label>
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama, email..." />
+            <input type="text" id="searchInput" placeholder="Cari nama, email, atau ID..." aria-label="Cari pengguna" />
         </div>
-        <select class="toolbar-select" id="filterRole">
+        <label for="filterRole" class="visually-hidden">Filter Role</label>
+        <select class="toolbar-select" id="filterRole" aria-label="Filter berdasarkan role">
             <option value="">Semua Role</option>
             @foreach ($roles as $role)
                 <option value="{{ $role->name }}">{{ Str::title($role->name) }}</option>
             @endforeach
         </select>
-        <select class="toolbar-select" id="filterStatus">
+        <label for="filterStatus" class="visually-hidden">Filter Status</label>
+        <select class="toolbar-select" id="filterStatus" aria-label="Filter berdasarkan status">
             <option value="">Semua Status</option>
             <option value="1">Aktif</option>
             <option value="0">Tidak Aktif</option>
         </select>
-        <button class="btn-toolbar btn-reset" onclick="resetFilters()" title="Reset Filter">
+        <button class="btn-toolbar btn-reset" onclick="resetFilters()" title="Reset Filter" aria-label="Reset semua filter">
             <i class="bi bi-arrow-counterclockwise"></i>
         </button>
         <div class="toolbar-right">
@@ -205,9 +208,10 @@
             <table id="userTable">
                 <thead>
                     <tr>
-                        <th class="col-check"><input type="checkbox" onchange="toggleAll(this)"></th>
+                        <th class="col-check"><input type="checkbox" onchange="toggleAll(this)" aria-label="Pilih semua pengguna"></th>
                         <th>Pengguna</th>
                         <th>Instansi</th>
+                        <th>Jabatan</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th style="text-align:center;">Aksi</th>

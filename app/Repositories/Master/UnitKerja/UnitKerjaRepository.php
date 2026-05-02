@@ -11,10 +11,10 @@ class UnitKerjaRepository implements UnitKerjaRepositoryInterface
         $query = UnitKerja::withCount('users');
 
         if (!empty($filters['search'])) {
-            $query->where(function($q) use ($filters) {
-                $q->where('nama_instansi', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('singkatan', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('nama_kepala', 'like', '%' . $filters['search'] . '%');
+            $search = $filters['search'];
+            $query->where(function($q) use ($search) {
+                $q->whereFullText(['nama_instansi', 'singkatan', 'nama_kepala', 'deskripsi', 'alamat'], $search, ['mode' => 'boolean'])
+                  ->orWhere('id', 'like', "%{$search}%");
             });
         }
 

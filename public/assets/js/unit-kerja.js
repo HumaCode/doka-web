@@ -99,7 +99,7 @@ function renderTable(page = 1) {
 
                     body.append(`
                         <tr>
-                            <td class="col-check"><input type="checkbox" class="row-check" data-id="${d.id}" onchange="updateBulk()"></td>
+                            <td class="col-check"><input type="checkbox" class="row-check" data-id="${d.id}" onchange="updateBulk()" aria-label="Pilih ${d.nama}"></td>
                             <td>
                                 <div class="uk-name-cell">
                                     <div class="uk-logo" style="background:${gradStr};"><i class="bi ${d.icon || 'bi-building'}"></i></div>
@@ -124,10 +124,10 @@ function renderTable(page = 1) {
                             <td><span class="status-pill ${d.status === 'active' ? 'sp-active' : 'sp-inactive'}">${d.status === 'active' ? 'Aktif' : 'Nonaktif'}</span></td>
                             <td>
                                 <div class="tbl-actions">
-                                    <button class="tbl-btn tbl-view" onclick="openDrawer('${d.id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
-                                    <button class="tbl-btn tbl-edit" onclick="openEditModal('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                                    <button class="tbl-btn tbl-toggle" onclick="toggleStatus('${d.id}')" title="Ubah Status"><i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i></button>
-                                    <button class="tbl-btn tbl-delete" onclick="deleteUK('${d.id}', '${d.nama}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                                    <button class="tbl-btn tbl-view" onclick="openDrawer('${d.id}')" title="Detail Unit Kerja" aria-label="Lihat detail ${d.nama}"><i class="bi bi-eye-fill"></i></button>
+                                    <button class="tbl-btn tbl-edit" onclick="openEditModal('${d.id}')" title="Edit Unit Kerja" aria-label="Edit unit kerja ${d.nama}"><i class="bi bi-pencil-fill"></i></button>
+                                    <button class="tbl-btn tbl-toggle" onclick="toggleStatus('${d.id}')" title="Ubah Status" aria-label="Ubah status ${d.nama}"><i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i></button>
+                                    <button class="tbl-btn tbl-delete" onclick="deleteUK('${d.id}', '${d.nama}')" title="Hapus Unit Kerja" aria-label="Hapus unit kerja ${d.nama}"><i class="bi bi-trash3-fill"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -151,7 +151,7 @@ function updatePagination(meta) {
     pg.empty();
     if (meta.last_page <= 1) return;
 
-    pg.append(`<button class="page-btn" ${meta.current_page === 1 ? 'disabled' : ''} onclick="renderTable(${meta.current_page - 1})"><i class="bi bi-chevron-left"></i></button>`);
+    pg.append(`<button class="page-btn" ${meta.current_page === 1 ? 'disabled' : ''} onclick="renderTable(${meta.current_page - 1})" aria-label="Halaman sebelumnya"><i class="bi bi-chevron-left"></i></button>`);
 
     for (let i = 1; i <= meta.last_page; i++) {
         if (i === 1 || i === meta.last_page || (i >= meta.current_page - 1 && i <= meta.current_page + 1)) {
@@ -161,7 +161,7 @@ function updatePagination(meta) {
         }
     }
 
-    pg.append(`<button class="page-btn" ${meta.current_page === meta.last_page ? 'disabled' : ''} onclick="renderTable(${meta.current_page + 1})"><i class="bi bi-chevron-right"></i></button>`);
+    pg.append(`<button class="page-btn" ${meta.current_page === meta.last_page ? 'disabled' : ''} onclick="renderTable(${meta.current_page + 1})" aria-label="Halaman selanjutnya"><i class="bi bi-chevron-right"></i></button>`);
 }
 
 function updateStats(stats) {

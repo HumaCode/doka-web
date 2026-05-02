@@ -15,16 +15,29 @@ class EnsureAccountIsActive
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && !auth()->user()->is_active) {
-            // Jika user mencoba mengakses halaman selain pending-activation atau logout
-            if (!$request->routeIs('pending.activation') && !$request->routeIs('logout')) {
-                return redirect()->route('pending.activation');
-            }
-        }
+        if (auth()->check()) {
+            $user = auth()->user();
 
-        // Jika user SUDAH aktif tapi mencoba akses halaman pending-activation
-        if (auth()->check() && auth()->user()->is_active && $request->routeIs('pending.activation')) {
-            return redirect()->route('dashboard');
+            // Check if profile is incomplete (missing key fields)
+            $isIncomplete = empty($user->unit_kerja_id) ||
+                (empty($user->nip) && empty($user->nik)) ||
+                empty($user->jabatan);
+
+            // If not active OR profile incomplete, force to pending page
+            if (!$user->is_active || $isIncomplete) {
+                if (
+                    !$request->routeIs('pending.activation') &&
+                    !$request->routeIs('pending.activation.submit') &&
+                    !$request->routeIs('logout')
+                ) {
+                    return redirect()->route('pending.activation');
+                }
+            } else {
+                // If user is active AND complete but trying to access pending page, redirect to dashboard
+                if ($request->routeIs('pending.activation')) {
+                    return redirect()->route('dashboard');
+                }
+            }
         }
 
         return $next($request);

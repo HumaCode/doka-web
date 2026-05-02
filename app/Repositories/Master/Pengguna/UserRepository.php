@@ -18,13 +18,14 @@ class UserRepository implements UserRepositoryInterface
     {
         $query = User::query()->with(['roles', 'unitKerja']);
 
-        // Apply filters
+        // Apply filters with Full-Text Search optimization
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                // Gunakan Full-Text Search untuk kolom identitas (Super cepat untuk jutaan data)
+                $q->whereFullText(['name', 'email', 'username', 'phone', 'nip', 'nik', 'jabatan'], $search, ['mode' => 'boolean'])
+                  // Tetap gunakan LIKE untuk ID (ULID) agar pencarian ID tetap akurat
+                  ->orWhere('id', 'like', "%{$search}%");
             });
         }
 

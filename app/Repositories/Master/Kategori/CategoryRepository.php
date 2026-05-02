@@ -12,8 +12,12 @@ class CategoryRepository implements CategoryRepositoryInterface
         $query = Kategori::query();
 
         if (!empty($filters['search'])) {
-            $query->where('nama_kategori', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('slug', 'like', '%' . $filters['search'] . '%');
+            $search = $filters['search'];
+            $query->where(function($q) use ($search) {
+                $q->whereFullText(['nama_kategori', 'deskripsi'], $search, ['mode' => 'boolean'])
+                  ->orWhere('id', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
+            });
         }
 
         if (!empty($filters['status'])) {

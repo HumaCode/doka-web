@@ -472,7 +472,7 @@
     <h1 class="status-title">Akun Anda Belum Aktif</h1>
     <p class="status-desc">
       Pendaftaran berhasil! Sebelum dapat mengakses sistem,
-      lengkapi data instansi Anda dan tunggu verifikasi dari Administrator.
+      lengkapi data Anda dan tunggu verifikasi dari Administrator.
     </p>
     <div class="user-chip">
       <div class="user-chip-av" id="userChipAv">AF</div>
@@ -732,11 +732,11 @@ function formatInstansiSelection(opt) {
   if (!inst) return opt.text;
   return $(`
     <span style="display:inline-flex;align-items:center;gap:7px;">
-      <span style="display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:${inst.grad};">
+      <span style="display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:${inst.grad};margin-top: 16px !important;">
         <i class="bi ${inst.ic}" style="font-size:.6rem;color:#fff;"></i>
       </span>
       <span style="font-weight:700;font-size:.85rem;">${inst.text}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:#94a3b8;">${inst.sing}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:#94a3b8;margin-top: 16px;">${inst.sing}</span>
     </span>`);
 }
 

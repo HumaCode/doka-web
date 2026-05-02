@@ -5,6 +5,7 @@ Gunakan checklist ini saat membuat modul baru untuk memastikan tidak ada layer y
 ## 1. Database & Model
 - [ ] Buat Migration (Gunakan ULID sebagai primary key).
 - [ ] Buat Model di folder yang sesuai (misal: `App\Models\Master`).
+- [ ] Tambahkan **FULLTEXT Index** pada kolom pencarian utama di migration.
 - [ ] Buat Factory & Seeder (Opsional tapi disarankan).
 
 ## 2. API & Data Layer
@@ -12,6 +13,8 @@ Gunakan checklist ini saat membuat modul baru untuk memastikan tidak ada layer y
 - [ ] Buat `Repository` implementation.
 - [ ] Buat `ServiceInterface` di `app/Services/Master/{Module}`.
 - [ ] Buat `Service` implementation.
+- [ ] Implementasikan **Server-Side Caching** untuk data statistik.
+- [ ] Implementasikan **Cache Invalidation** pada setiap operasi Write (Create/Update/Delete).
 - [ ] Buat `Resource` di `app/Http/Resources/Master`.
 
 ## 3. Request & Controller
@@ -25,6 +28,8 @@ Gunakan checklist ini saat membuat modul baru untuk memastikan tidak ada layer y
 - [ ] Buat `partials/modal-view.blade.php` untuk Add/Edit/Detail.
 - [ ] Buat `{module}.js` di `public/assets/js`.
 - [ ] Buat `{module}.css` di `public/assets/css`.
+- [ ] **A11y Audit**: Pastikan semua input memiliki `<label for="...">`.
+- [ ] **A11y Audit**: Pastikan semua tombol ikon memiliki `aria-label` dan `title`.
 
 ## 5. AJAX Integration
 - [ ] Implementasi `loadData()` dengan pagination & search.

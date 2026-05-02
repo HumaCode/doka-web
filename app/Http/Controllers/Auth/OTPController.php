@@ -29,6 +29,15 @@ class OTPController extends Controller
         }
 
         $email = $request->email;
+ 
+        // Check if user exists (OTP is only for login now)
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email tidak terdaftar dalam sistem. Silakan daftar akun baru.'
+            ], 404);
+        }
 
         // Rate limiting: Check if user already requested OTP in the last 60 seconds
         $recentOtp = EmailOtp::where('email', $email)

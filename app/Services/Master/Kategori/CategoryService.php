@@ -18,7 +18,11 @@ class CategoryService implements CategoryServiceInterface
     public function getCategories(int $perPage = 10, array $filters = []): array
     {
         $categories = $this->categoryRepository->getAllPagination($perPage, $filters);
-        $stats = $this->categoryRepository->getStats();
+        
+        // Cache stats for 5 minutes
+        $stats = cache()->remember('category_stats_global', 300, function() {
+            return $this->categoryRepository->getStats();
+        });
 
         $resource = PaginateResource::make($categories, CategoryResource::class)->toArray(request());
         $resource['stats'] = $stats;
@@ -33,17 +37,23 @@ class CategoryService implements CategoryServiceInterface
 
     public function createCategory(array $data)
     {
-        return $this->categoryRepository->create($data);
+        $result = $this->categoryRepository->create($data);
+        cache()->forget('category_stats_global');
+        return $result;
     }
 
     public function updateCategory(string $id, array $data)
     {
-        return $this->categoryRepository->update($id, $data);
+        $result = $this->categoryRepository->update($id, $data);
+        cache()->forget('category_stats_global');
+        return $result;
     }
 
     public function deleteCategory(string $id)
     {
-        return $this->categoryRepository->delete($id);
+        $result = $this->categoryRepository->delete($id);
+        cache()->forget('category_stats_global');
+        return $result;
     }
 
     public function toggleCategoryStatus(string $id)
@@ -51,6 +61,8 @@ class CategoryService implements CategoryServiceInterface
         $category = $this->categoryRepository->findById($id);
         $newStatus = $category->status === 'active' ? 'inactive' : 'active';
         
-        return $this->categoryRepository->update($id, ['status' => $newStatus]);
+        $result = $this->categoryRepository->update($id, ['status' => $newStatus]);
+        cache()->forget('category_stats_global');
+        return $result;
     }
 }

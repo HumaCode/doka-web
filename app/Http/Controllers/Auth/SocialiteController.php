@@ -68,6 +68,11 @@ class SocialiteController extends Controller
 
             Auth::login($user);
 
+            // Redirect to pending activation if not active or incomplete
+            if (!$user->is_active || empty($user->unit_kerja_id)) {
+                return redirect()->route('pending.activation');
+            }
+
             return redirect()->intended(route('dashboard', absolute: false));
         } catch (Exception $e) {
             return redirect()->route('login')->withErrors([

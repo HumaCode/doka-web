@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -31,7 +32,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         if (!\App\Helpers\ReCaptchaHelper::verify($request->g_recaptcha_response)) {
             return response()->json([
@@ -46,9 +47,16 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'unit_kerja_id' => ['required', 'exists:unit_kerja,id'],
+            'nip' => ['nullable', 'string', 'size:18'],
+            'nik' => ['nullable', 'string', 'size:16'],
+            'jabatan' => ['required', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:20'],
             'avatar' => ['nullable', 'image', 'max:2048'], // Max 2MB
         ]);
+
+        // Determine activation status: 
+        // 1 if verified via OTP (session exists), 0 if manual password registration
+        $isActive = session('register_email') === $request->email ? '1' : '0';
 
         $user = User::create([
             'name' => $request->name,
@@ -56,9 +64,17 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'unit_kerja_id' => $request->unit_kerja_id,
+            'nip' => $request->nip,
+            'nik' => $request->nik,
+            'jabatan' => $request->jabatan,
             'password' => Hash::make($request->password),
-            'is_active' => true,
+            'is_active' => $isActive,
         ]);
+
+        // Clear session if it was OTP
+        if ($isActive === '1') {
+            session()->forget('register_email');
+        }
 
         // Assign default role
         $user->assignRole('user');
@@ -76,11 +92,11 @@ class RegisteredUserController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Registrasi berhasil! Menyiapkan dashboard...',
-                'redirect' => route('dashboard')
+                'message' => 'Registrasi berhasil! Menunggu aktivasi akun...',
+                'redirect' => route('pending.activation')
             ]);
         }
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('pending.activation', absolute: false));
     }
 }

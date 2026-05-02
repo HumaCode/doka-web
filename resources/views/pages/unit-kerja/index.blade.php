@@ -52,15 +52,18 @@
     <!-- Toolbar -->
     <div class="toolbar fade-up">
         <div class="toolbar-search">
+            <label for="searchInput" class="visually-hidden">Cari Unit Kerja</label>
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama / singkatan..." oninput="filterData()" />
+            <input type="text" id="searchInput" placeholder="Cari nama / singkatan..." oninput="filterData()" aria-label="Cari unit kerja" />
         </div>
-        <select class="toolbar-select" id="filterStatus" onchange="filterData()">
+        <label for="filterStatus" class="visually-hidden">Filter Status</label>
+        <select class="toolbar-select" id="filterStatus" onchange="filterData()" aria-label="Filter berdasarkan status">
             <option value="">Semua Status</option>
             <option value="active">Aktif</option>
             <option value="inactive">Nonaktif</option>
         </select>
-        <select class="toolbar-select" id="filterJenis" onchange="filterData()">
+        <label for="filterJenis" class="visually-hidden">Filter Jenis OPD</label>
+        <select class="toolbar-select" id="filterJenis" onchange="filterData()" aria-label="Filter berdasarkan jenis OPD">
             <option value="">Semua Jenis</option>
             <option value="Dinas">Dinas</option>
             <option value="Badan">Badan</option>
@@ -70,7 +73,7 @@
             <option value="Kantor">Kantor</option>
             <option value="RSUD">RSUD</option>
         </select>
-        <button class="btn-reset" onclick="resetFilters()" title="Reset Filter">
+        <button class="btn-reset" onclick="resetFilters()" title="Reset Filter" aria-label="Reset semua filter">
             <i class="bi bi-arrow-counterclockwise"></i>
         </button>
         <div class="toolbar-right">
@@ -94,7 +97,8 @@
                 <span class="table-count-badge" id="tableCountBadge">0 unit</span>
                 <div style="display:flex;align-items:center;gap:8px;">
                     <span style="font-size:.78rem;color:var(--c-muted);">Tampilkan:</span>
-                    <select class="per-page-select" id="perPageSelect" onchange="changePerPage(this.value)">
+                    <label for="perPageSelect" class="visually-hidden">Data per halaman</label>
+                    <select class="per-page-select" id="perPageSelect" onchange="changePerPage(this.value)" aria-label="Jumlah data per halaman">
                         <option value="10">10</option>
                         <option value="15" selected>15</option>
                         <option value="25">25</option>
@@ -109,7 +113,7 @@
             <table class="uk-table">
                 <thead>
                     <tr>
-                        <th class="col-check"><input type="checkbox" id="checkAll" onchange="toggleAllCheck(this)" /></th>
+                        <th class="col-check"><input type="checkbox" id="checkAll" onchange="toggleAllCheck(this)" aria-label="Pilih semua unit kerja" /></th>
                         <th onclick="sortBy('nama')" id="th-nama">Unit Kerja <i class="bi bi-chevron-expand sort-icon" id="si-nama"></i></th>
                         <th onclick="sortBy('jenis')" id="th-jenis">Jenis <i class="bi bi-chevron-expand sort-icon" id="si-jenis"></i></th>
                         <th onclick="sortBy('kepala')" id="th-kepala">Kepala / Pimpinan <i class="bi bi-chevron-expand sort-icon" id="si-kepala"></i></th>

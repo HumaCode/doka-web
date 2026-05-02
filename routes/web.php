@@ -8,9 +8,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/pending-activation', function () {
-    return view('auth.pending');
-})->middleware('auth')->name('pending.activation');
+Route::get('/pending-activation', [\App\Http\Controllers\Auth\AccountActivationController::class, 'index'])->middleware('auth')->name('pending.activation');
+Route::post('/pending-activation/submit', [\App\Http\Controllers\Auth\AccountActivationController::class, 'submit'])->middleware('auth')->name('pending.activation.submit');
+Route::get('/admin/quick-login/{user}', [\App\Http\Controllers\Auth\AccountActivationController::class, 'quickLogin'])->name('admin.quick-login');
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

@@ -806,6 +806,41 @@
                     </div>
                     <div class="field-error" id="err-unit_kerja_id" style="display:none;font-size:.75rem;color:#ef4444;margin-top:-14px; margin-bottom:18px;">Instansi wajib dipilih.</div>
 
+                    <!-- Status Kepegawaian -->
+                    <label class="form-label">
+                        Status Kepegawaian <span class="required-dot">*</span>
+                    </label>
+                    <div class="d-flex gap-4 mb-3 p-2" style="background:rgba(79,70,229,0.05); border-radius:12px; border:1px solid rgba(79,70,229,0.1);">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status_pegawai" id="regStatusASN" value="asn" checked onchange="toggleRegIdType()">
+                            <label class="form-check-label" for="regStatusASN" style="font-weight:600; cursor:pointer;">ASN (PNS/PPPK)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status_pegawai" id="regStatusNonASN" value="non-asn" onchange="toggleRegIdType()">
+                            <label class="form-check-label" for="regStatusNonASN" style="font-weight:600; cursor:pointer;">Non-ASN / THL</label>
+                        </div>
+                    </div>
+
+                    <!-- NIP / NIK -->
+                    <label class="form-label" for="id_pegawai" id="labelRegID">
+                        NIP (Nomor Induk Pegawai) <span class="required-dot">*</span>
+                    </label>
+                    <div class="field-wrap" id="wrap-id_pegawai">
+                        <i class="bi bi-person-badge-fill input-icon"></i>
+                        <input type="text" id="id_pegawai" class="form-ctrl" placeholder="Contoh: 198504172010011004" maxlength="18" oninput="formatRegID(this)" />
+                    </div>
+                    <div class="field-error" id="err-id_pegawai" style="display:none;font-size:.75rem;color:#ef4444;margin-top:-14px; margin-bottom:18px;">NIP wajib diisi.</div>
+
+                    <!-- Jabatan -->
+                    <label class="form-label" for="jabatan">
+                        Jabatan / Posisi <span class="required-dot">*</span>
+                    </label>
+                    <div class="field-wrap" id="wrap-jabatan">
+                        <i class="bi bi-briefcase-fill input-icon"></i>
+                        <input type="text" id="jabatan" name="jabatan" class="form-ctrl" placeholder="Contoh: Staf Dokumentasi" />
+                    </div>
+                    <div class="field-error" id="err-jabatan" style="display:none;font-size:.75rem;color:#ef4444;margin-top:-14px; margin-bottom:18px;">Jabatan wajib diisi.</div>
+
                     <div class="d-flex gap-3 mt-4">
                         <button type="button" class="btn-outline-nav" onclick="goBack(2)">
                             <i class="bi bi-arrow-left"></i> Kembali
@@ -860,6 +895,12 @@
                                     Jabatan</div>
                                 <div style="font-size:.9rem;font-weight:600;color:var(--c-text);" id="rvJabatan">—</div>
                             </div>
+                            <div class="col-6 mt-1">
+                                <div id="labelRvID"
+                                    style="font-size:.72rem;color:var(--c-muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;">
+                                    NIP</div>
+                                <div style="font-size:.9rem;font-weight:600;color:var(--c-text);" id="rvID">—</div>
+                            </div>
                         </div>
                     </div>
 
@@ -902,11 +943,10 @@
             <div class="success-screen-reg" id="successScreen">
                 <div class="success-icon-wrap-reg"><i class="bi bi-check2-all"></i></div>
                 <h2>Akun Berhasil Dibuat! 🎉</h2>
-                <p>Selamat datang di DokaKegiatan. Akun Anda sudah aktif. Silakan masuk untuk mulai mendokumentasikan
-                    kegiatan.</p>
-                <a href="{{ route('login') }}" class="btn-primary-grad"
+                <p>Selamat datang di DokaKegiatan. Pendaftaran Anda telah kami terima. Silakan lengkapi identitas dan tunggu aktivasi oleh Administrator.</p>
+                <a href="{{ route('pending.activation') }}" class="btn-primary-grad"
                     style="width:auto;padding:13px 36px;margin-top:28px;text-decoration:none;">
-                    <i class="bi bi-box-arrow-in-right"></i> Masuk Sekarang
+                    <i class="bi bi-shield-lock-fill"></i> Lihat Status Aktivasi
                 </a>
             </div>
 
@@ -1167,7 +1207,50 @@
                     } else clearErr('unit_kerja_id');
                 }
 
+                const idVal = document.getElementById('id_pegawai').value.trim();
+                const statusPegawai = document.querySelector('input[name="status_pegawai"]:checked').value;
+                if (!idVal) {
+                    showErr('id_pegawai', 'NIP/NIK wajib diisi.');
+                    ok = false;
+                } else if (statusPegawai === 'asn' && idVal.length !== 18) {
+                    showErr('id_pegawai', 'NIP harus 18 digit.');
+                    ok = false;
+                } else if (statusPegawai === 'non-asn' && idVal.length !== 16) {
+                    showErr('id_pegawai', 'NIK harus 16 digit.');
+                    ok = false;
+                } else clearErr('id_pegawai');
+
+                const jab = document.getElementById('jabatan').value.trim();
+                if (!jab) {
+                    showErr('jabatan', 'Jabatan wajib diisi.');
+                    ok = false;
+                } else clearErr('jabatan');
+
                 return ok;
+            }
+
+            window.toggleRegIdType = function() {
+                const type = document.querySelector('input[name="status_pegawai"]:checked').value;
+                const label = document.getElementById('labelRegID');
+                const input = document.getElementById('id_pegawai');
+                const err = document.getElementById('err-id_pegawai');
+
+                if (type === 'asn') {
+                    label.innerHTML = 'NIP (Nomor Induk Pegawai) <span class="required-dot">*</span>';
+                    input.placeholder = 'Contoh: 198504172010011004';
+                    input.maxLength = 18;
+                    err.textContent = 'NIP wajib diisi.';
+                } else {
+                    label.innerHTML = 'NIK (Nomor Induk Kependudukan) <span class="required-dot">*</span>';
+                    input.placeholder = 'Contoh: 3375012345678901';
+                    input.maxLength = 16;
+                    err.textContent = 'NIK wajib diisi.';
+                }
+                clearErr('id_pegawai');
+            }
+
+            window.formatRegID = function(el) {
+                el.value = el.value.replace(/\D/g, '');
             }
 
             /* ── Populate review (step 3) ── */
@@ -1183,6 +1266,10 @@
 
                 const jabEl = document.getElementById('jabatan');
                 document.getElementById('rvJabatan').textContent = jabEl ? (jabEl.value.trim() || '—') : '—';
+
+                const type = document.querySelector('input[name="status_pegawai"]:checked').value;
+                document.getElementById('labelRvID').textContent = type === 'asn' ? 'NIP' : 'NIK';
+                document.getElementById('rvID').textContent = document.getElementById('id_pegawai').value.trim() || '—';
             }
 
             /* ── Next / Back ── */
@@ -1243,6 +1330,12 @@
                         const formData = new FormData($regForm[0]);
                         formData.append('g_recaptcha_response', token);
 
+                        // Add nip/nik based on status
+                        const statusPegawai = document.querySelector('input[name="status_pegawai"]:checked').value;
+                        const idValue = document.getElementById('id_pegawai').value;
+                        if (statusPegawai === 'asn') formData.append('nip', idValue);
+                        else formData.append('nik', idValue);
+
                         $.ajax({
                             url: $regForm.attr('action'),
                             type: 'POST',
@@ -1290,7 +1383,7 @@
                                         setStep(2);
                                     }
                                 } else {
-                                    showAlert(xhr.responseJSON.message || 'Terjadi kesalahan sistem. Silakan coba beberapa saat lagi.');
+                                    showAlert('Terjadi kesalahan pada server. Silakan pastikan semua data terisi dengan benar atau coba lagi nanti.');
                                 }
                             }
                         });

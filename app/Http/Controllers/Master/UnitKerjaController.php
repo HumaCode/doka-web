@@ -41,20 +41,20 @@ class UnitKerjaController extends Controller
 
         $unitKerjas = $this->unitKerjaService->getUnitKerjas($perPage, $filters);
 
-        // Stats calculation
-        $rawStats = UnitKerja::selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active
-        ")->first();
+        // Cache stats for 5 minutes
+        $stats = cache()->remember('unit_kerja_stats_global', 300, function() {
+            $rawStats = UnitKerja::selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active
+            ")->first();
 
-        $totalUsers = User::count();
-
-        $stats = [
-            'total'    => (int) $rawStats->total,
-            'active'   => (int) $rawStats->active,
-            'kegiatan' => 0,
-            'pengguna' => $totalUsers,
-        ];
+            return [
+                'total'    => (int) ($rawStats->total ?? 0),
+                'active'   => (int) ($rawStats->active ?? 0),
+                'kegiatan' => 0,
+                'pengguna' => User::count(),
+            ];
+        });
 
         $resource = PaginateResource::make($unitKerjas, UnitKerjaResource::class)->toArray(request());
         $resource['stats'] = $stats;
@@ -70,6 +70,7 @@ class UnitKerjaController extends Controller
         try {
             $data = $request->validated();
             $this->unitKerjaService->createUnitKerja($data);
+            cache()->forget('unit_kerja_stats_global');
 
             return $this->success('Unit Kerja berhasil ditambahkan.');
         } catch (\Exception $e) {
@@ -100,6 +101,7 @@ class UnitKerjaController extends Controller
         try {
             $data = $request->validated();
             $this->unitKerjaService->updateUnitKerja($id, $data);
+            cache()->forget('unit_kerja_stats_global');
 
             return $this->success('Unit Kerja berhasil diperbarui.');
         } catch (\Exception $e) {
@@ -114,6 +116,7 @@ class UnitKerjaController extends Controller
     {
         try {
             $unitKerja = $this->unitKerjaService->toggleUnitKerjaStatus($id);
+            cache()->forget('unit_kerja_stats_global');
             if (!$unitKerja) return $this->error('Unit Kerja tidak ditemukan.', 404);
 
             $status = $unitKerja->status === 'active' ? 'diaktifkan' : 'dinonaktifkan';
@@ -138,6 +141,7 @@ class UnitKerjaController extends Controller
             }
 
             $this->unitKerjaService->deleteUnitKerja($id);
+            cache()->forget('unit_kerja_stats_global');
             return $this->success('Unit Kerja berhasil dihapus.');
         } catch (\Exception $e) {
             return $this->error('Gagal menghapus data: ' . $e->getMessage());
@@ -154,6 +158,7 @@ class UnitKerjaController extends Controller
             if (empty($ids)) return $this->error('Tidak ada data terpilih.', 400);
 
             $this->unitKerjaService->bulkToggleStatus($ids);
+            cache()->forget('unit_kerja_stats_global');
             return $this->success('Status unit kerja terpilih berhasil diubah.');
         } catch (\Exception $e) {
             return $this->error('Gagal mengubah status massal: ' . $e->getMessage());
@@ -170,6 +175,7 @@ class UnitKerjaController extends Controller
             if (empty($ids)) return $this->error('Tidak ada data terpilih.', 400);
 
             $result = $this->unitKerjaService->deleteBulkUnitKerjas($ids);
+            cache()->forget('unit_kerja_stats_global');
             
             $deleted = $result['deleted_count'];
             $skipped = $result['skipped_count'];

@@ -45,7 +45,7 @@ function renderTable(page = 1) {
 
                 if (users.length === 0) {
                     body.html(
-                        '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--c-muted);">Tidak ada data pengguna ditemukan.</td></tr>'
+                        '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--c-muted);">Tidak ada data pengguna ditemukan.</td></tr>'
                     );
                     updatePagination(meta);
                     updateStats(stats || meta);
@@ -60,7 +60,7 @@ function renderTable(page = 1) {
 
                     body.append(`
                     <tr>
-                        <td class="col-check"><input type="checkbox" class="row-check" data-id="${u.id}" onchange="updateBulk()"></td>
+                        <td class="col-check"><input type="checkbox" class="row-check" data-id="${u.id}" onchange="updateBulk()" aria-label="Pilih ${u.name}"></td>
                         <td>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <div style="width:36px; height:36px; border-radius:50%; background:${color}; color:#fff; display:grid; place-items:center; font-weight:800;">${initial}</div>
@@ -76,13 +76,16 @@ function renderTable(page = 1) {
                                 ${u.unit_kerja?.sing ? `<div class="instansi-badge">${u.unit_kerja.sing}</div>` : ''}
                             </div>
                         </td>
+                        <td>
+                            <div style="font-weight:600; color:var(--c-text); font-size:0.85rem;">${u.jabatan || '-'}</div>
+                        </td>
                         <td><span class="role-badge role-${u.roles[0]?.name || 'user'}">${(u.roles[0]?.name || 'user').toUpperCase()}</span></td>
-                        <td><span class="status-badge status-${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Aktif' : 'Non-aktif'}</span></td>
+                        <td><span class="status-badge status-${u.is_active == '1' ? 'active' : 'inactive'}">${u.is_active == '1' ? 'Aktif' : 'Non-aktif'}</span></td>
                         <td style="text-align:center;">
                             <div class="action-btns">
-                                <button class="btn-action btn-view" onclick="openDetailModal('${u.id}')"><i class="bi bi-eye"></i></button>
-                                <button class="btn-action btn-edit" onclick="openEditModal('${u.id}')"><i class="bi bi-pencil-square"></i></button>
-                                <button class="btn-action btn-delete" data-id="${u.id}" data-name="${u.name} — ${(u.roles[0]?.name || 'user').toUpperCase()}" onclick="deleteUser(this)"><i class="bi bi-trash"></i></button>
+                                <button class="btn-action btn-view" onclick="openDetailModal('${u.id}')" title="Lihat Detail" aria-label="Lihat detail ${u.name}"><i class="bi bi-eye"></i></button>
+                                <button class="btn-action btn-edit" onclick="openEditModal('${u.id}')" title="Edit Data" aria-label="Edit data ${u.name}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn-action btn-delete" data-id="${u.id}" data-name="${u.name} — ${(u.roles[0]?.name || 'user').toUpperCase()}" onclick="deleteUser(this)" title="Hapus Akun" aria-label="Hapus akun ${u.name}"><i class="bi bi-trash"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -96,7 +99,7 @@ function renderTable(page = 1) {
         },
         error: function() {
             body.html(
-                '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--c-red);">Gagal memuat data. Silakan coba lagi.</td></tr>'
+                '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--c-red);">Gagal memuat data. Silakan coba lagi.</td></tr>'
             );
         }
     });
@@ -144,6 +147,13 @@ function updateStats(stats) {
 
 // --- INITIALIZATION --- //
 $(document).ready(function() {
+    // Check for search parameter in URL (for quick access from email)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+        $('#searchInput').val(searchParam);
+    }
+
     renderTable();
 
     // Use debounced function for search input to reduce server load
@@ -161,6 +171,22 @@ $(document).ready(function() {
         dropdownParent: $('#modalUser')
     });
 });
+
+function toggleModalIdType() {
+    const status = $('#f-status_pegawai').val();
+    const label = $('#modalLabelID');
+    const input = $('#f-id_pegawai');
+    
+    if (status === 'asn') {
+        label.text('NIP (18 Digit)');
+        input.attr('placeholder', 'Masukkan NIP 18 digit');
+        input.attr('maxlength', '18');
+    } else {
+        label.text('NIK (16 Digit)');
+        input.attr('placeholder', 'Masukkan NIK 16 digit');
+        input.attr('maxlength', '16');
+    }
+}
 
 // --- MODAL & FORM CONTROL --- //
 let editUserId = null;
@@ -202,6 +228,16 @@ function openEditModal(id) {
                 $('#f-phone').val(user.phone || '');
                 $('#f-gender').val(user.gender ? user.gender.toLowerCase() : '');
                 $('#f-unit_kerja_id').val(user.unit_kerja?.id || '').trigger('change');
+                $('#f-jabatan').val(user.jabatan || '');
+                
+                if (user.nip) {
+                    $('#f-status_pegawai').val('asn');
+                    $('#f-id_pegawai').val(user.nip);
+                } else if (user.nik) {
+                    $('#f-status_pegawai').val('non-asn');
+                    $('#f-id_pegawai').val(user.nik);
+                }
+                toggleModalIdType();
 
                 if (user.roles && user.roles.length > 0) {
                     $('#f-role').val(user.roles[0].name);
@@ -209,7 +245,7 @@ function openEditModal(id) {
                     $('#f-role').val('');
                 }
 
-                $('#f-is_active').val(user.is_active ? "1" : "0");
+                $('#f-is_active').val(user.is_active == '1' ? "1" : "0");
 
                 $('#modalTitle').text('Edit Pengguna');
                 $('#modalSubTitle').text('Perbarui informasi akun pengguna ini.');
@@ -290,6 +326,14 @@ function openDetailModal(id) {
                                 </div>
                             </div>
                             <div class="detail-item">
+                                <label class="detail-label">Jabatan / Posisi</label>
+                                <div class="detail-value">${u.jabatan || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label class="detail-label">${u.nip ? 'NIP' : 'NIK'}</label>
+                                <div class="detail-value">${u.nip || u.nik || '-'}</div>
+                            </div>
+                            <div class="detail-item">
                                 <label class="detail-label">Username</label>
                                 <div class="detail-value">${u.username || '-'}</div>
                             </div>
@@ -305,6 +349,11 @@ function openDetailModal(id) {
                                 <label class="detail-label">ID Pengguna</label>
                                 <div class="detail-value" style="font-family:monospace; font-size:0.75rem;">${u.id}</div>
                             </div>
+                            ${u.keterangan ? `
+                            <div class="detail-item" style="grid-column: span 2;">
+                                <label class="detail-label">Keterangan Aktivasi</label>
+                                <div class="detail-value" style="background:rgba(245,158,11,.05); padding:10px; border-radius:8px; border:1px solid rgba(245,158,11,.1);">${u.keterangan}</div>
+                            </div>` : ''}
                         </div>
                     </div>
                 `);
@@ -339,6 +388,17 @@ function updateBulk() {
 function saveUser() {
     $('.form-ctrl-m').removeClass('is-invalid');
     $('.invalid-feedback').remove();
+
+    // Prep NIP/NIK before FormData
+    const status = $('#f-status_pegawai').val();
+    const idVal = $('#f-id_pegawai').val();
+    if (status === 'asn') {
+        $('#f-nip').val(idVal);
+        $('#f-nik').val('');
+    } else {
+        $('#f-nik').val(idVal);
+        $('#f-nip').val('');
+    }
 
     const formData = new FormData($('#formUser')[0]);
 

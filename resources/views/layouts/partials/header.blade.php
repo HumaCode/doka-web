@@ -1,7 +1,7 @@
- <header class="topbar" id="topbar">
+<header class="topbar" id="topbar">
 
      <!-- Hamburger -->
-     <button class="btn-hamburger" id="btnHamburger" onclick="toggleSidebar()">
+     <button class="btn-hamburger" id="btnHamburger" onclick="toggleSidebar()" aria-label="Toggle Sidebar Menu">
          <span class="hamburger-line"></span>
          <span class="hamburger-line"></span>
          <span class="hamburger-line"></span>
@@ -9,27 +9,28 @@
 
      <!-- Search -->
      <div class="topbar-search">
+         <label for="topbarSearch" class="visually-hidden">Cari di dashboard</label>
          <i class="bi bi-search"></i>
-         <input type="text" placeholder="Cari kegiatan, laporan..." />
+         <input type="text" id="topbarSearch" placeholder="Cari kegiatan, laporan..." aria-label="Cari di dashboard" />
      </div>
 
      <!-- Right -->
      <div class="topbar-right">
 
          <!-- Notifications -->
-         <button class="topbar-icon-btn">
+         <button class="topbar-icon-btn" aria-label="Notifikasi">
              <i class="bi bi-bell-fill"></i>
              <span class="notif-dot"></span>
          </button>
 
          <!-- Messages -->
-         <button class="topbar-icon-btn">
+         <button class="topbar-icon-btn" aria-label="Pesan">
              <i class="bi bi-chat-dots-fill"></i>
          </button>
 
          <!-- User dropdown -->
          <div class="user-dropdown-wrap">
-             <button class="user-trigger" id="userTrigger" onclick="toggleUserDropdown()">
+             <button class="user-trigger" id="userTrigger" onclick="toggleUserDropdown()" aria-label="User Menu" aria-expanded="false">
                  <div class="user-avatar">{{ auth()->user()->name[0] }}</div>
                  <div class="user-info">
                      <div class="user-name">{{ auth()->user()->name }}</div>

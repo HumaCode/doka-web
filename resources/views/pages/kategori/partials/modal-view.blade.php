@@ -8,7 +8,7 @@
                 </div>
                 <span id="modalTitleText">Tambah Kategori</span>
             </div>
-            <button class="btn-close-modal" onclick="closeModal('modalKat')">
+            <button class="btn-close-modal" onclick="closeModal('modalKat')" aria-label="Tutup Modal">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
@@ -29,7 +29,7 @@
             <!-- Nama & Slug -->
             <div class="frow2">
                 <div class="fgroup" id="grp-nama">
-                    <div class="flabel"><i class="bi bi-type" style="color:var(--c-muted);font-size:.85rem;"></i> Nama Kategori <span class="req">*</span></div>
+                    <label class="flabel" for="f-nama"><i class="bi bi-type" style="color:var(--c-muted);font-size:.85rem;"></i> Nama Kategori <span class="req">*</span></label>
                     <div class="fwrap">
                         <i class="bi bi-type ficon"></i>
                         <input type="text" class="fctrl" id="f-nama" placeholder="Contoh: Rapat Koordinasi"
@@ -38,7 +38,7 @@
                     <div class="finvalid">Nama kategori wajib diisi.</div>
                 </div>
                 <div class="fgroup" id="grp-slug">
-                    <div class="flabel"><i class="bi bi-link-45deg" style="color:var(--c-muted);font-size:.85rem;"></i> Slug <span class="req">*</span></div>
+                    <label class="flabel" for="f-slug"><i class="bi bi-link-45deg" style="color:var(--c-muted);font-size:.85rem;"></i> Slug <span class="req">*</span></label>
                     <div class="fwrap">
                         <i class="bi bi-link-45deg ficon"></i>
                         <input type="text" class="fctrl" id="f-slug" placeholder="rapat-koordinasi"
@@ -51,13 +51,13 @@
 
             <!-- Deskripsi -->
             <div class="fgroup">
-                <div class="flabel"><i class="bi bi-card-text" style="color:var(--c-muted);font-size:.85rem;"></i> Deskripsi <span style="color:var(--c-muted);font-weight:500;font-size:.72rem;">(opsional)</span></div>
+                <label class="flabel" for="f-desc"><i class="bi bi-card-text" style="color:var(--c-muted);font-size:.85rem;"></i> Deskripsi <span style="color:var(--c-muted);font-weight:500;font-size:.72rem;">(opsional)</span></label>
                 <textarea class="fctrl no-icon" id="f-desc" rows="3" placeholder="Deskripsi singkat..."></textarea>
             </div>
 
             <!-- Status -->
             <div class="fgroup" id="grp-status">
-                <div class="flabel"><i class="bi bi-toggle-on" style="color:var(--c-muted);font-size:.85rem;"></i> Status <span class="req">*</span></div>
+                <label class="flabel" for="f-status"><i class="bi bi-toggle-on" style="color:var(--c-muted);font-size:.85rem;"></i> Status <span class="req">*</span></label>
                 <div class="fwrap">
                     <i class="bi bi-toggle-on ficon"></i>
                     <select class="fctrl" id="f-status" onchange="clearErr('grp-status')">
@@ -73,7 +73,7 @@
                 <div class="icon-picker-label"><i class="bi bi-emoji-smile" style="color:var(--c-primary);margin-right:4px;"></i> Pilih Ikon</div>
                 <div class="icon-search-wrap">
                     <i class="bi bi-search"></i>
-                    <input type="text" class="icon-search" id="iconSearch" placeholder="Cari ikon..." oninput="filterIcons(this.value)" />
+                    <input type="text" class="icon-search" id="iconSearch" placeholder="Cari ikon..." oninput="filterIcons(this.value)" aria-label="Cari ikon" />
                 </div>
                 <div class="icon-grid" id="iconGrid"></div>
             </div>

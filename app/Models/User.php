@@ -15,7 +15,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 
-#[Fillable(['unit_kerja_id', 'name', 'username', 'avatar', 'phone', 'gender', 'email', 'password', 'is_active', 'last_login_at', 'last_login_ip', 'google_id', 'google_token', 'google_refresh_token'])]
+#[Fillable(['unit_kerja_id', 'name', 'username', 'avatar', 'phone', 'nip', 'nik', 'jabatan', 'keterangan', 'gender', 'email', 'password', 'is_active', 'last_login_at', 'last_login_ip', 'google_id', 'google_token', 'google_refresh_token'])]
 #[Hidden(['password', 'remember_token', 'google_token', 'google_refresh_token'])]
 class User extends Authenticatable implements HasMedia
 {

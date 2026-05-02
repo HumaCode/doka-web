@@ -18,6 +18,8 @@ Setiap modul baru **WAJIB** mengikuti struktur 4-layer:
 2.  **Service**: Tempat logika bisnis utama. Mengolah data sebelum disimpan atau setelah diambil dari database.
 3.  **Repository**: Tempat query database (Eloquent). Memisahkan logika data dari logika bisnis.
 4.  **Interface**: Digunakan untuk binding Service dan Repository agar mendukung *Dependency Injection*.
+5.  **Performance Layer (Caching)**: Implementasikan caching pada level Service untuk data statistik atau data statis yang jarang berubah guna mengurangi beban query database.
+6.  **Database Scalability**: Gunakan **FULLTEXT Index** pada kolom yang sering dicari (nama, deskripsi, alamat) untuk menjamin kecepatan pencarian meskipun data mencapai jutaan baris.
 
 ## 📁 Struktur Folder Modul
 
@@ -54,6 +56,10 @@ Proses login dan registrasi di DokaWeb menggunakan standar keamanan tinggi:
 3.  **Form Validation**: Error harus ditampilkan di bawah input dengan class `.finvalid` berwarna merah (`#ef4444`).
 4.  **Loading State**: Gunakan spinner atau progress bar saat melakukan request AJAX.
 5.  **OTP Timer**: Sertakan countdown timer (misal: 3 menit) pada setiap proses verifikasi OTP dengan opsi "Kirim Ulang" yang muncul setelah timer habis.
+6.  **Accessibility (Standard A11y)**: Setiap halaman **WAJIB** lolos audit aksesibilitas Lighthouse:
+    *   **Labeling**: Gunakan `<label for="ID_INPUT">` untuk setiap elemen form. Jika label tidak ingin ditampilkan, gunakan class `.visually-hidden`.
+    *   **Accessible Names**: Semua tombol ikon (tutup modal, aksi tabel, navigasi) wajib memiliki atribut `aria-label` dan `title` yang deskriptif.
+    *   **Interactive State**: Gunakan `aria-current` atau class `.active` yang jelas pada elemen navigasi atau pagination.
 
 ## 🔗 Binding Service & Repository
 

@@ -44,19 +44,21 @@ class UserController extends Controller
 
         $users = $this->userService->getUsers($perPage, $filters);
 
-        // Single query for all stats (optimized from 4 separate queries)
-        $rawStats = \App\Models\User::selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN is_active = '1' THEN '1' ELSE '0' END) as active,
-            SUM(CASE WHEN is_active = '0' THEN '1' ELSE '0' END) as inactive
-        ")->first();
+        // Cache stats for 5 minutes to reduce DB load (Optimized Performance)
+        $stats = cache()->remember('user_stats_global', 300, function() {
+            $rawStats = \App\Models\User::selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN is_active = '1' THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN is_active = '0' THEN 1 ELSE 0 END) as inactive
+            ")->first();
 
-        $stats = [
-            'total'    => (int) $rawStats->total,
-            'active'   => (int) $rawStats->active,
-            'inactive' => (int) $rawStats->inactive,
-            'admin'    => \App\Models\User::role('admin')->count(),
-        ];
+            return [
+                'total'    => (int) ($rawStats->total ?? 0),
+                'active'   => (int) ($rawStats->active ?? 0),
+                'inactive' => (int) ($rawStats->inactive ?? 0),
+                'admin'    => \App\Models\User::role('admin')->count(),
+            ];
+        });
 
         $resource = PaginateResource::make($users, UserResource::class)->toArray(request());
         $resource['stats'] = $stats;
@@ -79,6 +81,7 @@ class UserController extends Controller
             unset($data['role']);
 
             $this->userService->createUser($data, $roleId);
+            cache()->forget('user_stats_global');
 
             return $this->success('Pengguna berhasil ditambahkan.');
         } catch (\Exception $e) {
@@ -119,6 +122,7 @@ class UserController extends Controller
             unset($data['role']);
 
             $this->userService->updateUser($id, $data, $roleId);
+            cache()->forget('user_stats_global');
 
             return $this->success('Data pengguna berhasil diperbarui.');
         } catch (\Exception $e) {
@@ -136,6 +140,7 @@ class UserController extends Controller
     {
         try {
             $this->userService->deleteUser($id);
+            cache()->forget('user_stats_global');
             return $this->success('Akun pengguna berhasil dihapus.');
         } catch (\Exception $e) {
             return $this->error('Gagal menghapus data: ' . $e->getMessage());
@@ -157,6 +162,7 @@ class UserController extends Controller
 
         try {
             $this->userService->deleteBulkUsers($request->ids);
+            cache()->forget('user_stats_global');
             return $this->success(count($request->ids) . ' akun pengguna berhasil dihapus.');
         } catch (\Exception $e) {
             return $this->error('Gagal menghapus data: ' . $e->getMessage());

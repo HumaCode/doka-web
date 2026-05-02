@@ -137,11 +137,11 @@ function renderCards(data, meta) {
                     ${d.status === 'active' ? 'Aktif' : 'Nonaktif'}
                 </span>
                 <div class="kat-actions">
-                    <button class="kat-action-btn kat-btn-edit" onclick="openEditModal('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                    <button class="kat-action-btn kat-btn-toggle" onclick="toggleStatus('${d.id}', '${d.nama_kategori}')" title="Toggle Status">
+                    <button class="kat-action-btn kat-btn-edit" onclick="openEditModal('${d.id}')" title="Edit Kategori" aria-label="Edit kategori ${d.nama_kategori}"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="kat-action-btn kat-btn-toggle" onclick="toggleStatus('${d.id}', '${d.nama_kategori}')" title="Ubah Status" aria-label="Ubah status ${d.nama_kategori}">
                         <i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i>
                     </button>
-                    <button class="kat-action-btn kat-btn-delete" onclick="deleteKategori('${d.id}', '${d.nama_kategori}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                    <button class="kat-action-btn kat-btn-delete" onclick="deleteKategori('${d.id}', '${d.nama_kategori}')" title="Hapus Kategori" aria-label="Hapus kategori ${d.nama_kategori}"><i class="bi bi-trash3-fill"></i></button>
                 </div>
             </div>
         </div>`).join(''));
@@ -183,9 +183,9 @@ function renderTable(data, meta) {
             </td>
             <td>
                 <div class="tbl-actions">
-                    <button class="tbl-btn tbl-edit" onclick="openEditModal('${d.id}')" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                    <button class="tbl-btn tbl-toggle" onclick="toggleStatus('${d.id}', '${d.nama_kategori}')" title="Toggle Status"><i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i></button>
-                    <button class="tbl-btn tbl-delete" onclick="deleteKategori('${d.id}', '${d.nama_kategori}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                    <button class="tbl-btn tbl-edit" onclick="openEditModal('${d.id}')" title="Edit Kategori" aria-label="Edit kategori ${d.nama_kategori}"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="tbl-btn tbl-toggle" onclick="toggleStatus('${d.id}', '${d.nama_kategori}')" title="Ubah Status" aria-label="Ubah status ${d.nama_kategori}"><i class="bi ${d.status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off'}"></i></button>
+                    <button class="tbl-btn tbl-delete" onclick="deleteKategori('${d.id}', '${d.nama_kategori}')" title="Hapus Kategori" aria-label="Hapus kategori ${d.nama_kategori}"><i class="bi bi-trash3-fill"></i></button>
                 </div>
             </td>
         </tr>`).join(''));
@@ -212,7 +212,7 @@ function renderPagination(meta, type) {
         return;
     }
 
-    let html = `<button class="page-btn" onclick="loadData(${meta.current_page - 1})" ${meta.current_page === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+    let html = `<button class="page-btn" onclick="loadData(${meta.current_page - 1})" ${meta.current_page === 1 ? 'disabled' : ''} aria-label="Halaman sebelumnya"><i class="bi bi-chevron-left"></i></button>`;
     
     for (let i = 1; i <= meta.last_page; i++) {
         if (i === 1 || i === meta.last_page || (i >= meta.current_page - 1 && i <= meta.current_page + 1)) {
@@ -222,7 +222,7 @@ function renderPagination(meta, type) {
         }
     }
 
-    html += `<button class="page-btn" onclick="loadData(${meta.current_page + 1})" ${meta.current_page === meta.last_page ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+    html += `<button class="page-btn" onclick="loadData(${meta.current_page + 1})" ${meta.current_page === meta.last_page ? 'disabled' : ''} aria-label="Halaman selanjutnya"><i class="bi bi-chevron-right"></i></button>`;
     wrap.html(html);
 }
 
