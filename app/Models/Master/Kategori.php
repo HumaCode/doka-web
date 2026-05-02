@@ -30,4 +30,12 @@ class Kategori extends Model
             'status' => 'string',
         ];
     }
+
+    /**
+     * Get the activities for the category.
+     */
+    public function kegiatans()
+    {
+        return $this->hasMany(\App\Models\Kegiatan\Kegiatan::class, 'kategori_id');
+    }
 }

@@ -22,8 +22,8 @@ class CategoryResource extends JsonResource
             'icon'           => $this->icon,
             'warna'          => $this->warna,
             'status'         => $this->status,
-            // 'kegiatan_count' => $this->kegiatan_count ?? 0, // Placeholder for future use
-            // 'foto_count'     => $this->foto_count ?? 0,     // Placeholder for future use
+            'kegiatan_count' => $this->kegiatans_count ?? 0,
+            'foto_count'     => $this->foto_count ?? 0,
             'created_at'     => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }

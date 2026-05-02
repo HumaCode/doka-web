@@ -128,8 +128,8 @@ function renderCards(data, meta) {
                 <div class="kat-desc">${d.deskripsi || '<span style="color:var(--c-border);font-style:italic;">Belum ada deskripsi</span>'}</div>
                 <code class="kat-slug">${d.slug}</code>
                 <div class="kat-stats">
-                    <div class="kat-stat"><i class="bi bi-calendar3-fill" style="color:var(--c-primary);"></i> <span>0</span> kegiatan</div>
-                    <div class="kat-stat"><i class="bi bi-images" style="color:var(--c-green);"></i> <span>0</span> foto</div>
+                    <div class="kat-stat"><i class="bi bi-calendar3-fill" style="color:var(--c-primary);"></i> <span>${d.kegiatan_count}</span> kegiatan</div>
+                    <div class="kat-stat"><i class="bi bi-images" style="color:var(--c-green);"></i> <span>${d.foto_count}</span> foto</div>
                 </div>
             </div>
             <div class="kat-card-footer">
@@ -174,8 +174,8 @@ function renderTable(data, meta) {
                 </div>
             </td>
             <td><code style="font-family:'DM Mono',monospace;font-size:.75rem;background:var(--c-surface2);padding:3px 8px;border-radius:5px;">${d.slug}</code></td>
-            <td style="font-weight:700;text-align:center;">0</td>
-            <td style="font-weight:700;text-align:center;">0</td>
+            <td style="font-weight:700;text-align:center;">${d.kegiatan_count}</td>
+            <td style="font-weight:700;text-align:center;">${d.foto_count}</td>
             <td>
                 <span class="kat-status ${d.status === 'active' ? 'kat-status-active' : 'kat-status-inactive'}">
                     ${d.status === 'active' ? 'Aktif' : 'Nonaktif'}

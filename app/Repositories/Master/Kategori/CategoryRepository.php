@@ -9,7 +9,13 @@ class CategoryRepository implements CategoryRepositoryInterface
 {
     public function getAllPagination(int $perPage, array $filters): LengthAwarePaginator
     {
-        $query = Kategori::query();
+        $query = Kategori::query()
+            ->withCount('kegiatans')
+            ->withCount(['kegiatans as foto_count' => function($q) {
+                $q->join('media', 'kegiatans.id', '=', 'media.model_id')
+                  ->where('media.model_type', \App\Models\Kegiatan\Kegiatan::class)
+                  ->where('media.collection_name', 'foto_kegiatan');
+            }]);
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
@@ -55,7 +61,10 @@ class CategoryRepository implements CategoryRepositoryInterface
         return [
             'total'    => Kategori::count(),
             'active'   => Kategori::where('status', 'active')->count(),
-            'inactive' => Kategori::where('status', 'inactive')->count(),
+            'kegiatan' => \App\Models\Kegiatan\Kegiatan::count(),
+            'foto'     => \Spatie\MediaLibrary\MediaCollections\Models\Media::where('model_type', \App\Models\Kegiatan\Kegiatan::class)
+                            ->where('collection_name', 'foto_kegiatan')
+                            ->count(),
         ];
     }
 }
