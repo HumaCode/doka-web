@@ -2,6 +2,7 @@
     <x-slot:title>DokaKegiatan — Semua Kegiatan</x-slot:title>
 
     @push('css')
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('assets/css/kegiatan.css') }}">
     @endpush
 
@@ -43,11 +44,11 @@
                 <div class="ms-lbl">Draft</div>
             </div>
         </div>
-        <div class="mini-stat ms4" title="Total foto yang sudah diunggah">
-            <div class="ms-icon"><i class="bi bi-images"></i></div>
+        <div class="mini-stat ms4" title="Kegiatan yang sedang berlangsung">
+            <div class="ms-icon"><i class="bi bi-play-circle-fill"></i></div>
             <div>
                 <div class="ms-val" id="sc4">0</div>
-                <div class="ms-lbl">Total Foto</div>
+                <div class="ms-lbl">Berjalan</div>
             </div>
         </div>
     </div>
@@ -71,11 +72,9 @@
         <label for="filterKategori" class="visually-hidden">Filter Kategori</label>
         <select class="toolbar-select" id="filterKategori" onchange="filterData()" aria-label="Filter berdasarkan kategori">
             <option value="">Semua Kategori</option>
-            <option value="Rapat">Rapat</option>
-            <option value="Pelatihan">Pelatihan</option>
-            <option value="Kunjungan">Kunjungan</option>
-            <option value="Sosialisasi">Sosialisasi</option>
-            <option value="Upacara">Upacara</option>
+            @foreach($categories as $cat)
+                <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
+            @endforeach
         </select>
 
         <label for="filterBulan" class="visually-hidden">Filter Bulan</label>
@@ -95,13 +94,17 @@
             <option value="12">Desember</option>
         </select>
 
+        <button class="btn-reset" onclick="resetFilters()" title="Reset Filter" aria-label="Reset semua filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+
         <div class="toolbar-right">
             <div class="view-toggle">
                 <button class="view-btn active" id="btnCardView" onclick="setView('card')" title="Card View" aria-label="Tampilan Grid"><i class="bi bi-grid-3x2-gap-fill"></i></button>
                 <button class="view-btn" id="btnTableView" onclick="setView('table')" title="Table View" aria-label="Tampilan Tabel"><i class="bi bi-table"></i></button>
             </div>
             <button class="btn-toolbar btn-export" onclick="exportData()" aria-label="Export data kegiatan"><i class="bi bi-download"></i> Export</button>
-            <a href="#" class="btn-toolbar btn-add" aria-label="Tambah kegiatan baru"><i class="bi bi-plus-lg"></i> Tambah Kegiatan</a>
+            <a href="{{ route('kegiatan.create') }}" class="btn-toolbar btn-add" aria-label="Tambah kegiatan baru"><i class="bi bi-plus-lg"></i> Tambah Kegiatan</a>
         </div>
     </div>
 
@@ -112,13 +115,19 @@
             <div class="empty-icon"><i class="bi bi-calendar-x"></i></div>
             <h3>Tidak ada kegiatan ditemukan</h3>
             <p>Coba ubah filter atau kata kunci pencarian.</p>
-            <a href="#" class="btn-toolbar btn-add" style="display:inline-flex;"><i class="bi bi-plus-lg"></i> Tambah Kegiatan Baru</a>
+            <a href="{{ route('kegiatan.create') }}" class="btn-toolbar btn-add" style="display:inline-flex;"><i class="bi bi-plus-lg"></i> Tambah Kegiatan Baru</a>
         </div>
     </div>
 
     <!-- ── TABLE VIEW ── -->
     <div id="tableViewWrap" style="display:none;" class="fade-up">
         <div class="table-card">
+            <!-- Bulk Actions Bar -->
+            <div class="bulk-bar" id="bulkActions">
+                <span class="bulk-count" id="selectedCountText">0 dipilih</span>
+                <button class="btn-bulk btn-bulk-del" onclick="bulkDelete()"><i class="bi bi-trash3-fill"></i> Hapus Terpilih</button>
+            </div>
+
             <div class="table-card-head">
                 <div>
                     <div class="table-card-title"><i class="bi bi-table"></i> Daftar Kegiatan</div>
@@ -129,7 +138,7 @@
                 <table class="kegiatan-table">
                     <thead>
                         <tr>
-                            <th style="width:44px;"><input type="checkbox" id="checkAll" onchange="toggleAllCheck(this)" style="width:16px;height:16px;accent-color:var(--c-primary);" aria-label="Pilih semua kegiatan" /></th>
+                            <th class="col-check"><input type="checkbox" id="checkAll" onchange="toggleAllCheck(this)" aria-label="Pilih semua kegiatan" /></th>
                             <th onclick="sortTable(0)">Kegiatan <i class="bi bi-chevron-expand sort-icon"></i></th>
                             <th onclick="sortTable(1)">Tanggal <i class="bi bi-chevron-expand sort-icon"></i></th>
                             <th onclick="sortTable(2)">Kategori <i class="bi bi-chevron-expand sort-icon"></i></th>
@@ -180,6 +189,7 @@
     </div>
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="{{ asset('assets/js/kegiatan.js') }}"></script>
     @endpush
 </x-master-layout>

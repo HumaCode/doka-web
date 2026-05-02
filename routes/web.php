@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Master\KegiatanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -9,11 +10,13 @@ Route::get('/', function () {
 });
 
 Route::get('/pending-activation', [\App\Http\Controllers\Auth\AccountActivationController::class, 'index'])->middleware('auth')->name('pending.activation');
-Route::post('/pending-activation/submit', [\App\Http\Controllers\Auth\AccountActivationController::class, 'submit'])->middleware('auth')->name('pending.activation.submit');
 Route::get('/admin/quick-login/{user}', [\App\Http\Controllers\Auth\AccountActivationController::class, 'quickLogin'])->name('admin.quick-login');
+Route::post('/pending-activation/submit', [\App\Http\Controllers\Auth\AccountActivationController::class, 'submit'])->middleware('auth')->name('pending.activation.submit');
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Pengguna
     Route::get('/pengguna', [\App\Http\Controllers\Master\UserController::class, 'index'])->name('pengguna.index');
     Route::post('/pengguna', [\App\Http\Controllers\Master\UserController::class, 'store'])->name('pengguna.store');
     Route::get('/pengguna/getallpagination', [\App\Http\Controllers\Master\UserController::class, 'getAllPagination'])->name('pengguna.getallpagination');
@@ -43,9 +46,14 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::delete('/unit-kerja/{id}', [\App\Http\Controllers\Master\UnitKerjaController::class, 'destroy'])->name('unit-kerja.destroy');
 
     // Kegiatan
-    Route::get('/kegiatan', [\App\Http\Controllers\Master\KegiatanController::class, 'index'])->name('kegiatan.index');
-    Route::get('/kegiatan/tambah', [\App\Http\Controllers\Master\KegiatanController::class, 'create'])->name('kegiatan.create');
-    Route::get('/kegiatan/getallpagination', [\App\Http\Controllers\Master\KegiatanController::class, 'getAllPagination'])->name('kegiatan.getallpagination');
+    Route::prefix('kegiatan')->name('kegiatan.')->group(function() {
+        Route::get('/', [KegiatanController::class, 'index'])->name('index');
+        Route::get('/data', [KegiatanController::class, 'getAllPagination'])->name('getData');
+        Route::get('/tambah', [KegiatanController::class, 'create'])->name('create');
+        Route::post('/bulk-delete', [KegiatanController::class, 'bulkDelete'])->name('bulkDelete');
+        Route::delete('/{id}', [KegiatanController::class, 'destroy'])->name('destroy');
+        Route::get('/getallpagination', [KegiatanController::class, 'getAllPagination'])->name('getallpagination'); // Compatibility
+    });
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

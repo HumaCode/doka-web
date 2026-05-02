@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Models\Master;
+
+use App\Models\User;
+use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+#[Fillable([
+    'judul', 
+    'tanggal', 
+    'waktu', 
+    'lokasi', 
+    'kategori_id', 
+    'unit_id', 
+    'uraian', 
+    'jumlah_peserta', 
+    'narasumber', 
+    'status', 
+    'petugas_id', 
+    'tags'
+])]
+class Kegiatan extends Model implements HasMedia
+{
+    use HasFactory, HasUlids, InteractsWithMedia;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'tanggal' => 'date',
+            'tags' => 'array',
+            'jumlah_peserta' => 'integer',
+        ];
+    }
+
+    /**
+     * Relationship with Category
+     */
+    public function kategori(): BelongsTo
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    /**
+     * Relationship with Unit Kerja
+     */
+    public function unitKerja(): BelongsTo
+    {
+        return $this->belongsTo(UnitKerja::class, 'unit_id');
+    }
+
+    /**
+     * Relationship with User (Petugas)
+     */
+    public function petugas(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'petugas_id');
+    }
+
+    /**
+     * Register Media Collections
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('foto_kegiatan')
+             ->useFallbackUrl(asset('assets/img/placeholder-kegiatan.jpg'))
+             ->useFallbackPath(public_path('assets/img/placeholder-kegiatan.jpg'));
+
+        $this->addMediaCollection('lampiran_kegiatan');
+    }
+}
