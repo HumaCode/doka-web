@@ -16,15 +16,25 @@
 ### 4. General UI Updates
 - **Export Alert**: Menambahkan notifikasi "Fitur Segera Hadir" menggunakan `DKA.notify` pada tombol Export di halaman **Pengguna** dan **Unit Kerja** untuk pengalaman user yang lebih konsisten.
 
+### 5. Galeri Foto Module Implementation
+- **Architecture**: Menerapkan pola **Controller-Service-Repository-Resource** untuk pemisahan logika yang bersih.
+- **UI/UX**: 
+    - Implementasi **Horizontal Masonry** (Horizontal Flow + Masonry Look) menggunakan CSS Grid.
+    - Integrasi **Select2** pada filter dan modal upload.
+    - Fitur **Live Preview** dan **Drag & Drop** pada modal upload foto.
+- **Features**: 
+    - **ZIP Download**: Pengelompokan foto otomatis per folder kegiatan dalam satu file ZIP.
+    - **Bulk Actions**: Support hapus massal dan unduh massal (selected items).
+    - **Stable Stats**: Menstabilkan angka statistik agar konsisten saat reload menggunakan logika deterministik.
+
 ## 📄 Files Modified
-- `database/factories/Kegiatan/KegiatanFactory.php`
-- `app/Providers/AppServiceProvider.php`
-- `resources/views/layouts/master.blade.php`
-- `resources/views/layouts/partials/sidebar.blade.php`
-- `resources/views/pages/kegiatan/index.blade.php`
-- `resources/views/pages/pengguna/index.blade.php`
-- `resources/views/pages/unit-kerja/index.blade.php`
-- `public/assets/js/kegiatan.js`
-- `public/assets/js/pengguna.js`
-- `public/assets/js/unit-kerja.js`
-- `.antigravity/guidelines.md`
+- `app/Http/Controllers/Kegiatan/GaleriController.php`
+- `app/Services/Kegiatan/GaleriService.php`
+- `app/Repositories/Kegiatan/GaleriRepository.php`
+- `app/Http/Resources/Galeri/GaleriResource.php`
+- `app/Repositories/Kegiatan/GaleriRepositoryInterface.php`
+- `app/Services/Kegiatan/GaleriServiceInterface.php`
+- `resources/views/pages/galery/index.blade.php`
+- `routes/web.php`
+- `app/Models/Kegiatan/Kegiatan.php`
+- `.antigravity/galeri-module.md`

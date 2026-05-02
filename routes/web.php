@@ -61,7 +61,10 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     });
 
     // Galeri
-    Route::get('/galeri', [\App\Http\Controllers\Galeri\GaleriController::class, 'index'])->name('galeri.index');
+    Route::get('/galeri', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'index'])->name('galeri.index');
+    Route::post('/galeri/download-zip', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'downloadZip'])->name('galeri.download-zip');
+    Route::delete('/galeri', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'destroy'])->name('galeri.destroy');
+    Route::post('/galeri/upload', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'store'])->name('galeri.store');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

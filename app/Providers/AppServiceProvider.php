@@ -30,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
         // Kegiatan
         $this->app->bind(\App\Repositories\Kegiatan\KegiatanRepositoryInterface::class, \App\Repositories\Kegiatan\KegiatanRepository::class);
         $this->app->bind(\App\Services\Kegiatan\KegiatanServiceInterface::class, \App\Services\Kegiatan\KegiatanService::class);
+
+        // Galeri
+        $this->app->bind(\App\Repositories\Kegiatan\GaleriRepositoryInterface::class, \App\Repositories\Kegiatan\GaleriRepository::class);
+        $this->app->bind(\App\Services\Kegiatan\GaleriServiceInterface::class, \App\Services\Kegiatan\GaleriService::class);
     }
 
     /**

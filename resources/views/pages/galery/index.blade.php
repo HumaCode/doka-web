@@ -1,5 +1,6 @@
 <x-master-layout title="Galeri Foto — DokaKegiatan">
     @push('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         /* ═══════════════════════════════════
            GALLERY SPECIFIC STYLES
@@ -31,12 +32,73 @@
         .toolbar-select { padding:10px 14px; border:1.5px solid var(--c-border); border-radius:10px; font-size:.875rem; font-family:'Plus Jakarta Sans',sans-serif; background:#fff; color:var(--c-text-2); outline:none; cursor:pointer; transition:border-color var(--trans); }
         .toolbar-select:focus { border-color:var(--c-primary); }
         .toolbar-right { margin-left:auto; display:flex; gap:8px; align-items:center; }
-        .btn-tb { display:inline-flex; align-items:center; gap:7px; padding:10px 16px; border-radius:10px; font-size:.875rem; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; border:none; transition:transform var(--trans),box-shadow var(--trans); }
-        .btn-tb:hover { transform:translateY(-1px); }
-        .btn-upload { background:linear-gradient(135deg,var(--c-primary),var(--c-purple)); color:#fff; box-shadow:0 4px 12px rgba(79,70,229,.3); }
-        .btn-upload:hover { box-shadow:0 6px 18px rgba(79,70,229,.45); }
+        .btn-toolbar { display:inline-flex; align-items:center; gap:7px; padding:10px 16px; border-radius:10px; font-size:.875rem; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; border:none; transition:transform var(--trans),box-shadow var(--trans); background:transparent; }
+        .btn-toolbar:hover { transform:translateY(-1px); }
+        .btn-toolbar.btn-add { background:linear-gradient(135deg,var(--c-primary),#7c3aed) !important; color:#fff !important; box-shadow:0 4px 12px rgba(79,70,229,0.3); }
+        .btn-toolbar.btn-add:hover { box-shadow:0 6px 18px rgba(79,70,229,0.45); }
         .btn-outline { background:#fff; color:var(--c-text-2); border:1.5px solid var(--c-border); }
         .btn-outline:hover { border-color:var(--c-primary); color:var(--c-primary); background:#f5f3ff; }
+
+        .btn-reset {
+            background: #fff;
+            color: var(--c-muted);
+            border: 1.5px solid var(--c-border);
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all var(--trans);
+        }
+        .btn-reset:hover {
+            border-color: var(--c-orange);
+            color: var(--c-orange);
+            background: #fff7ed;
+        }
+
+        /* Premium Select2 Styling */
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1.5px solid var(--c-border);
+            border-radius: 10px;
+            background-color: #fff;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: .875rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+            right: 10px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--c-text-2);
+            padding-left: 5px;
+        }
+        .select2-dropdown {
+            border: 1px solid var(--c-border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            z-index: 1051;
+        }
+        .select2-search--dropdown .select2-search__field {
+            border: 1.5px solid var(--c-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--c-primary);
+        }
 
         /* View toggle */
         .view-toggle { display:flex; gap:0; border:1.5px solid var(--c-border); border-radius:10px; overflow:hidden; background:#fff; }
@@ -46,18 +108,19 @@
 
         /* ─── Grid View ─── */
         .photo-grid {
-          columns: 4;
-          column-gap: 16px;
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          grid-auto-rows: 10px;
+          gap: 14px;
           animation: fadeUp .45s ease .15s both;
         }
-        @media(max-width:1200px) { .photo-grid { columns: 3; } }
-        @media(max-width:768px)  { .photo-grid { columns: 2; } }
-        @media(max-width:480px)  { .photo-grid { columns: 1; } }
+        @media(max-width:1400px) { .photo-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media(max-width:1100px) { .photo-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(max-width:768px)  { .photo-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width:480px)  { .photo-grid { grid-template-columns: 1fr; } }
 
         .photo-item {
-          break-inside: avoid;
-          margin-bottom: 16px;
-          border-radius: 18px; /* Softer rounded corners like in image */
+          border-radius: 18px;
           overflow: hidden;
           position: relative;
           cursor: pointer;
@@ -70,6 +133,7 @@
 
         .photo-content {
           width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -200,6 +264,12 @@
         .modal-body { padding:24px; max-height:calc(90vh - 140px); overflow-y:auto; }
         .modal-foot { padding:16px 24px; border-top:1px solid var(--c-border); display:flex; gap:10px; justify-content:flex-end; background:var(--c-surface2); border-radius:0 0 var(--radius-lg) var(--radius-lg); }
 
+        .btn-m-primary { background:linear-gradient(135deg,var(--c-primary),#7c3aed) !important; color:#fff !important; border:none; padding:10px 24px; border-radius:10px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:all var(--trans); box-shadow:0 4px 12px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:8px; }
+        .btn-m-primary:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(79,70,229,0.45); }
+        .btn-m-primary:disabled { opacity:.7; cursor:not-allowed; }
+        .btn-m-secondary { background:#fff; color:var(--c-text-2); border:1.5px solid var(--c-border); padding:10px 24px; border-radius:10px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:all var(--trans); display:inline-flex; align-items:center; gap:8px; }
+        .btn-m-secondary:hover { background:var(--c-surface2); border-color:var(--c-muted); color:var(--c-text); }
+
         .drop-zone { border:2px dashed var(--c-border); border-radius:14px; padding:36px 24px; text-align:center; cursor:pointer; transition:all var(--trans); background:var(--c-surface2); position:relative; margin-bottom:16px; }
         .drop-zone:hover, .drop-zone.drag-over { border-color:var(--c-primary); background:rgba(79,70,229,.04); transform:scale(1.01); }
         .drop-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
@@ -239,10 +309,10 @@
 
     <!-- Stats -->
     <div class="mini-stats">
-        <div class="mini-stat ms1"><div class="ms-icon"><i class="bi bi-images"></i></div><div><div class="ms-val" id="sc1">0</div><div class="ms-lbl">Total Foto</div></div></div>
-        <div class="mini-stat ms2"><div class="ms-icon"><i class="bi bi-calendar3-fill"></i></div><div><div class="ms-val" id="sc2">0</div><div class="ms-lbl">Dari Kegiatan</div></div></div>
-        <div class="mini-stat ms3"><div class="ms-icon"><i class="bi bi-hdd-fill"></i></div><div><div class="ms-val" id="sc3">0</div><div class="ms-lbl">Total Ukuran (MB)</div></div></div>
-        <div class="mini-stat ms4"><div class="ms-icon"><i class="bi bi-calendar-week-fill"></i></div><div><div class="ms-val" id="sc4">0</div><div class="ms-lbl">Upload Bulan Ini</div></div></div>
+        <div class="mini-stat ms1"><div class="ms-icon"><i class="bi bi-images"></i></div><div><div class="ms-val" id="sc1">{{ $stats['total_foto'] }}</div><div class="ms-lbl">Total Foto</div></div></div>
+        <div class="mini-stat ms2"><div class="ms-icon"><i class="bi bi-calendar3-fill"></i></div><div><div class="ms-val" id="sc2">{{ $stats['total_kegiatan'] }}</div><div class="ms-lbl">Dari Kegiatan</div></div></div>
+        <div class="mini-stat ms3"><div class="ms-icon"><i class="bi bi-hdd-fill"></i></div><div><div class="ms-val" id="sc3">{{ $stats['total_size'] }}</div><div class="ms-lbl">Total Ukuran (MB)</div></div></div>
+        <div class="mini-stat ms4"><div class="ms-icon"><i class="bi bi-calendar-week-fill"></i></div><div><div class="ms-val" id="sc4">{{ $stats['upload_bulan_ini'] }}</div><div class="ms-lbl">Upload Bulan Ini</div></div></div>
     </div>
 
     <!-- Toolbar -->
@@ -253,21 +323,26 @@
         </div>
         <select class="toolbar-select" id="filterKegiatan" onchange="filterData()">
             <option value="">Semua Kegiatan</option>
+            @foreach($kegiatans as $k)
+                <option value="{{ $k->id }}">{{ Str::limit($k->judul, 40) }}</option>
+            @endforeach
         </select>
         <select class="toolbar-select" id="filterUnit" onchange="filterData()">
             <option value="">Semua Unit</option>
-            <option value="Diskominfo">Diskominfo</option>
-            <option value="Disdik">Disdik</option>
-            <option value="Dinkes">Dinkes</option>
-            <option value="Humas">Humas</option>
+            @foreach($units as $u)
+                <option value="{{ $u->nama_instansi }}">{{ $u->nama_instansi }}</option>
+            @endforeach
         </select>
+        <button class="btn-reset" onclick="resetFilters()" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
         <div class="toolbar-right">
             <div class="view-toggle">
                 <button class="vbtn active" id="btnGrid" onclick="setView('grid')" title="Grid View"><i class="bi bi-grid-3x2-gap-fill"></i></button>
                 <button class="vbtn" id="btnList" onclick="setView('list')" title="List View"><i class="bi bi-list-ul"></i></button>
             </div>
-            <button class="btn-tb btn-outline" onclick="downloadAll()"><i class="bi bi-download"></i> Unduh Semua</button>
-            <button class="btn-tb btn-upload" onclick="openUploadModal()"><i class="bi bi-cloud-upload-fill"></i> Upload Foto</button>
+            <button class="btn-toolbar btn-outline" onclick="downloadAll()"><i class="bi bi-download"></i> Unduh Semua</button>
+            <button class="btn-toolbar btn-add" onclick="openUploadModal()"><i class="bi bi-plus-lg"></i> Upload Foto</button>
         </div>
     </div>
 
@@ -279,10 +354,11 @@
             <h3>Tidak ada foto ditemukan</h3>
             <p>Coba ubah filter atau upload foto baru.</p>
         </div>
-        <div class="load-more-wrap" id="loadMoreWrap" style="text-align:center; margin-top:20px;">
+        <div class="load-more-wrap" id="loadMoreWrap" style="text-align:center; margin-top:24px;">
             <button class="btn-load-more" id="btnLoadMore" onclick="loadMore()">
                 <i class="bi bi-arrow-down-circle lm-icon"></i>
-                Muat Lebih Banyak
+                <span class="spinner-border spinner-border-sm d-none" id="lmSpinner"></span>
+                <span id="lmText">Muat Lebih Banyak</span>
             </button>
         </div>
     </div>
@@ -347,6 +423,9 @@
                             <i class="bi bi-calendar3-fill f-icon"></i>
                             <select class="fctrl" id="f-kegiatan">
                                 <option value="">-- Pilih Kegiatan --</option>
+                                @foreach($kegiatans as $k)
+                                    <option value="{{ $k->id }}">{{ $k->judul }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -360,13 +439,14 @@
                 </div>
             </div>
             <div class="modal-foot">
-                <button class="btn-m-secondary" onclick="closeModal()">Batal</button>
-                <button class="btn-m-primary" id="btnUpload" onclick="doUpload()">Upload Sekarang</button>
+                <button class="btn-m-secondary" onclick="closeModal()"><i class="bi bi-x-lg"></i> Batal</button>
+                <button class="btn-m-primary" id="btnUpload" onclick="doUpload()"><i class="bi bi-cloud-arrow-up-fill"></i> Upload Sekarang</button>
             </div>
         </div>
     </div>
 
     @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         const GRADS = [
             'linear-gradient(135deg,#4f46e5,#7c3aed)', 'linear-gradient(135deg,#10b981,#06b6d4)',
@@ -376,50 +456,60 @@
         ];
         const EMOJIS = ['📷','📸','🎞','🖼','📅','👥','🏛','📋'];
         
-        let ALL_PHOTOS = [];
-        let filteredPhotos = [];
+        let ALL_PHOTOS = @json($photos);
+        let filteredPhotos = [...ALL_PHOTOS];
         let visibleCount = 24;
         let selectedIds = new Set();
         let currentView = 'grid';
         let lbIndex = 0;
         let lbPhotos = [];
+        let selectedFiles = [];
 
-        // Mock data generator
-        function initMockData() {
-            for(let i=1; i<=60; i++) {
-                ALL_PHOTOS.push({
-                    id: i,
-                    kegiatan: `Kegiatan Contoh #${Math.ceil(i/5)}`,
-                    kegiatanId: Math.ceil(i/5),
-                    unit: ['Diskominfo', 'Disdik', 'Dinkes', 'Humas'][i%4],
-                    bulan: '04',
-                    tanggal: 'Mei 2024',
-                    caption: `Dokumentasi foto ke-${i}`,
-                    emoji: EMOJIS[i%8],
-                    gradId: i%8,
-                    isMain: i%10 === 1,
-                    size: (Math.random() * 3 + 0.5).toFixed(1)
-                });
-            }
-            filteredPhotos = [...ALL_PHOTOS];
+        // Data initialization
+        function initGallery() {
+            // Initialize Select2
+            $('#filterKegiatan').select2({
+                placeholder: "Cari Kegiatan...",
+                allowClear: true,
+                width: '280px'
+            }).on('change', filterData);
+
+            $('#filterUnit').select2({
+                placeholder: "Semua Unit",
+                allowClear: true,
+                width: '180px'
+            }).on('change', filterData);
+
+            // Initialize Modal Select2
+            $('#f-kegiatan').select2({
+                dropdownParent: $('#modalUpload'),
+                placeholder: "-- Pilih Kegiatan --",
+                width: '100%'
+            });
+
             render();
             updateStats();
-            
-            // Fill kegiatan select
-            const kSel = document.getElementById('filterKegiatan');
-            const fKSel = document.getElementById('f-kegiatan');
-            for(let i=1; i<=12; i++) {
-                const opt = `<option value="${i}">Kegiatan Contoh #${i}</option>`;
-                kSel.insertAdjacentHTML('beforeend', opt);
-                fKSel.insertAdjacentHTML('beforeend', opt);
-            }
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            $('#filterKegiatan').val(null).trigger('change');
+            $('#filterUnit').val(null).trigger('change');
+            filterData();
         }
 
         function updateStats() {
+            const now = new Date();
+            const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+            
+            const uniqueKegiatan = new Set(ALL_PHOTOS.map(p => p.kegiatan_id)).size;
+            const totalSize = ALL_PHOTOS.reduce((sum, p) => sum + parseFloat(p.size || 0), 0);
+            const monthlyUploads = ALL_PHOTOS.filter(p => p.bulan == currentMonth).length;
+
             document.getElementById('sc1').textContent = ALL_PHOTOS.length;
-            document.getElementById('sc2').textContent = 12;
-            document.getElementById('sc3').textContent = Math.round(ALL_PHOTOS.reduce((s,p)=>s+parseFloat(p.size),0));
-            document.getElementById('sc4').textContent = ALL_PHOTOS.length;
+            document.getElementById('sc2').textContent = uniqueKegiatan;
+            document.getElementById('sc3').textContent = Math.round(totalSize);
+            document.getElementById('sc4').textContent = monthlyUploads;
         }
 
         function filterData() {
@@ -453,20 +543,29 @@
             document.getElementById('emptyGrid').classList.add('d-none');
             
             grid.innerHTML = slice.map((p, i) => {
-                const aspect = getAspect(i);
+                const hasImg = p.url && !p.url.includes('placeholder');
+                
+                // Horizontal masonry logic - Smaller spans
+                const spans = [18, 14, 22, 16, 20, 15, 24, 19];
+                const s = spans[i % spans.length];
+
                 return `
-                <div class="photo-item ${selectedIds.has(p.id)?'checked':''}" data-id="${p.id}" onclick="handleCardClick(event, ${i}, ${p.id})">
-                    <div class="photo-content" style="background:${GRADS[p.gradId]}; padding-bottom:${aspect}%;">
-                        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
-                            <span class="photo-emoji">${p.emoji}</span>
-                        </div>
+                <div class="photo-item ${selectedIds.has(p.id)?'checked':''}" data-id="${p.id}" onclick="handleCardClick(event, ${i}, ${p.id})" style="grid-row-end: span ${s};">
+                    <div class="photo-content" style="background:${GRADS[p.gradId]};">
+                        ${hasImg ? 
+                            `<img src="${p.url}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">` : 
+                            `<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                                <span class="photo-emoji">${p.emoji}</span>
+                            </div>`
+                        }
                     </div>
                     ${p.isMain ? '<span class="photo-main-badge"><i class="bi bi-star-fill"></i> Utama</span>' : ''}
                     <div class="photo-check-wrap"></div>
                     <div class="photo-overlay">
                         <div class="photo-overlay-actions" onclick="event.stopPropagation()">
-                            <button class="photo-ov-btn pob-view" onclick="openLightbox(${i})"><i class="bi bi-eye-fill"></i></button>
-                            <button class="photo-ov-btn pob-delete" onclick="deletePhoto(${p.id})"><i class="bi bi-trash3-fill"></i></button>
+                            <button class="photo-ov-btn pob-view" onclick="openLightbox(${i})" title="Lihat"><i class="bi bi-eye-fill"></i></button>
+                            <button class="photo-ov-btn pob-dl" onclick="downloadPhoto('${p.id}')" title="Unduh"><i class="bi bi-download"></i></button>
+                            <button class="photo-ov-btn pob-delete" onclick="deletePhoto('${p.id}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
                         </div>
                         <div class="photo-overlay-info">
                             <div class="photo-kegiatan">${p.kegiatan}</div>
@@ -490,22 +589,29 @@
             document.getElementById('listCount').textContent = `${filteredPhotos.length} foto`;
             lbPhotos = filteredPhotos;
             
-            list.innerHTML = filteredPhotos.map((p, i) => `
+            list.innerHTML = filteredPhotos.map((p, i) => {
+                const hasImg = p.url && !p.url.includes('placeholder');
+                return `
                 <div class="list-row" onclick="openLightbox(${i})">
-                    <div class="list-thumb-placeholder" style="background:${GRADS[p.gradId]};">${p.emoji}</div>
+                    ${hasImg ? 
+                        `<img src="${p.url}" class="list-thumb-placeholder" style="object-fit:cover;">` : 
+                        `<div class="list-thumb-placeholder" style="background:${GRADS[p.gradId]};">${p.emoji}</div>`
+                    }
                     <div class="list-info">
                         <div class="list-title">${p.kegiatan}</div>
                         <div class="list-meta">
                             <span><i class="bi bi-calendar3"></i> ${p.tanggal}</span>
                             <span><i class="bi bi-building"></i> ${p.unit}</span>
+                            <span><i class="bi bi-hdd"></i> ${p.size} MB</span>
                         </div>
                     </div>
                     <div class="list-actions" onclick="event.stopPropagation()">
-                        <button class="list-btn lb-view" onclick="openLightbox(${i})"><i class="bi bi-eye-fill"></i></button>
-                        <button class="list-btn lb-delete" onclick="deletePhoto(${p.id})"><i class="bi bi-trash3-fill"></i></button>
+                        <button class="list-btn lb-view" onclick="openLightbox(${i})" title="Lihat"><i class="bi bi-eye-fill"></i></button>
+                        <button class="list-btn lb-dl" onclick="downloadPhoto('${p.id}')" title="Unduh"><i class="bi bi-download"></i></button>
+                        <button class="list-btn lb-delete" onclick="deletePhoto('${p.id}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function setView(v) {
@@ -518,8 +624,25 @@
         }
 
         function loadMore() {
-            visibleCount += 24;
-            renderGrid();
+            const btn = document.getElementById('btnLoadMore');
+            const spinner = document.getElementById('lmSpinner');
+            const icon = btn.querySelector('.lm-icon');
+            const text = document.getElementById('lmText');
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            icon.classList.add('d-none');
+            text.textContent = 'Memuat...';
+
+            setTimeout(() => {
+                visibleCount += 24;
+                renderGrid();
+                
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                text.textContent = 'Muat Lebih Banyak';
+            }, 800);
         }
 
         function handleCardClick(e, idx, id) {
@@ -542,7 +665,15 @@
         function openLightbox(idx) {
             lbIndex = idx;
             const p = lbPhotos[idx];
-            document.getElementById('lbImg').src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><rect width='100%' height='100%' fill='gray'/><text x='50%' y='50%' font-size='100' text-anchor='middle'>${p.emoji}</text></svg>`;
+            const hasImg = p.url && !p.url.includes('placeholder');
+            const imgEl = document.getElementById('lbImg');
+            
+            if(hasImg) {
+                imgEl.src = p.url;
+            } else {
+                imgEl.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><rect width='100%' height='100%' fill='gray'/><text x='50%' y='50%' font-size='100' text-anchor='middle'>${p.emoji}</text></svg>`;
+            }
+            
             document.getElementById('lbKegiatan').textContent = p.kegiatan;
             document.getElementById('lbDate').textContent = p.tanggal;
             document.getElementById('lbCaption').textContent = p.caption;
@@ -560,18 +691,220 @@
 
         function openUploadModal() { document.getElementById('modalUpload').classList.add('show'); }
         function closeModal() { document.getElementById('modalUpload').classList.remove('show'); }
+
+        function handleFiles(files) {
+            selectedFiles = [...selectedFiles, ...Array.from(files)];
+            renderUploadPreview();
+        }
+
+        function renderUploadPreview() {
+            const container = document.getElementById('uploadPreview');
+            container.innerHTML = selectedFiles.map((file, idx) => {
+                const url = URL.createObjectURL(file);
+                return `
+                    <div class="up-item">
+                        <img src="${url}">
+                        <button class="up-item-rm" onclick="removeSelectedFile(${idx})"><i class="bi bi-x"></i></button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeSelectedFile(idx) {
+            selectedFiles.splice(idx, 1);
+            renderUploadPreview();
+        }
+
+        function dzOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+        function dzLeave(e) { e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); }
+        function dzDrop(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        }
+
+        async function doUpload() {
+            const kid = document.getElementById('f-kegiatan').value;
+            const ket = document.getElementById('f-keterangan').value;
+
+            if (!kid) return DKA.notify({ type:'warning', message:'Pilih kegiatan terlebih dahulu' });
+            if (selectedFiles.length === 0) return DKA.notify({ type:'warning', message:'Pilih foto yang akan diunggah' });
+
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('kegiatan_id', kid);
+            formData.append('keterangan', ket);
+            selectedFiles.forEach(file => formData.append('photos[]', file));
+
+            const btn = document.getElementById('btnUpload');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengunggah...';
+
+            try {
+                const response = await fetch('{{ route("galeri.store") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const res = await response.json();
+                if (!response.ok) throw new Error(res.message || 'Gagal mengunggah foto');
+
+                // Update local state
+                ALL_PHOTOS = [...res.data, ...ALL_PHOTOS];
+                filterData();
+                updateStats();
+                
+                DKA.toast({ type:'success', title:'Berhasil', message: res.message });
+                closeModal();
+                
+                // Reset form
+                selectedFiles = [];
+                document.getElementById('uploadPreview').innerHTML = '';
+                document.getElementById('f-keterangan').value = '';
+                $('#f-kegiatan').val(null).trigger('change');
+
+            } catch (e) {
+                DKA.notify({ type: 'error', title: 'Error', message: e.message });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
         
-        function deletePhoto(id) {
-            DKA.deleteConfirm({ title: 'Hapus Foto?', message: 'Foto akan dihapus permanen.' }).then(r => {
-                if(r) {
-                    ALL_PHOTOS = ALL_PHOTOS.filter(p => p.id !== id);
-                    filterData();
-                    DKA.toast({ type:'success', title:'Terhapus', message:'Foto berhasil dihapus' });
+        async function downloadZip(type) {
+            const loader = DKA.loading({ title: 'Menyiapkan ZIP...', message: 'Mengumpulkan foto per folder kegiatan.', style: 'dots' });
+            
+            let body = {
+                _token: '{{ csrf_token() }}'
+            };
+
+            if (type === 'selected') {
+                body.ids = Array.from(selectedIds);
+            } else {
+                body.filters = {
+                    search: document.getElementById('searchInput').value,
+                    kegiatan_id: document.getElementById('filterKegiatan').value,
+                    unit: document.getElementById('filterUnit').value
+                };
+            }
+
+            try {
+                const response = await fetch('{{ route("galeri.download-zip") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message || 'Gagal menyiapkan ZIP');
                 }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Galeri-Doka-${new Date().getTime()}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                loader.close();
+                
+                if (type === 'selected') clearSelection();
+                
+                DKA.toast({ type:'success', title:'Berhasil', message:'ZIP foto berhasil diunduh' });
+            } catch (e) {
+                loader.close();
+                DKA.notify({ type: 'error', title: 'Error', message: e.message });
+            }
+        }
+
+        function downloadAll() { downloadZip('all'); }
+        function downloadSelected() { downloadZip('selected'); }
+
+        function downloadPhoto(id) {
+            const p = ALL_PHOTOS.find(x => x.id == id);
+            if(!p) return;
+            if(p.url) {
+                const link = document.createElement('a');
+                link.href = p.url;
+                // Generate a clean filename based on the activity title
+                const fileName = `DOKA-${p.kegiatan.substring(0,30).replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+                link.setAttribute('download', fileName);
+                link.setAttribute('target', '_blank');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                DKA.notify({ type:'info', title:'Mock Download', message:`Mengunduh placeholder untuk: ${p.kegiatan}` });
+            }
+        }
+
+        async function deletePhotosApi(ids) {
+            const loader = DKA.loading({ title: 'Menghapus...', message: 'Mohon tunggu sebentar.', style: 'dots' });
+            
+            try {
+                const response = await fetch('{{ route("galeri.destroy") }}', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                });
+
+                const res = await response.json();
+                loader.close();
+
+                if (!response.ok) throw new Error(res.message || 'Gagal menghapus foto');
+
+                // Update local state
+                ALL_PHOTOS = ALL_PHOTOS.filter(p => !ids.includes(p.id));
+                ids.forEach(id => selectedIds.delete(id));
+                
+                if (selectedIds.size === 0) {
+                    document.getElementById('selBar').classList.remove('show');
+                } else {
+                    document.getElementById('selCountText').textContent = selectedIds.size;
+                }
+
+                filterData();
+                updateStats();
+                DKA.toast({ type:'success', title:'Terhapus', message: res.message });
+            } catch (e) {
+                loader.close();
+                DKA.notify({ type: 'error', title: 'Error', message: e.message });
+            }
+        }
+
+        function deletePhoto(id) {
+            DKA.deleteConfirm({ 
+                title: 'Hapus Foto?', 
+                message: 'Foto akan dihapus permanen dari sistem.',
+                confirm: 'Ya, Hapus'
+            }).then(r => {
+                if(r) deletePhotosApi([id]);
             });
         }
 
-        initMockData();
+        function deleteSelected() {
+            if(selectedIds.size === 0) return;
+            DKA.deleteConfirm({ 
+                title: `Hapus ${selectedIds.size} Foto?`, 
+                message: 'Foto yang dipilih akan dihapus permanen.',
+                confirm: 'Ya, Hapus Semua'
+            }).then(r => {
+                if(r) deletePhotosApi(Array.from(selectedIds));
+            });
+        }
+
+        initGallery();
     </script>
     @endpush
 </x-master-layout>
