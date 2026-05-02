@@ -315,6 +315,18 @@ function submitForm(isDraft = false) {
     const oldHtml = btn.html();
     btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Menyimpan...');
 
+    const loader = DKA.loading({
+        title: isEdit ? 'Memperbarui Kegiatan' : (isDraft ? 'Menyimpan Draf' : 'Mempublikasikan Kegiatan'),
+        message: 'Menyiapkan data dan berkas...',
+        style: 'ring',
+    });
+
+    // Simulated progress steps
+    const steps = ['Mengompres gambar...', 'Mengunggah lampiran...', 'Menyimpan ke database...'];
+    steps.forEach((msg, i) => {
+        setTimeout(() => loader.update(msg), (i + 1) * 800);
+    });
+
     $.ajax({
         url: url,
         method: 'POST', // Use POST with _method PUT for multipart compatibility
@@ -323,15 +335,17 @@ function submitForm(isDraft = false) {
         contentType: false,
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         success: function(res) {
+            loader.close();
             if (res.success) {
                 DKA.notify({ type: 'success', title: 'Berhasil', message: res.message || 'Data berhasil disimpan.' });
                 setTimeout(() => window.location.href = '/kegiatan', 1500);
             } else {
-                DKA.notify({ type: 'error', title: 'Gagal', message: res.message || 'Terjadi kesalahan.' });
                 btn.prop('disabled', false).html(oldHtml);
+                DKA.notify({ type: 'error', title: 'Gagal', message: res.message || 'Terjadi kesalahan.' });
             }
         },
         error: function(xhr) {
+            loader.close();
             btn.prop('disabled', false).html(oldHtml);
             if (xhr.status === 422) {
                 const errors = xhr.responseJSON.errors;

@@ -301,16 +301,64 @@ function updateBulkBar() {
 }
 
 function bulkDelete() {
-    const count = selectedIds.size;
-    DKA.deleteConfirm({ title: 'Hapus Terpilih?', message: `Hapus <strong>${count}</strong> kegiatan?`, itemName: `${count} Item` }).then(res => {
-        if (res) {
-            $.ajax({
-                url: '/kegiatan/bulk-delete',
-                method: 'POST',
-                data: { _token: $('meta[name="csrf-token"]').attr('content'), ids: Array.from(selectedIds) },
-                success: function() { DKA.notify({ type: 'success', title: 'Berhasil', message: 'Dihapus.' }); selectedIds.clear(); loadData(); }
-            });
-        }
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+
+    DKA.deleteConfirm({ 
+        title: 'Hapus Terpilih?', 
+        message: `Hapus <strong>${ids.length}</strong> kegiatan yang dipilih?`, 
+        itemName: ids.length + ' Item Terpilih' 
+    }).then(res => {
+        if (!res) return;
+
+        const loader = DKA.loading({ 
+            title: 'Menghapus data...', 
+            message: 'Sedang membersihkan data terpilih.', 
+            style: 'dots' 
+        });
+
+        $.ajax({
+            url: '/kegiatan/bulk-delete',
+            method: 'POST',
+            data: { 
+                _token: $('meta[name="csrf-token"]').attr('content'), 
+                ids: ids 
+            },
+            success: function(response) { 
+                setTimeout(() => {
+                    loader.close();
+                    if (response.success) {
+                        DKA.toast({
+                            type: 'success',
+                            title: 'Kegiatan Dihapus',
+                            message: response.message,
+                            position: 'top-right'
+                        });
+                        
+                        $('#bulkActions').removeClass('show');
+                        $('#checkAll').prop('checked', false);
+                        selectedIds.clear(); 
+                        loadData(); 
+                    } else {
+                        DKA.notify({ 
+                            type: 'danger', 
+                            title: 'Gagal Menghapus', 
+                            message: response.message,
+                            duration: 5000 
+                        });
+                    }
+                }, 1000);
+            },
+            error: function() {
+                loader.close();
+                DKA.notify({ 
+                    type: 'danger', 
+                    title: 'Kesalahan Server', 
+                    message: 'Koneksi terputus atau terjadi masalah server.',
+                    duration: 5000 
+                });
+            }
+        });
     });
 }
 
@@ -353,7 +401,23 @@ function closeDrawer() { $('#drawerOverlay').removeClass('show'); $('body').css(
 function editKegiatan(id) { window.location.href = `/kegiatan/${id}/edit`; }
 function deleteKegiatan(id, title) {
     DKA.deleteConfirm({ title: 'Hapus Kegiatan?', message: `Hapus "<strong>${title}</strong>"?`, itemName: title }).then(res => {
-        if (res) { $.ajax({ url: `/kegiatan/${id}`, method: 'DELETE', data: { _token: $('meta[name="csrf-token"]').attr('content') }, success: function() { loadData(); } }); }
+        if (res) { 
+            const loader = DKA.loading({ title: 'Menghapus Kegiatan', message: 'Sedang memproses...', style: 'ring' });
+            $.ajax({ 
+                url: `/kegiatan/${id}`, 
+                method: 'DELETE', 
+                data: { _token: $('meta[name="csrf-token"]').attr('content') }, 
+                success: function(res) { 
+                    loader.close();
+                    DKA.notify({ type: 'success', title: 'Berhasil', message: res.message || 'Kegiatan dihapus.' });
+                    loadData(); 
+                },
+                error: function() {
+                    loader.close();
+                    DKA.notify({ type: 'error', title: 'Gagal', message: 'Gagal menghapus kegiatan.' });
+                }
+            }); 
+        }
     });
 }
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }

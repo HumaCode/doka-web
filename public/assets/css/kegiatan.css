@@ -93,14 +93,14 @@
 .kc-uploader { display:flex; align-items:center; gap:6px; flex:1; min-width:0; }
 .kc-uploader-avatar { width:26px; height:26px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:.65rem; font-weight:800; flex-shrink:0; }
 .kc-uploader-name { font-size:.72rem; font-weight:600; color:var(--c-text-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.kc-action-btn { width:30px; height:30px; border-radius:7px; border:1.5px solid var(--c-border); background:#fff; cursor:pointer; display:grid; place-items:center; font-size:.85rem; transition:all var(--trans); }
-.kc-action-btn.view { color:var(--c-primary); }
-.kc-action-btn.edit { color:var(--c-green); }
-.kc-action-btn.delete { color:var(--c-red); }
+.kc-action-btn { width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; display:grid; place-items:center; font-size:.88rem; transition:all var(--trans); }
+.kc-action-btn.view { background:#eff6ff; color:var(--c-primary); }
+.kc-action-btn.edit { background:#f0fdf4; color:var(--c-green); }
+.kc-action-btn.delete { background:#fef2f2; color:#ef4444; }
 .kc-action-btn:hover { transform:scale(1.1); }
-.kc-action-btn.view:hover { background:var(--c-primary); color:#fff; border-color:var(--c-primary); }
-.kc-action-btn.edit:hover { background:var(--c-green); color:#fff; border-color:var(--c-green); }
-.kc-action-btn.delete:hover { background:var(--c-red); color:#fff; border-color:var(--c-red); }
+.kc-action-btn.view:hover { background:var(--c-primary); color:#fff; }
+.kc-action-btn.edit:hover { background:var(--c-green); color:#fff; }
+.kc-action-btn.delete:hover { background:#ef4444; color:#fff; }
 
 .table-card { background:#fff; border:1px solid var(--c-border); border-radius:var(--radius-md); box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeUp .45s ease .15s both; }
 .table-card-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--c-border); }
@@ -164,10 +164,10 @@ table.kegiatan-table { width:100%; border-collapse:collapse; }
 .tbl-btn:hover { transform:scale(1.1); }
 .tbl-view { background:#eff6ff; color:var(--c-primary); }
 .tbl-edit { background:#f0fdf4; color:var(--c-green); }
-.tbl-delete { background:#fef2f2; color:var(--c-red); }
+.tbl-delete { background:#fef2f2; color:#ef4444; }
 .tbl-view:hover { background:var(--c-primary); color:#fff; }
 .tbl-edit:hover { background:var(--c-green); color:#fff; }
-.tbl-delete:hover { background:var(--c-red); color:#fff; }
+.tbl-delete:hover { background:#ef4444; color:#fff; }
 .foto-pill { display:inline-flex; align-items:center; gap:4px; background:var(--c-surface2); border:1px solid var(--c-border); border-radius:99px; padding:3px 9px; font-size:.72rem; font-weight:700; color:var(--c-text-2); }
 .foto-pill i { color:var(--c-primary); font-size:.75rem; }
 .table-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-top:1px solid var(--c-border); flex-wrap:wrap; gap:10px; }

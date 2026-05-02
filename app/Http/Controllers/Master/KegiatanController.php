@@ -237,6 +237,45 @@ class KegiatanController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $kegiatan = Kegiatan::findOrFail($id);
+        
+        // Deleting the model will automatically delete associated media via Spatie
+        $kegiatan->delete();
+
+        \Illuminate\Support\Facades\Cache::forget('kegiatan_stats_global');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kegiatan berhasil dihapus.'
+        ]);
+    }
+
+    /**
+     * Remove multiple resources from storage.
+     */
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada data terpilih.']);
+        }
+
+        // Use get()->each->delete() to ensure media deletion observers are triggered
+        Kegiatan::whereIn('id', $ids)->get()->each->delete();
+
+        \Illuminate\Support\Facades\Cache::forget('kegiatan_stats_global');
+
+        return response()->json([
+            'success' => true,
+            'message' => count($ids) . ' kegiatan berhasil dihapus.'
+        ]);
+    }
+
+    /**
      * Download private attachment
      */
     public function download($uuid)
