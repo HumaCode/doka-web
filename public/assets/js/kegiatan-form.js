@@ -80,7 +80,41 @@ $(document).ready(function() {
         if ($(this).scrollTop() > 300) $('#fabBtn').addClass('visible');
         else $('#fabBtn').removeClass('visible');
     });
+
+    // 6. Handle Edit Mode Initialization
+    if ($('#mainForm').data('mode') === 'edit') {
+        initEditMode();
+    }
 });
+
+/* ════════════════════════════════════
+   EDIT MODE LOGIC
+════════════════════════════════════ */
+let deletedMediaIds = [];
+
+function initEditMode() {
+    // Tags
+    if (window.existingTags && Array.isArray(window.existingTags)) {
+        window.existingTags.forEach(t => tags.add(t));
+        renderTags();
+    }
+
+    // Photos
+    if (window.existingMedia && window.existingMedia.photos) {
+        window.existingMedia.photos.forEach(p => {
+            uploadedPhotos.push({ id: p.id, src: p.src, name: p.name, isExisting: true });
+        });
+        renderPhotoPreviews();
+    }
+
+    // Docs
+    if (window.existingMedia && window.existingMedia.docs) {
+        window.existingMedia.docs.forEach(d => {
+            uploadedDocs.push({ id: d.id, file: { name: d.name }, isExisting: true, download_url: d.download_url });
+        });
+        renderDocPreviews();
+    }
+}
 
 /* ════════════════════════════════════
    TAGS INPUT LOGIC
@@ -160,7 +194,14 @@ function renderPhotoPreviews() {
     updatePhotoCounter();
 }
 
-function removePhoto(id) { uploadedPhotos = uploadedPhotos.filter(p => p.id !== id); renderPhotoPreviews(); }
+function removePhoto(id) { 
+    const photo = uploadedPhotos.find(p => p.id === id);
+    if (photo && photo.isExisting) {
+        deletedMediaIds.push(id);
+    }
+    uploadedPhotos = uploadedPhotos.filter(p => p.id !== id); 
+    renderPhotoPreviews(); 
+}
 
 function handleDocSelect(e) {
     const files = e.target.files;
@@ -177,17 +218,30 @@ function renderDocPreviews() {
     uploadedDocs.forEach(doc => {
         let icon = 'bi-file-earmark-text-fill';
         if (doc.file.name.endsWith('.pdf')) icon = 'bi-file-earmark-pdf-fill';
+        
+        let linkHtml = `<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.file.name}</span>`;
+        if (doc.isExisting && doc.download_url) {
+            linkHtml = `<a href="${doc.download_url}" target="_blank" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--c-primary);text-decoration:none;font-weight:700;">${doc.file.name} <i class="bi bi-download" style="font-size:.7rem;"></i></a>`;
+        }
+
         const item = `
             <div class="doc-preview-item" style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;font-size:.75rem;">
                 <i class="bi ${icon}" style="color:var(--c-primary);font-size:1rem;"></i>
-                <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.file.name}</span>
+                ${linkHtml}
                 <button type="button" onclick="removeDoc(${doc.id})" style="border:none;background:none;color:var(--c-red);cursor:pointer;"><i class="bi bi-x-circle-fill"></i></button>
             </div>`;
         wrap.append(item);
     });
 }
 
-function removeDoc(id) { uploadedDocs = uploadedDocs.filter(d => d.id !== id); renderDocPreviews(); }
+function removeDoc(id) { 
+    const doc = uploadedDocs.find(d => d.id === id);
+    if (doc && doc.isExisting) {
+        deletedMediaIds.push(id);
+    }
+    uploadedDocs = uploadedDocs.filter(d => d.id !== id); 
+    renderDocPreviews(); 
+}
 
 function updatePhotoCounter() {
     const count = uploadedPhotos.length;
@@ -230,39 +284,47 @@ function submitForm(isDraft = false) {
         return;
     }
 
+    const isEdit = $('#mainForm').data('mode') === 'edit';
+    const activityId = $('#mainForm').data('id');
+    const url = isEdit ? `/kegiatan/${activityId}` : '/kegiatan/store';
+    
     // 2. Prepare Data
     const formData = new FormData($('#mainForm')[0]);
     formData.append('uraian', uraian);
     formData.set('tags', Array.from(tags).join(','));
     
-    if (isDraft) {
+    if (isEdit) {
+        formData.append('_method', 'PUT');
+        formData.append('deleted_media', deletedMediaIds.join(','));
+    } else if (isDraft) {
         formData.set('status', 'draft');
     }
-    // Add Photos
-    uploadedPhotos.forEach((p, index) => {
+
+    // Add Photos (Only new ones)
+    uploadedPhotos.filter(p => !p.isExisting).forEach((p, index) => {
         formData.append('photos[]', p.file);
     });
     
-    // Add Docs
-    uploadedDocs.forEach(d => {
+    // Add Docs (Only new ones)
+    uploadedDocs.filter(d => !d.isExisting).forEach(d => {
         formData.append('attachments[]', d.file);
     });
 
     // 3. AJAX Submit
-    const btn = $('.btn-submit');
+    const btn = isDraft ? $('.btn-draft') : $('.btn-submit');
     const oldHtml = btn.html();
     btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Menyimpan...');
 
     $.ajax({
-        url: '/kegiatan/store',
-        method: 'POST',
+        url: url,
+        method: 'POST', // Use POST with _method PUT for multipart compatibility
         data: formData,
         processData: false,
         contentType: false,
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         success: function(res) {
             if (res.success) {
-                DKA.notify({ type: 'success', title: 'Berhasil', message: 'Kegiatan berhasil disimpan.' });
+                DKA.notify({ type: 'success', title: 'Berhasil', message: res.message || 'Data berhasil disimpan.' });
                 setTimeout(() => window.location.href = '/kegiatan', 1500);
             } else {
                 DKA.notify({ type: 'error', title: 'Gagal', message: res.message || 'Terjadi kesalahan.' });

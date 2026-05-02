@@ -350,7 +350,7 @@ function openDrawer(id) {
 }
 
 function closeDrawer() { $('#drawerOverlay').removeClass('show'); $('body').css('overflow', ''); }
-function editKegiatan(id) { window.location.href = `/kegiatan/edit/${id}`; }
+function editKegiatan(id) { window.location.href = `/kegiatan/${id}/edit`; }
 function deleteKegiatan(id, title) {
     DKA.deleteConfirm({ title: 'Hapus Kegiatan?', message: `Hapus "<strong>${title}</strong>"?`, itemName: title }).then(res => {
         if (res) { $.ajax({ url: `/kegiatan/${id}`, method: 'DELETE', data: { _token: $('meta[name="csrf-token"]').attr('content') }, success: function() { loadData(); } }); }

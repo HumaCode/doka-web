@@ -52,6 +52,8 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('/tambah', [KegiatanController::class, 'create'])->name('create');
         Route::post('/store', [KegiatanController::class, 'store'])->name('store');
         Route::get('/download/{uuid}', [KegiatanController::class, 'download'])->name('download');
+        Route::get('/{id}/edit', [KegiatanController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [KegiatanController::class, 'update'])->name('update');
         Route::post('/bulk-delete', [KegiatanController::class, 'bulkDelete'])->name('bulkDelete');
         Route::delete('/{id}', [KegiatanController::class, 'destroy'])->name('destroy');
         Route::get('/getallpagination', [KegiatanController::class, 'getAllPagination'])->name('getallpagination'); // Compatibility

@@ -151,6 +151,92 @@ class KegiatanController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $kegiatan = Kegiatan::with(['kategori', 'unitKerja', 'petugas', 'media'])->findOrFail($id);
+        $categories = \App\Models\Master\Kategori::where('status', 'active')->get();
+        $users = \App\Models\User::orderBy('name')->get();
+        $units = \App\Models\Master\UnitKerja::orderBy('nama_instansi')->get();
+
+        return view('pages.kegiatan.edit', compact('kegiatan', 'categories', 'users', 'units'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $kegiatan = Kegiatan::findOrFail($id);
+
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'waktu' => 'nullable|string',
+            'lokasi' => 'nullable|string|max:255',
+            'kategori_id' => 'required|exists:categories,id',
+            'unit_id' => 'nullable|exists:unit_kerja,id',
+            'uraian' => 'required|string',
+            'jumlah_peserta' => 'nullable|integer',
+            'narasumber' => 'nullable|string|max:255',
+            'status' => 'required|in:draft,berjalan,selesai',
+            'petugas_id' => 'required|exists:users,id',
+            'tags' => 'nullable|string',
+            'photos.*' => 'image|max:5120',
+            'attachments.*' => 'file|max:10240',
+            'deleted_media' => 'nullable|string', // IDs of media to delete
+        ]);
+
+        $kegiatan->update([
+            'judul' => $validated['judul'],
+            'tanggal' => $validated['tanggal'],
+            'waktu' => $validated['waktu'],
+            'lokasi' => $validated['lokasi'],
+            'kategori_id' => $validated['kategori_id'],
+            'unit_id' => $validated['unit_id'],
+            'uraian' => $validated['uraian'],
+            'jumlah_peserta' => $validated['jumlah_peserta'],
+            'narasumber' => $validated['narasumber'],
+            'status' => $validated['status'],
+            'petugas_id' => $validated['petugas_id'],
+            'tags' => $validated['tags'] ? explode(',', $validated['tags']) : [],
+        ]);
+
+        // Handle Media Deletion
+        if ($request->filled('deleted_media')) {
+            $ids = explode(',', $request->deleted_media);
+            \Spatie\MediaLibrary\MediaCollections\Models\Media::whereIn('id', $ids)
+                ->where('model_id', $kegiatan->id)
+                ->get()
+                ->each
+                ->delete();
+        }
+
+        // New Photos Upload
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $kegiatan->addMedia($photo)->toMediaCollection('foto_kegiatan');
+            }
+        }
+
+        // New Attachments Upload
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $attachment) {
+                $kegiatan->addMedia($attachment)->toMediaCollection('lampiran_kegiatan');
+            }
+        }
+
+        \Illuminate\Support\Facades\Cache::forget('kegiatan_stats_global');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kegiatan berhasil diubah.',
+            'redirect' => route('kegiatan.index')
+        ]);
+    }
+
+    /**
      * Download private attachment
      */
     public function download($uuid)
