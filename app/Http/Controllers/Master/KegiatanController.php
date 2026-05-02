@@ -20,11 +20,74 @@ class KegiatanController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'waktu' => 'nullable|string',
+            'lokasi' => 'nullable|string|max:255',
+            'kategori_id' => 'required|exists:categories,id',
+            'unit_id' => 'nullable|exists:unit_kerja,id',
+            'uraian' => 'required|string',
+            'jumlah_peserta' => 'nullable|integer',
+            'narasumber' => 'nullable|string|max:255',
+            'status' => 'required|in:draft,berjalan,selesai',
+            'petugas_id' => 'required|exists:users,id',
+            'tags' => 'nullable|string',
+            'photos.*' => 'image|max:5120',
+            'attachments.*' => 'file|max:10240',
+        ]);
+
+        $kegiatan = Kegiatan::create([
+            'judul' => $validated['judul'],
+            'tanggal' => $validated['tanggal'],
+            'waktu' => $validated['waktu'],
+            'lokasi' => $validated['lokasi'],
+            'kategori_id' => $validated['kategori_id'],
+            'unit_id' => $validated['unit_id'],
+            'uraian' => $validated['uraian'],
+            'jumlah_peserta' => $validated['jumlah_peserta'],
+            'narasumber' => $validated['narasumber'],
+            'status' => $validated['status'],
+            'petugas_id' => $validated['petugas_id'],
+            'tags' => $validated['tags'] ? explode(',', $validated['tags']) : [],
+        ]);
+
+        // Photos Upload
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $kegiatan->addMedia($photo)->toMediaCollection('foto_kegiatan');
+            }
+        }
+
+        // Attachments Upload
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $attachment) {
+                $kegiatan->addMedia($attachment)->toMediaCollection('lampiran_kegiatan');
+            }
+        }
+
+        \Illuminate\Support\Facades\Cache::forget('kegiatan_stats_global');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kegiatan berhasil disimpan.',
+            'redirect' => route('kegiatan.index')
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('pages.kegiatan.create');
+        $categories = \App\Models\Master\Kategori::where('status', 'active')->get();
+        $users = \App\Models\User::orderBy('name')->get();
+        $units = \App\Models\Master\UnitKerja::orderBy('nama_instansi')->get();
+        return view('pages.kegiatan.create', compact('categories', 'users', 'units'));
     }
 
     /**

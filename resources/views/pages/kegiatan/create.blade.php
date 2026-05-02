@@ -2,8 +2,13 @@
     <x-slot:title>DokaKegiatan — Tambah Kegiatan</x-slot:title>
 
     @push('css')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link rel="stylesheet" href="{{ asset('assets/css/kegiatan-form.css') }}">
         <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+        <style>
+            .ck-editor__editable { min-height: 200px; border-radius: 0 0 10px 10px !important; }
+            .flatpickr-calendar { border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--c-border); }
+        </style>
     @endpush
 
     <!-- Page Header -->
@@ -62,7 +67,7 @@
                                 <label for="f-waktu" class="flabel"><i class="bi bi-clock" style="color:var(--c-muted);font-size:.85rem;"></i> Waktu Mulai <span class="opt">(opsional)</span></label>
                                 <div class="fwrap">
                                     <i class="bi bi-clock ficon"></i>
-                                    <input type="time" class="fctrl" id="f-waktu" name="waktu" />
+                                    <input type="text" class="fctrl" id="f-waktu" name="waktu" placeholder="--:--" readonly />
                                 </div>
                             </div>
                         </div>
@@ -84,12 +89,9 @@
                                     <i class="bi bi-tags-fill ficon"></i>
                                     <select class="fctrl" id="f-kategori" name="kategori_id" onchange="clearErr('grp-kategori')" required>
                                         <option value="">-- Pilih Kategori --</option>
-                                        <option value="1">Rapat / Koordinasi</option>
-                                        <option value="2">Pelatihan / Workshop</option>
-                                        <option value="3">Kunjungan / Studi Banding</option>
-                                        <option value="4">Sosialisasi / Diseminasi</option>
-                                        <option value="5">Upacara / Seremonial</option>
-                                        <option value="6">Lainnya</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="finvalid">Kategori wajib dipilih.</div>
@@ -100,15 +102,9 @@
                                     <i class="bi bi-building-fill ficon"></i>
                                     <select class="fctrl" id="f-unit" name="unit_id">
                                         <option value="">-- Pilih Unit --</option>
-                                        <option value="1">Dinas Kominfo</option>
-                                        <option value="2">Dinas Pendidikan</option>
-                                        <option value="3">Dinas Kesehatan</option>
-                                        <option value="4">Dinas Sosial</option>
-                                        <option value="5">Dinas PUPR</option>
-                                        <option value="6">Bagian Humas</option>
-                                        <option value="7">Sekretariat Daerah</option>
-                                        <option value="8">Bappeda</option>
-                                        <option value="9">Inspektorat</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}">{{ $unit->nama_instansi }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -246,41 +242,32 @@
                     <div class="sc-head">
                         <div class="sc-title"><i class="bi bi-person-badge"></i> Petugas Dokumentasi</div>
                     </div>
-                    <div class="sc-body">
-                        <div class="petugas-list">
-                            <div class="petugas-opt">
-                                <input type="radio" name="petugas" id="p-1" value="1" checked />
-                                <label for="p-1">
-                                    <div class="p-avatar" style="background: linear-gradient(135deg,#4f46e5,#7c3aed);">AF</div>
-                                    <div>
-                                        <div class="p-name">Ahmad Fauzi</div>
-                                        <div class="p-role">Fotografer</div>
-                                    </div>
-                                    <div class="p-check"></div>
-                                </label>
+                    <div class="sc-body" style="padding: 12px 18px;">
+                        <div class="fgroup" style="margin-bottom: 12px;">
+                            <div class="fwrap">
+                                <i class="bi bi-search ficon"></i>
+                                <input type="text" class="fctrl" id="searchPetugas" placeholder="Cari nama petugas..." onkeyup="filterPetugas()" style="padding: 8px 12px 8px 36px; font-size: .8rem; border-radius: 8px;">
                             </div>
-                            <div class="petugas-opt">
-                                <input type="radio" name="petugas" id="p-2" value="2" />
-                                <label for="p-2">
-                                    <div class="p-avatar" style="background: linear-gradient(135deg,#10b981,#06b6d4);">SR</div>
-                                    <div>
-                                        <div class="p-name">Siti Rahayu</div>
-                                        <div class="p-role">Admin Konten</div>
-                                    </div>
-                                    <div class="p-check"></div>
-                                </label>
-                            </div>
-                            <div class="petugas-opt">
-                                <input type="radio" name="petugas" id="p-3" value="3" />
-                                <label for="p-3">
-                                    <div class="p-avatar" style="background: linear-gradient(135deg,#f59e0b,#f97316);">BS</div>
-                                    <div>
-                                        <div class="p-name">Budi Santoso</div>
-                                        <div class="p-role">Dokumentator</div>
-                                    </div>
-                                    <div class="p-check"></div>
-                                </label>
-                            </div>
+                        </div>
+                        <div class="petugas-list" id="petugasList">
+                            @foreach($users as $user)
+                                @php
+                                    $initials = collect(explode(' ', $user->name))->map(fn($n) => str($n)->substr(0,1))->take(2)->join('');
+                                    $colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#7c3aed'];
+                                    $color = $colors[$loop->index % count($colors)];
+                                @endphp
+                                <div class="petugas-opt">
+                                    <input type="radio" name="petugas_id" id="p-{{ $user->id }}" value="{{ $user->id }}" {{ $loop->first ? 'checked' : '' }} />
+                                    <label for="p-{{ $user->id }}">
+                                        <div class="p-avatar" style="background: {{ $color }};">{{ $initials }}</div>
+                                        <div>
+                                            <div class="p-name">{{ $user->name }}</div>
+                                            <div class="p-role">{{ $user->roles->first()->name ?? 'Staff' }}</div>
+                                        </div>
+                                        <div class="p-check"></div>
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -354,7 +341,8 @@
     </button>
 
     @push('js')
-        <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="{{ asset('assets/js/kegiatan-form.js') }}"></script>
     @endpush
 </x-master-layout>
