@@ -286,7 +286,7 @@ function submitForm(isDraft = false) {
 
     const isEdit = $('#mainForm').data('mode') === 'edit';
     const activityId = $('#mainForm').data('id');
-    const url = isEdit ? `/kegiatan/${activityId}` : '/kegiatan/store';
+    const url = isEdit ? `/kegiatan/update/${activityId}` : '/kegiatan/store';
     
     // 2. Prepare Data
     const formData = new FormData($('#mainForm')[0]);
@@ -294,7 +294,6 @@ function submitForm(isDraft = false) {
     formData.set('tags', Array.from(tags).join(','));
     
     if (isEdit) {
-        formData.append('_method', 'PUT');
         formData.append('deleted_media', deletedMediaIds.join(','));
     } else if (isDraft) {
         formData.set('status', 'draft');

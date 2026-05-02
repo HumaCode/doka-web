@@ -29,7 +29,6 @@
 
     <!-- Main Form Container -->
     <form id="mainForm" novalidate onsubmit="return false;" data-id="{{ $kegiatan->id }}" data-mode="edit">
-        @method('PUT')
         <div class="form-grid">
 
             <!-- ═══ LEFT COLUMN ═══ -->
@@ -277,7 +276,7 @@
                     </div>
                     <div class="sc-body">
                         <div class="photo-upload-zone" style="padding:18px 14px;" onclick="document.getElementById('docInput').click()">
-                            <input type="file" id="docInput" name="attachments[]" accept=".pdf,.docx,.xlsx,.pptx" multiple style="display:none;" onchange="handleDocSelect(event)" />
+                            <input type="file" id="docInput" accept=".pdf,.docx,.xlsx,.pptx" multiple style="display:none;" onchange="handleDocSelect(event)" />
                             <i class="bi bi-file-earmark-arrow-up-fill" style="font-size:1.6rem;color:var(--c-muted);display:block;margin: 0 auto 7px;"></i>
                             <div style="font-size:.8rem;font-weight:700;color:var(--c-text);margin-bottom:3px;text-align:center;">Upload Dokumen Baru</div>
                         </div>

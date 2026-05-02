@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models\Master;
+namespace App\Models\Kegiatan;
 
 use App\Models\User;
+use App\Models\Master\Kategori;
+use App\Models\Master\UnitKerja;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;

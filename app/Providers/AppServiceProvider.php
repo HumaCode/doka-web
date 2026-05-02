@@ -22,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
         // Unit Kerja
         $this->app->bind(\App\Repositories\Master\UnitKerja\UnitKerjaRepositoryInterface::class, \App\Repositories\Master\UnitKerja\UnitKerjaRepository::class);
         $this->app->bind(\App\Services\Master\UnitKerja\UnitKerjaServiceInterface::class, \App\Services\Master\UnitKerja\UnitKerjaService::class);
+
+        // Kegiatan
+        $this->app->bind(\App\Repositories\Kegiatan\KegiatanRepositoryInterface::class, \App\Repositories\Kegiatan\KegiatanRepository::class);
+        $this->app->bind(\App\Services\Kegiatan\KegiatanServiceInterface::class, \App\Services\Kegiatan\KegiatanService::class);
     }
 
     /**

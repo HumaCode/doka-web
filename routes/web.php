@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Master\KegiatanController;
+use App\Http\Controllers\Kegiatan\KegiatanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -53,10 +53,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::post('/store', [KegiatanController::class, 'store'])->name('store');
         Route::get('/download/{uuid}', [KegiatanController::class, 'download'])->name('download');
         Route::get('/{id}/edit', [KegiatanController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [KegiatanController::class, 'update'])->name('update');
+        Route::post('/update/{id}', [KegiatanController::class, 'update'])->name('update');
         Route::post('/bulk-delete', [KegiatanController::class, 'bulkDelete'])->name('bulkDelete');
         Route::delete('/{id}', [KegiatanController::class, 'destroy'])->name('destroy');
-        Route::get('/getallpagination', [KegiatanController::class, 'getAllPagination'])->name('getallpagination'); // Compatibility
     });
 });
 
