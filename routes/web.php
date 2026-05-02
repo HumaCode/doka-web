@@ -59,6 +59,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::post('/bulk-delete', [KegiatanController::class, 'bulkDelete'])->name('bulkDelete');
         Route::delete('/{id}', [KegiatanController::class, 'destroy'])->name('destroy');
     });
+
+    // Galeri
+    Route::get('/galeri', [\App\Http\Controllers\Galeri\GaleriController::class, 'index'])->name('galeri.index');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

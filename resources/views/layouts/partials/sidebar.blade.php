@@ -71,7 +71,8 @@
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Galeri Foto">
+            <a href="{{ route('galeri.index') }}"
+                class="nav-link-item {{ request()->routeIs('galeri.index') ? 'active' : '' }}" data-label="Galeri Foto">
                 <i class="bi bi-images nav-icon"></i>
                 <span class="nav-label">Galeri Foto</span>
             </a>
