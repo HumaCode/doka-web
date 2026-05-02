@@ -1,15 +1,15 @@
 <?php
 
-namespace Database\Factories\Master;
+namespace Database\Factories\Kegiatan;
 
-use App\Models\User;
-use App\Models\Master\Kegiatan;
+use App\Models\Kegiatan\Kegiatan;
 use App\Models\Master\Kategori;
 use App\Models\Master\UnitKerja;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Master\Kegiatan>
+ * @extends Factory<\App\Models\Master\Kegiatan>
  */
 class KegiatanFactory extends Factory
 {
@@ -32,16 +32,16 @@ class KegiatanFactory extends Factory
         $userIds = User::pluck('id')->toArray();
 
         $judulPrefix = [
-            'Rapat Koordinasi', 'Sosialisasi Kebijakan', 'Workshop Peningkatan Kapasitas', 
+            'Rapat Koordinasi', 'Sosialisasi Kebijakan', 'Workshop Peningkatan Kapasitas',
             'Studi Banding', 'Kunjungan Kerja', 'Pelatihan Teknis', 'Upacara Bendera',
             'Seminar Nasional', 'Webinar Internal', 'Evaluasi Kinerja', 'Bimbingan Teknis',
-            'Pertemuan Rutin', 'Launching Program', 'Peresmian Gedung', 'Monitoring Lapangan'
+            'Pertemuan Rutin', 'Launching Program', 'Peresmian Gedung', 'Monitoring Lapangan',
         ];
 
         $lokasiList = [
             'Aula Utama Gedung A', 'Ruang Rapat Lantai 2', 'Hotel Santika', 'Kantor Gubernur',
             'Sekretariat Daerah', 'Dinas Kominfo', 'Bappeda', 'Gedung Serbaguna',
-            'Ruang Media Center', 'Laboratorium Komputer', 'Lapangan Upacara', 'Hotel Aston'
+            'Ruang Media Center', 'Laboratorium Komputer', 'Lapangan Upacara', 'Hotel Aston',
         ];
 
         $kategori_id = $this->faker->randomElement($kategoriIds);
@@ -49,7 +49,7 @@ class KegiatanFactory extends Factory
         $petugas_id = $this->faker->optional(0.9)->randomElement($userIds);
 
         return [
-            'judul' => $this->faker->randomElement($judulPrefix) . ' ' . $this->faker->sentence(3),
+            'judul' => $this->faker->randomElement($judulPrefix).' '.$this->faker->sentence(3),
             'tanggal' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
             'waktu' => $this->faker->optional(0.7)->time('H:i'),
             'lokasi' => $this->faker->optional(0.8)->randomElement($lokasiList),
