@@ -77,7 +77,7 @@
             <i class="bi bi-arrow-counterclockwise"></i>
         </button>
         <div class="toolbar-right">
-            <button class="btn-toolbar btn-export" onclick="doExport()"><i class="bi bi-download"></i> Export</button>
+            <button class="btn-toolbar btn-export" onclick="exportData()"><i class="bi bi-download"></i> Export</button>
             <button class="btn-toolbar btn-add" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> Tambah Unit Kerja</button>
         </div>
     </div>

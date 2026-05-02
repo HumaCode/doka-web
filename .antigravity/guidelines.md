@@ -22,6 +22,7 @@ Setiap modul baru **WAJIB** mengikuti struktur 4-layer:
 6.  **Database Scalability**: Gunakan **FULLTEXT Index** pada kolom yang sering dicari (nama, deskripsi, alamat) untuk menjamin kecepatan pencarian meskipun data mencapai jutaan baris.
 7.  **ENUM Type Handling**: Jika menggunakan kolom `enum('0', '1')` untuk status (bukan boolean), **WAJIB** menggunakan nilai string eksplisit `'1'` atau `'0'` di level Repository/Service. Hindari negasi boolean langsung (`!$user->is_active`) karena dapat menyebabkan error *Data Truncated* di MySQL.
 8.  **Simple Audit Trail**: Untuk aksi sensitif seperti aktivasi/nonaktifkan akun, wajib mencatat pelaku aksi di kolom `keterangan` (misal: "Akun diaktifkan oleh [Nama Admin]").
+9.  **Sidebar Badge Logic**: Gunakan View Composer di `AppServiceProvider.php` untuk menampilkan badge data baru di sidebar. Standard: Tampilkan jumlah data yang dibuat dalam **5 hari terakhir**. Gunakan filter `unit_kerja_id` untuk user biasa, sementara role `dev` dapat melihat data global.
 
 ## 📁 Struktur Folder Modul
 
@@ -58,7 +59,9 @@ Proses login dan registrasi di DokaWeb menggunakan standar keamanan tinggi:
 3.  **Form Validation**: Error harus ditampilkan di bawah input dengan class `.finvalid` berwarna merah (`#ef4444`).
 4.  **Loading State**: Gunakan spinner atau progress bar saat melakukan request AJAX.
 5.  **OTP Timer**: Sertakan countdown timer (misal: 3 menit) pada setiap proses verifikasi OTP dengan opsi "Kirim Ulang" yang muncul setelah timer habis.
-6.  **Accessibility (Standard A11y)**: Setiap halaman **WAJIB** lolos audit aksesibilitas Lighthouse:
+6.  **Pagination Info Sync**: Info pagination (misal: "Menampilkan 12 data (13-24) dari 50") harus mencantumkan **jumlah data di halaman tersebut** secara eksplisit agar sinkron dengan bar aksi massal (bulk bar).
+7.  **Coming Soon Notification**: Untuk fitur yang belum siap (misal: Export), gunakan `DKA.notify` dengan pesan "Fitur sedang dalam pengembangan (Segera Hadir)" daripada `alert()` bawaan browser.
+8.  **Accessibility (Standard A11y)**: Setiap halaman **WAJIB** lolos audit aksesibilitas Lighthouse:
     *   **Labeling**: Gunakan `<label for="ID_INPUT">` untuk setiap elemen form. Jika label tidak ingin ditampilkan, gunakan class `.visually-hidden`.
     *   **Accessible Names**: Semua tombol ikon (tutup modal, aksi tabel, navigasi) wajib memiliki atribut `aria-label` dan `title` yang deskriptif.
     *   **Interactive State**: Gunakan `aria-current` atau class `.active` yang jelas pada elemen navigasi atau pagination.

@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\User;
+use App\Models\Kegiatan\Kegiatan;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +37,34 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('layouts.partials.sidebar', function ($view) {
+            $newUserCount = 0;
+            $newKegiatanCount = 0;
+
+            if (auth()->check()) {
+                $user = auth()->user();
+                $isDev = $user->hasRole('dev');
+                $fiveDaysAgo = now()->subDays(5);
+
+                // Count new users in last 5 days
+                $userQuery = User::where('created_at', '>=', $fiveDaysAgo);
+                if (!$isDev) {
+                    $userQuery->where('unit_kerja_id', $user->unit_kerja_id);
+                }
+                $newUserCount = $userQuery->count();
+
+                // Count new activities in last 5 days
+                $kegiatanQuery = Kegiatan::where('created_at', '>=', $fiveDaysAgo);
+                if (!$isDev) {
+                    $kegiatanQuery->where('unit_id', $user->unit_kerja_id);
+                }
+                $newKegiatanCount = $kegiatanQuery->count();
+            }
+
+            $view->with([
+                'sidebarNewUserCount' => $newUserCount,
+                'sidebarNewKegiatanCount' => $newKegiatanCount,
+            ]);
+        });
     }
 }

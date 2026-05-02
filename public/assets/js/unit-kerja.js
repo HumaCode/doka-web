@@ -584,7 +584,14 @@ function renderDrawerBody(d) {
     
     $('#drawerBody').html(html);
 }
-function doExport() { DKA.notify({ type: 'success', title: 'Export', message: 'Mengekspor data...' }); }
+function exportData() {
+    DKA.notify({ 
+        type: 'info', 
+        title: 'Fitur Export', 
+        message: 'Fitur ini sedang dalam pengembangan (Segera Hadir).',
+        duration: 3000 
+    });
+}
 function bulkToggle() {
     const selected = $('.row-check:checked');
     if (selected.length === 0) return;

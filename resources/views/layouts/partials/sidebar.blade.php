@@ -31,7 +31,9 @@
                 class="nav-link-item {{ request()->routeIs('pengguna.index') ? 'active' : '' }}" data-label="Pengguna">
                 <i class="bi bi-people-fill nav-icon"></i>
                 <span class="nav-label">Pengguna</span>
-                <span class="nav-badge">5</span>
+                @if($sidebarNewUserCount > 0)
+                    <span class="nav-badge">{{ $sidebarNewUserCount }}</span>
+                @endif
             </a>
         </div>
         <div class="nav-item-wrap">
@@ -56,7 +58,9 @@
                 class="nav-link-item {{ request()->routeIs('kegiatan.*') ? 'active' : '' }}" data-label="Semua Kegiatan">
                 <i class="bi bi-calendar3-fill nav-icon"></i>
                 <span class="nav-label">Semua Kegiatan</span>
-                <span class="nav-badge" style="background:var(--c-green);">24</span>
+                @if($sidebarNewKegiatanCount > 0)
+                    <span class="nav-badge" style="background:var(--c-green);">{{ $sidebarNewKegiatanCount }}</span>
+                @endif
             </a>
         </div>
         <div class="nav-item-wrap">

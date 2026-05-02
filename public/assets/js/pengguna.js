@@ -660,3 +660,12 @@ function toggleStatus(id, name) {
     });
 }
 
+function exportData() {
+    DKA.notify({ 
+        type: 'info', 
+        title: 'Fitur Export', 
+        message: 'Fitur ini sedang dalam pengembangan (Segera Hadir).',
+        duration: 3000 
+    });
+}
+

@@ -181,7 +181,7 @@
             <i class="bi bi-arrow-counterclockwise"></i>
         </button>
         <div class="toolbar-right">
-            <button class="btn-toolbar btn-export" onclick="alert('Export data ke Excel/PDF')">
+            <button class="btn-toolbar btn-export" onclick="exportData()">
                 <i class="bi bi-download"></i> Export
             </button>
             <button class="btn-toolbar btn-add" onclick="openAddModal()">

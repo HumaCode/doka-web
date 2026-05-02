@@ -288,14 +288,14 @@
             transition: opacity var(--trans), max-width var(--trans);
         }
 
-        body.collapsed .nav-link-item .nav-label {
-            opacity: 0;
-            max-width: 0;
-        }
-
         body.collapsed .nav-link-item {
             justify-content: center;
             padding: 10px;
+            gap: 0;
+        }
+
+        body.collapsed .nav-link-item .nav-label {
+            display: none;
         }
 
         body.collapsed .nav-item-wrap {
@@ -317,7 +317,7 @@
         }
 
         body.collapsed .nav-badge {
-            opacity: 0;
+            display: none;
         }
 
         @keyframes badgePop {
