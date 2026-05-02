@@ -51,7 +51,15 @@ class KegiatanResource extends JsonResource
             'foto' => $this->getMedia('foto_kegiatan')->map(fn($media) => [
                 'id' => $media->id,
                 'url' => $media->getUrl(),
-                'thumb' => $media->getUrl(), // You could add a conversion here later
+                'thumb' => $media->getUrl(), 
+            ]),
+            'attachments' => $this->getMedia('lampiran_kegiatan')->map(fn($media) => [
+                'id' => $media->id,
+                'uuid' => $media->uuid,
+                'file_name' => $media->file_name,
+                'size' => $media->human_readable_size,
+                'mime' => $media->mime_type,
+                'download_url' => route('kegiatan.download', $media->uuid),
             ]),
             'cover' => $this->getFirstMediaUrl('foto_kegiatan') ?: asset('assets/img/placeholder-kegiatan.jpg'),
             'foto_count' => $this->getMedia('foto_kegiatan')->count(),

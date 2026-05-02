@@ -76,6 +76,7 @@ class Kegiatan extends Model implements HasMedia
              ->useFallbackUrl(asset('assets/img/placeholder-kegiatan.jpg'))
              ->useFallbackPath(public_path('assets/img/placeholder-kegiatan.jpg'));
 
-        $this->addMediaCollection('lampiran_kegiatan');
+        $this->addMediaCollection('lampiran_kegiatan')
+             ->useDisk('local');
     }
 }

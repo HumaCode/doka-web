@@ -149,4 +149,19 @@ class KegiatanController extends Controller
 
         return $this->success('Data berhasil dimuat.', $resource);
     }
+
+    /**
+     * Download private attachment
+     */
+    public function download($uuid)
+    {
+        $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::where('uuid', $uuid)->firstOrFail();
+        
+        // Security check: ensure it's from the private collection
+        if ($media->collection_name !== 'lampiran_kegiatan') {
+            abort(403, 'Unauthorized access to this media type.');
+        }
+
+        return response()->download($media->getPath(), $media->file_name);
+    }
 }

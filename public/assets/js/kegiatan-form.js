@@ -23,7 +23,25 @@ $(document).ready(function() {
         });
     }
 
-    // 2. Initialize CKEditor 5
+    // 2. Initialize Select2 (Kategori & Unit Kerja)
+    if ($('#f-kategori').length) {
+        $('#f-kategori').select2({
+            placeholder: '-- Pilih Kategori --',
+            allowClear: true,
+            width: '100%'
+        }).on('change', function() {
+            $('#grp-kategori').removeClass('has-err');
+        });
+    }
+    if ($('#f-unit').length) {
+        $('#f-unit').select2({
+            placeholder: '-- Pilih Unit --',
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    // 3. Initialize CKEditor 5
     if (document.querySelector('#editor-uraian')) {
         ClassicEditor
             .create(document.querySelector('#editor-uraian'), {

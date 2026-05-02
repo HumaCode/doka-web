@@ -400,6 +400,64 @@ select.fctrl { cursor: pointer; }
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
+/* ─── SELECT2 CUSTOM STYLING ─── */
+.select2-container--default .select2-selection--single {
+    height: 46px !important;
+    border: 1.5px solid var(--c-border) !important;
+    border-radius: 10px !important;
+    background-color: var(--c-surface2) !important;
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 32px !important; /* Make room for the absolute icon in .fwrap */
+    transition: all var(--trans) !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--c-primary) !important;
+    background-color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(79,70,229,.1) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--c-text) !important;
+    font-size: .875rem !important;
+    padding-left: 0 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 44px !important;
+    right: 8px !important;
+}
+
+.select2-dropdown {
+    border: 1px solid var(--c-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-lg) !important;
+    overflow: hidden !important;
+    margin-top: 5px !important;
+    animation: fadeUp 0.3s ease !important;
+}
+
+.select2-results__option {
+    padding: 10px 15px !important;
+    font-size: .85rem !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--c-primary) !important;
+}
+
+.select2-search--dropdown {
+    padding: 10px !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border: 1.5px solid var(--c-border) !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
+    outline: none !important;
+}
+
 /* Responsive Form */
 @media(max-width:1100px) { .form-grid { grid-template-columns: 1fr; } }
 @media(max-width:992px)  { .frow2,.frow3 { grid-template-columns:1fr; } }
