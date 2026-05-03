@@ -22,7 +22,14 @@ class UserController extends Controller
     public function index()
     {
         $roles = Role::all();
-        $unitKerjas = UnitKerja::where('status', 'active')->orderBy('nama_instansi')->get();
+        $unitKerjasQuery = UnitKerja::where('status', 'active');
+        
+        // If not dev, only show their own unit in the filter
+        if (!auth()->user()->hasRole('dev')) {
+            $unitKerjasQuery->where('id', auth()->user()->unit_kerja_id);
+        }
+        
+        $unitKerjas = $unitKerjasQuery->orderBy('nama_instansi')->get();
         return view('pages.pengguna.index', compact('roles', 'unitKerjas'));
     }
 
@@ -40,13 +47,26 @@ class UserController extends Controller
             'is_active' => $request->get('status'), // status filter
         ];
 
+        // Role-based filtering: Non-dev users can only see users from their own unit
+        if (!auth()->user()->hasRole('dev')) {
+            $filters['unit_kerja_id'] = auth()->user()->unit_kerja_id;
+        }
+
         $perPage = $request->get('per_page', 10);
 
         $users = $this->userService->getUsers($perPage, $filters);
 
-        // Cache stats for 5 minutes to reduce DB load (Optimized Performance)
-        $stats = cache()->remember('user_stats_global', 300, function() {
-            $rawStats = \App\Models\User::selectRaw("
+        // Cache stats: differentiated by unit if not dev
+        $cacheKey = auth()->user()->hasRole('dev') ? 'user_stats_global' : 'user_stats_unit_' . auth()->user()->unit_kerja_id;
+
+        $stats = cache()->remember($cacheKey, 300, function() use ($filters) {
+            $query = \App\Models\User::query();
+            
+            if (isset($filters['unit_kerja_id'])) {
+                $query->where('unit_kerja_id', $filters['unit_kerja_id']);
+            }
+
+            $rawStats = $query->selectRaw("
                 COUNT(*) as total,
                 SUM(CASE WHEN is_active = '1' THEN 1 ELSE 0 END) as active,
                 SUM(CASE WHEN is_active = '0' THEN 1 ELSE 0 END) as inactive
@@ -56,7 +76,7 @@ class UserController extends Controller
                 'total'    => (int) ($rawStats->total ?? 0),
                 'active'   => (int) ($rawStats->active ?? 0),
                 'inactive' => (int) ($rawStats->inactive ?? 0),
-                'admin'    => \App\Models\User::role('admin')->count(),
+                'admin'    => (clone $query)->role('admin')->count(),
             ];
         });
 

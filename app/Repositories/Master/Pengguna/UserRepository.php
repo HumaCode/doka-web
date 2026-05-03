@@ -37,6 +37,10 @@ class UserRepository implements UserRepositoryInterface
             $query->where('is_active', $filters['is_active']);
         }
 
+        if (isset($filters['unit_kerja_id']) && $filters['unit_kerja_id'] !== '') {
+            $query->where('unit_kerja_id', $filters['unit_kerja_id']);
+        }
+
         return $query->latest()->paginate($perPage);
     }
 
