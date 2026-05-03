@@ -31,6 +31,15 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 | `show` | `unit-kerja.api.show` | **READ** | Detail unit untuk Edit | `unit_kerja.view` |
 | `update` | `unit-kerja.api.update` | **UPDATE** | Perbarui data unit | `unit_kerja.edit` |
 | `destroy` | `unit-kerja.api.destroy` | **DELETE** | Hapus unit kerja | `unit_kerja.delete` |
+ 
+---
+
+## 📊 Modul: Laporan
+**Controller**: `App\Http\Controllers\Laporan\LaporanController`
+
+| Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
+| :--- | :--- | :--- | :--- | :--- |
+| `bulanan` | `laporan.bulanan` | **READ** | Laporan kegiatan bulanan & ekspor | `laporan.view` |
 | `toggleStatus` | `unit-kerja.api.toggle-status`| **UPDATE** | Aktif/Nonaktifkan unit | `unit_kerja.edit` |
 | `bulkDelete` | `unit-kerja.api.bulk-delete` | **DELETE** | Hapus banyak unit sekaligus | `unit_kerja.delete` |
 | `bulkToggleStatus` | `unit-kerja.api.bulk-toggle` | **UPDATE** | Ubah status banyak unit | `unit_kerja.edit` |

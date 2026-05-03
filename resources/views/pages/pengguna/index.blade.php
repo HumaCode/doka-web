@@ -3,6 +3,74 @@
         <link rel="stylesheet" href="{{ asset('assets/css/pengguna.css') }}">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <style>
+            @media(max-width: 992px) {
+                .toolbar {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                }
+                .toolbar-search {
+                    grid-column: span 2;
+                    max-width: none;
+                }
+                .toolbar-right {
+                    grid-column: span 2;
+                    margin-left: 0;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                }
+                .toolbar-right .btn-toolbar {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+            @media(max-width: 768px) {
+                .page-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                    padding: 20px;
+                }
+                .breadcrumb-nav { margin-left: 0; }
+
+                .mini-stats {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 12px;
+                }
+
+                .form-row, .detail-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .detail-header {
+                    flex-direction: column;
+                    text-align: center;
+                }
+            }
+
+            @media(max-width: 576px) {
+                .mini-stats {
+                    grid-template-columns: 1fr;
+                }
+                .toolbar {
+                    grid-template-columns: 1fr;
+                }
+                .toolbar-search, .toolbar-right {
+                    grid-column: span 1;
+                }
+                .toolbar-right {
+                    grid-template-columns: 1fr;
+                }
+                .toolbar-select {
+                    width: 100%;
+                }
+                .btn-reset {
+                    width: 100%;
+                }
+            }
+
             /* Modal Scroll Fix */
             .modal-box {
                 max-height: 90vh;
