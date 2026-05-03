@@ -40,6 +40,7 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
 | `bulanan` | `laporan.bulanan` | **READ** | Laporan kegiatan bulanan & ekspor | `laporan.view` |
+| `index` | `laporan.export-pdf` | **READ** | Halaman konfigurasi ekspor PDF | `laporan.export` |
 
 > [!NOTE]
 > Halaman Laporan Bulanan juga menggunakan rute `kegiatan.show` dan `kegiatan.destroy` untuk aksi pada baris tabel.

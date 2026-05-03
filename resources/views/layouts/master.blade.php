@@ -35,6 +35,7 @@
             --c-pink: #ec4899;
             --c-green: #10b981;
             --c-orange: #f97316;
+            --c-red: #ef4444;
 
             --c-bg: #f1f5f9;
             --c-surface: #ffffff;

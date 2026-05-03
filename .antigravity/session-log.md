@@ -64,12 +64,18 @@
 - **Functional Delete**: Mengimplementasikan penghapusan riil via AJAX (`DELETE` request) dengan proteksi CSRF dan integrasi `DKA.deleteConfirm`.
 - **Media Cleanup**: Memastikan penghapusan model `Kegiatan` memicu penghapusan otomatis file foto dan lampiran PDF dari storage via Spatie Media Library.
 
+### 5. Modul Export PDF Implementation
+- **New Module**: Membuat controller, route, dan view untuk fitur Export PDF.
+- **Frontend Assets**: Memisahkan CSS dan JS ke file terpisah (`export-pdf.css`, `export-pdf.js`).
+- **Layout Optimization**: Mengatur sidebar agar otomatis *collapsed* pada halaman ini untuk meningkatkan fokus pengguna.
+- **Sidebar Update**: Menambahkan link rute aktif ke sidebar dan menyelaraskan menu PENGATURAN dengan menambahkan link "Akses & Role".
+
 ## 📄 Files Modified
-- `app/Http/Controllers/Laporan/LaporanController.php`
-- `app/Services/Laporan/LaporanService.php`
-- `app/Repositories/Laporan/LaporanRepository.php`
-- `resources/views/pages/laporan/bulanan.blade.php`
-- `public/assets/js/laporan-bulanan.js`
-- `public/assets/css/laporan-bulanan.css`
-- `.antigravity/laporan-bulanan.md`
+- `app/Http/Controllers/Laporan/ExportController.php`
+- `routes/web.php`
+- `resources/views/pages/laporan/export-pdf.blade.php`
+- `public/assets/css/export-pdf.css`
+- `public/assets/js/export-pdf.js`
+- `resources/views/layouts/partials/sidebar.blade.php`
+- `.antigravity/export-pdf.md`
 - `.antigravity/session-log.md`

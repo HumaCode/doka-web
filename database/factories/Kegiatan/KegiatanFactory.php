@@ -50,7 +50,7 @@ class KegiatanFactory extends Factory
 
         return [
             'judul' => $this->faker->randomElement($judulPrefix).' '.$this->faker->sentence(3),
-            'tanggal' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
+            'tanggal' => $this->faker->dateTimeBetween('2026-04-01', '2026-05-31')->format('Y-m-d'),
             'waktu' => $this->faker->optional(0.7)->time('H:i'),
             'lokasi' => $this->faker->optional(0.8)->randomElement($lokasiList),
             'kategori_id' => $kategori_id,

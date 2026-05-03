@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
         $this->command->warn('Sedang membuat 1000 user tambahan (ini mungkin memakan waktu)...');
 
         User::factory()
-            ->count(1000)
+            ->count(100)
             ->create([
                 'unit_kerja_id' => fn () => fake()->randomElement($unitKerjaIds),
             ])

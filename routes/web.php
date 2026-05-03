@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Laporan\LaporanController;
+use App\Http\Controllers\Laporan\ExportController;
 use App\Http\Controllers\Kegiatan\KegiatanController;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +71,11 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     // Laporan
     Route::prefix('laporan')->name('laporan.')->group(function () {
         Route::get('/bulanan', [LaporanController::class, 'bulanan'])->name('bulanan');
+        Route::get('/export-pdf', [ExportController::class, 'index'])->name('export-pdf');
+        Route::get('/export-pdf/preview', [ExportController::class, 'getPreview'])->name('export-pdf.preview');
+        Route::get('/export-pdf/preview-full', [ExportController::class, 'previewFull'])->name('export-pdf.preview-full');
+        Route::post('/export-pdf', [ExportController::class, 'store'])->name('export-pdf.store');
+        Route::delete('/export-pdf/{id}', [ExportController::class, 'destroy'])->name('export-pdf.destroy');
     });
 });
 

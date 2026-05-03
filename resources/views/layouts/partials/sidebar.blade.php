@@ -86,7 +86,7 @@
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Export PDF">
+            <a href="{{ route('laporan.export-pdf') }}" class="nav-link-item {{ request()->routeIs('laporan.export-pdf') ? 'active' : '' }}" data-label="Export PDF">
                 <i class="bi bi-file-earmark-pdf-fill nav-icon"></i>
                 <span class="nav-label">Export PDF</span>
             </a>
@@ -98,6 +98,12 @@
             <a href="#" class="nav-link-item" data-label="Profil Saya">
                 <i class="bi bi-person-fill-gear nav-icon"></i>
                 <span class="nav-label">Profil Saya</span>
+            </a>
+        </div>
+        <div class="nav-item-wrap">
+            <a href="#" class="nav-link-item" data-label="Akses & Role">
+                <i class="bi bi-shield-lock-fill nav-icon"></i>
+                <span class="nav-label">Akses & Role</span>
             </a>
         </div>
         <div class="nav-item-wrap">

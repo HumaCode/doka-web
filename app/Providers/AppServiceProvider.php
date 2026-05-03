@@ -34,11 +34,15 @@ class AppServiceProvider extends ServiceProvider
         // Galeri
         $this->app->bind(\App\Repositories\Kegiatan\GaleriRepositoryInterface::class, \App\Repositories\Kegiatan\GaleriRepository::class);
         $this->app->bind(\App\Services\Kegiatan\GaleriServiceInterface::class, \App\Services\Kegiatan\GaleriService::class);
-+
-+        // Laporan
-+        $this->app->bind(\App\Repositories\Laporan\LaporanRepositoryInterface::class, \App\Repositories\Laporan\LaporanRepository::class);
-+        $this->app->bind(\App\Services\Laporan\LaporanServiceInterface::class, \App\Services\Laporan\LaporanService::class);
-     }
+
+        // Laporan
+        $this->app->bind(\App\Repositories\Laporan\LaporanRepositoryInterface::class, \App\Repositories\Laporan\LaporanRepository::class);
+        $this->app->bind(\App\Services\Laporan\LaporanServiceInterface::class, \App\Services\Laporan\LaporanService::class);
+
+        // Export
+        $this->app->bind(\App\Repositories\Laporan\ExportRepositoryInterface::class, \App\Repositories\Laporan\ExportRepository::class);
+        $this->app->bind(\App\Services\Laporan\ExportServiceInterface::class, \App\Services\Laporan\ExportService::class);
+    }
 
     /**
      * Bootstrap any application services.
