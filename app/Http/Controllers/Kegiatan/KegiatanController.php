@@ -59,9 +59,14 @@ class KegiatanController extends Controller
             'sort_order' => $request->get('sort_order', 'desc'),
         ];
 
+        // Role-based filtering: Admin can only see their unit's activities
+        if (!auth()->user()->hasRole('dev')) {
+            $filters['unit_id'] = auth()->user()->unit_kerja_id;
+        }
+
         $perPage = $request->get('per_page', 12);
         $data = $this->kegiatanService->getActivities($perPage, $filters);
-        $stats = $this->kegiatanService->getDashboardStats();
+        $stats = $this->kegiatanService->getDashboardStats($filters);
 
         $resource = PaginateResource::make($data, KegiatanResource::class)->toArray(request());
         $resource['stats'] = $stats;
@@ -75,8 +80,16 @@ class KegiatanController extends Controller
     public function create()
     {
         $categories = \App\Models\Master\Kategori::select('id', 'nama_kategori')->where('status', 'active')->get();
-        $units = \App\Models\Master\UnitKerja::select('id', 'nama_instansi')->get();
-        $users = \App\Models\User::select('id', 'name')->get();
+        $unitsQuery = \App\Models\Master\UnitKerja::select('id', 'nama_instansi');
+        $usersQuery = \App\Models\User::select('id', 'name');
+
+        if (!auth()->user()->hasRole('dev')) {
+            $unitsQuery->where('id', auth()->user()->unit_kerja_id);
+            $usersQuery->where('unit_kerja_id', auth()->user()->unit_kerja_id);
+        }
+
+        $units = $unitsQuery->get();
+        $users = $usersQuery->get();
 
         return view('pages.kegiatan.create', compact('categories', 'units', 'users'));
     }
@@ -109,8 +122,16 @@ class KegiatanController extends Controller
     {
         $kegiatan = $this->kegiatanService->getActivityById($id);
         $categories = \App\Models\Master\Kategori::select('id', 'nama_kategori')->where('status', 'active')->get();
-        $units = \App\Models\Master\UnitKerja::select('id', 'nama_instansi')->get();
-        $users = \App\Models\User::select('id', 'name')->get();
+        $unitsQuery = \App\Models\Master\UnitKerja::select('id', 'nama_instansi');
+        $usersQuery = \App\Models\User::select('id', 'name');
+
+        if (!auth()->user()->hasRole('dev')) {
+            $unitsQuery->where('id', auth()->user()->unit_kerja_id);
+            $usersQuery->where('unit_kerja_id', auth()->user()->unit_kerja_id);
+        }
+
+        $units = $unitsQuery->get();
+        $users = $usersQuery->get();
 
         return view('pages.kegiatan.edit', compact('kegiatan', 'categories', 'units', 'users'));
     }

@@ -47,7 +47,7 @@ interface KegiatanRepositoryInterface
     public function getRelated($id, int $limit = 6);
 
     /**
-     * Get global statistics.
+     * Get global or unit-specific statistics.
      */
-    public function getStats();
+    public function getStats(array $filters = []);
 }

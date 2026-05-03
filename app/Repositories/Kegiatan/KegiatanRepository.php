@@ -30,6 +30,10 @@ class KegiatanRepository implements KegiatanRepositoryInterface
             $query->where('kategori_id', $filters['kategori']);
         }
 
+        if (!empty($filters['unit_id'])) {
+            $query->where('unit_id', $filters['unit_id']);
+        }
+
         $sortField = $filters['sort_field'] ?? 'created_at';
         $sortOrder = $filters['sort_order'] ?? 'desc';
         $query->orderBy($sortField, $sortOrder);
@@ -103,16 +107,25 @@ class KegiatanRepository implements KegiatanRepositoryInterface
     }
 
     /**
-     * Get global statistics.
+     * Get global or unit-specific statistics.
      */
-    public function getStats()
+    public function getStats(array $filters = [])
     {
-        return Cache::remember('kegiatan_stats_global', 3600, function () {
+        $unitId = $filters['unit_id'] ?? 'global';
+        $cacheKey = 'kegiatan_stats_' . $unitId;
+
+        return Cache::remember($cacheKey, 3600, function () use ($filters) {
+            $query = Kegiatan::query();
+
+            if (!empty($filters['unit_id'])) {
+                $query->where('unit_id', $filters['unit_id']);
+            }
+
             return [
-                'total' => Kegiatan::count(),
-                'selesai' => Kegiatan::where('status', 'selesai')->count(),
-                'draft' => Kegiatan::where('status', 'draft')->count(),
-                'berjalan' => Kegiatan::where('status', 'berjalan')->count(),
+                'total' => (clone $query)->count(),
+                'selesai' => (clone $query)->where('status', 'selesai')->count(),
+                'draft' => (clone $query)->where('status', 'draft')->count(),
+                'berjalan' => (clone $query)->where('status', 'berjalan')->count(),
             ];
         });
     }

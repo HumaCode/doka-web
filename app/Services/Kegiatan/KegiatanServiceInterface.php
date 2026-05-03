@@ -44,5 +44,5 @@ interface KegiatanServiceInterface
     /**
      * Get dashboard statistics.
      */
-    public function getDashboardStats();
+    public function getDashboardStats(array $filters = []);
 }

@@ -104,8 +104,8 @@ class KegiatanService implements KegiatanServiceInterface
         return $this->kegiatanRepository->getRelated($id, $limit);
     }
 
-    public function getDashboardStats()
+    public function getDashboardStats(array $filters = [])
     {
-        return $this->kegiatanRepository->getStats();
+        return $this->kegiatanRepository->getStats($filters);
     }
 }
