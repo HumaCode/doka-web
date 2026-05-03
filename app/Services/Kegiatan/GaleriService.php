@@ -19,12 +19,21 @@ class GaleriService implements GaleriServiceInterface
     /**
      * Get all data for gallery page.
      */
-    public function getGalleryData()
+    public function getGalleryData(array $filters = [])
     {
-        $photos = $this->galeriRepo->getAllPhotos();
-        $stats = $this->galeriRepo->getStatistics($photos);
-        $units = UnitKerja::all();
-        $kegiatans = Kegiatan::latest()->get();
+        $photos = $this->galeriRepo->getAllPhotos($filters);
+        $stats = $this->galeriRepo->getStatistics($photos, $filters);
+        
+        $unitsQuery = UnitKerja::query();
+        $kegiatansQuery = Kegiatan::latest();
+
+        if (!empty($filters['unit_id'])) {
+            $unitsQuery->where('id', $filters['unit_id']);
+            $kegiatansQuery->where('unit_id', $filters['unit_id']);
+        }
+
+        $units = $unitsQuery->get();
+        $kegiatans = $kegiatansQuery->get();
 
         return [
             'photos' => GaleriResource::collection($photos)->resolve(),

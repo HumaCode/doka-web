@@ -7,12 +7,12 @@ interface GaleriRepositoryInterface
     /**
      * Get all photos for gallery.
      */
-    public function getAllPhotos();
+    public function getAllPhotos(array $filters = []);
 
     /**
      * Get gallery statistics.
      */
-    public function getStatistics($photos);
+    public function getStatistics($photos, array $filters = []);
 
     /**
      * Get media items for ZIP.

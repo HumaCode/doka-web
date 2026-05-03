@@ -502,13 +502,13 @@
             const now = new Date();
             const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
             
-            const uniqueKegiatan = new Set(ALL_PHOTOS.map(p => p.kegiatan_id)).size;
-            const totalSize = ALL_PHOTOS.reduce((sum, p) => sum + parseFloat(p.size || 0), 0);
-            const monthlyUploads = ALL_PHOTOS.filter(p => p.bulan == currentMonth).length;
+            const uniqueKegiatan = new Set(filteredPhotos.map(p => p.kegiatanId)).size;
+            const totalSize = filteredPhotos.reduce((sum, p) => sum + parseFloat(p.size || 0), 0);
+            const monthlyUploads = filteredPhotos.filter(p => p.bulan == currentMonth).length;
 
-            document.getElementById('sc1').textContent = ALL_PHOTOS.length;
+            document.getElementById('sc1').textContent = filteredPhotos.length;
             document.getElementById('sc2').textContent = uniqueKegiatan;
-            document.getElementById('sc3').textContent = Math.round(totalSize);
+            document.getElementById('sc3').textContent = totalSize > 100 ? Math.round(totalSize) : totalSize.toFixed(1);
             document.getElementById('sc4').textContent = monthlyUploads;
         }
 
@@ -524,6 +524,7 @@
             );
             visibleCount = 24;
             render();
+            updateStats();
         }
 
         function render() {

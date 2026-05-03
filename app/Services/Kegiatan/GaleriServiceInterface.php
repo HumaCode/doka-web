@@ -7,7 +7,7 @@ interface GaleriServiceInterface
     /**
      * Get all data for gallery page.
      */
-    public function getGalleryData();
+    public function getGalleryData(array $filters = []);
 
     /**
      * Generate ZIP for photos.

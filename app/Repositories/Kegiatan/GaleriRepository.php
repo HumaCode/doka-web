@@ -9,9 +9,15 @@ class GaleriRepository implements GaleriRepositoryInterface
     /**
      * Get all photos for gallery.
      */
-    public function getAllPhotos()
+    public function getAllPhotos(array $filters = [])
     {
-        $kegiatans = Kegiatan::with(['unitKerja', 'media'])->latest()->get();
+        $query = Kegiatan::with(['unitKerja', 'media']);
+
+        if (!empty($filters['unit_id'])) {
+            $query->where('unit_id', $filters['unit_id']);
+        }
+
+        $kegiatans = $query->latest()->get();
         $photos = collect();
 
         // 1. Real photos
@@ -22,11 +28,11 @@ class GaleriRepository implements GaleriRepositoryInterface
                     'url' => $media->getUrl(),
                     'thumb' => $media->getUrl(),
                     'kegiatan' => $kegiatan->judul,
-                    'kegiatan_id' => $kegiatan->id,
+                    'kegiatanId' => $kegiatan->id,
                     'unit' => $kegiatan->unitKerja->nama_instansi ?? 'Umum',
                     'tanggal' => $kegiatan->tanggal ? $kegiatan->tanggal->format('d M Y') : '-',
                     'bulan' => $kegiatan->tanggal ? $kegiatan->tanggal->format('m') : null,
-                    'size' => number_format($media->size / 1024 / 1024, 1),
+                    'size' => round($media->size / 1024 / 1024, 1),
                     'caption' => $media->getCustomProperty('caption') ?? $kegiatan->judul,
                     'is_main' => $media->getCustomProperty('is_main') ?? false,
                     'gradId' => (crc32($media->id) % 8),
@@ -50,11 +56,11 @@ class GaleriRepository implements GaleriRepositoryInterface
                         'url' => null,
                         'thumb' => null,
                         'kegiatan' => $kegiatan->judul,
-                        'kegiatan_id' => $kegiatan->id,
+                        'kegiatanId' => $kegiatan->id,
                         'unit' => $kegiatan->unitKerja->nama_instansi ?? 'Umum',
                         'tanggal' => $kegiatan->tanggal ? $kegiatan->tanggal->format('d M Y') : '-',
                         'bulan' => $kegiatan->tanggal ? $kegiatan->tanggal->format('m') : null,
-                        'size' => number_format((abs(crc32($mockId)) % 20 + 5) / 10, 1),
+                        'size' => round((abs(crc32($mockId)) % 20 + 5) / 10, 1),
                         'caption' => 'Placeholder dokumentasi',
                         'is_main' => ($i === 0 && (abs(crc32($mockId)) % 5) === 0),
                         'gradId' => $gradId,
@@ -70,11 +76,16 @@ class GaleriRepository implements GaleriRepositoryInterface
     /**
      * Get gallery statistics.
      */
-    public function getStatistics($photos)
+    public function getStatistics($photos, array $filters = [])
     {
+        $kegiatanQuery = Kegiatan::query();
+        if (!empty($filters['unit_id'])) {
+            $kegiatanQuery->where('unit_id', $filters['unit_id']);
+        }
+
         return [
             'total_foto' => $photos->count(),
-            'total_kegiatan' => Kegiatan::count(),
+            'total_kegiatan' => $kegiatanQuery->count(),
             'total_size' => $photos->sum('size'),
             'upload_bulan_ini' => $photos->filter(fn($p) => isset($p->bulan) && $p->bulan == now()->format('m'))->count(),
         ];
@@ -91,6 +102,9 @@ class GaleriRepository implements GaleriRepositoryInterface
         if (!empty($filters)) {
             if (!empty($filters['kegiatan_id'])) {
                 $query->where('id', $filters['kegiatan_id']);
+            }
+            if (!empty($filters['unit_id'])) {
+                $query->where('unit_id', $filters['unit_id']);
             }
             if (!empty($filters['unit'])) {
                 $query->whereHas('unitKerja', function($q) use ($filters) {
@@ -162,11 +176,11 @@ class GaleriRepository implements GaleriRepositoryInterface
                 'url' => $media->getUrl(),
                 'thumb' => $media->getUrl(),
                 'kegiatan' => $kegiatan->judul,
-                'kegiatan_id' => $kegiatan->id,
+                'kegiatanId' => $kegiatan->id,
                 'unit' => $kegiatan->unitKerja->nama_instansi ?? 'Umum',
                 'tanggal' => $kegiatan->tanggal ? $kegiatan->tanggal->format('d M Y') : '-',
                 'bulan' => $kegiatan->tanggal ? $kegiatan->tanggal->format('m') : null,
-                'size' => number_format((abs(crc32($media->id)) % 4000 + 500) / 1024, 1), // Consistent size based on ID
+                'size' => round((abs(crc32($media->id)) % 4000 + 500) / 1024, 1), // Consistent size based on ID
                 'caption' => $caption ?? $kegiatan->judul,
                 'is_main' => false,
                 'gradId' => (abs(crc32($media->id)) % 8),

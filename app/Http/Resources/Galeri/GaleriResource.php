@@ -19,7 +19,7 @@ class GaleriResource extends JsonResource
             'url' => $this->url,
             'thumb' => $this->thumb,
             'kegiatan' => $this->kegiatan,
-            'kegiatan_id' => $this->kegiatan_id,
+            'kegiatanId' => $this->kegiatanId,
             'unit' => $this->unit,
             'tanggal' => $this->tanggal,
             'bulan' => $this->bulan,

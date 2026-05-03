@@ -20,7 +20,12 @@ class GaleriController extends Controller
      */
     public function index()
     {
-        $data = $this->galeriService->getGalleryData();
+        $filters = [];
+        if (!auth()->user()->hasRole('dev')) {
+            $filters['unit_id'] = auth()->user()->unit_kerja_id;
+        }
+
+        $data = $this->galeriService->getGalleryData($filters);
         
         return view('pages.galery.index', [
             'photos' => $data['photos'],
@@ -38,6 +43,11 @@ class GaleriController extends Controller
         try {
             $ids = $request->input('ids', []);
             $filters = $request->input('filters', []);
+
+            // Role-based filtering for ZIP download
+            if (!auth()->user()->hasRole('dev')) {
+                $filters['unit_id'] = auth()->user()->unit_kerja_id;
+            }
 
             $zipPath = $this->galeriService->generateZip($ids, $filters);
 
