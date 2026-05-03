@@ -268,6 +268,8 @@
         // Data injection from Blade to External JS
         const IS_ADMIN = {{ auth()->user()->hasRole('admin') ? 'true' : 'false' }};
         const INITIAL_STATS = @json($reportData['stats']);
+        const KEGIATAN_SHOW_URL = "{{ route('kegiatan.show', ':id') }}";
+        const KEGIATAN_DESTROY_URL = "{{ route('kegiatan.destroy', ':id') }}";
         const MASTER_DATA = {
             {{ (int)request('bulan', date('m')) }}: @json($reportData['kegiatan'])
         };

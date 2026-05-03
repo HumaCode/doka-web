@@ -580,39 +580,77 @@ function renderSummary(bulan, tahun) {
    ROW ACTIONS
    ════════════════════════════════════ */
 function viewKegiatan(id) {
-    // window.location.href = '#';
+    if (typeof KEGIATAN_SHOW_URL !== 'undefined') {
+        window.location.href = KEGIATAN_SHOW_URL.replace(':id', id);
+    } else {
+        console.error('KEGIATAN_SHOW_URL is not defined');
+        window.location.href = `/kegiatan/show/${id}`;
+    }
 }
 
 function delKegiatan(id, nama) {
     if (typeof DKA !== 'undefined') {
         DKA.deleteConfirm({
-            title: 'Hapus dari Laporan?',
-            message: 'Kegiatan ini akan dihapus dari sistem (simulasi). Data foto terkait tidak akan ikut terhapus.',
+            title: 'Hapus Kegiatan?',
+            message: 'Seluruh data kegiatan, foto, dan lampiran PDF akan dihapus permanen dari sistem.',
             itemName: nama.slice(0, 50) + (nama.length > 50 ? '...' : ''),
-            confirm: 'Ya, Hapus Kegiatan',
-        }).then(r => {
+            confirm: 'Ya, Hapus Permanen',
+        }).then(async r => {
             if (!r) return;
-            const l = DKA.loading({
+            
+            const loader = DKA.loading({
                 title: 'Menghapus kegiatan...',
-                message: 'Mohon tunggu.',
+                message: 'Menghapus data dan file media.',
                 style: 'dots'
             });
-            setTimeout(() => {
-                // Remove from data
-                const bulan = +document.getElementById('fBulan').value;
-                if (typeof MASTER_DATA !== 'undefined' && MASTER_DATA[bulan]) {
-                    const idx = MASTER_DATA[bulan].findIndex(d => d.id === id);
-                    if (idx > -1) MASTER_DATA[bulan].splice(idx, 1);
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const url = KEGIATAN_DESTROY_URL.replace(':id', id);
+
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Remove from local state
+                    const bulan = +document.getElementById('fBulan').value;
+                    if (typeof MASTER_DATA !== 'undefined' && MASTER_DATA[bulan]) {
+                        const idx = MASTER_DATA[bulan].findIndex(d => d.id === id);
+                        if (idx > -1) MASTER_DATA[bulan].splice(idx, 1);
+                    }
+                    currentData = currentData.filter(d => d.id !== id);
+
+                    loader.close();
+                    renderTable();
+                    
+                    DKA.toast({
+                        type: 'success',
+                        title: 'Terhapus',
+                        message: result.message || 'Kegiatan dan file terkait berhasil dihapus.',
+                        position: 'top-right'
+                    });
+                } else {
+                    throw new Error(result.message || 'Gagal menghapus data.');
                 }
-                l.close();
-                generateReport();
+            } catch (err) {
+                loader.close();
+                console.error(err);
                 DKA.toast({
-                    type: 'success',
-                    title: 'Kegiatan Dihapus',
-                    message: 'Data berhasil dihapus dari laporan.',
+                    type: 'error',
+                    title: 'Gagal Hapus',
+                    message: err.message || 'Terjadi kesalahan saat menghapus data.',
                     position: 'top-right'
                 });
-            }, 1200);
+            }
         });
     }
 }

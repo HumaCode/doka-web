@@ -17,6 +17,9 @@ Modul ini menyediakan visualisasi data kegiatan bulanan dengan fitur ekspor dan 
     - **Excel**: Ekspor data kegiatan ke format `.xlsx`.
     - **PDF**: Ekspor dokumen resmi dengan layout 1080px yang distandarisasi.
 4. **Access Control**: Filter otomatis `unit_id` untuk role Admin, akses penuh untuk role Dev.
+5. **Interactive Row Actions**:
+    - **View Detail**: Terintegrasi langsung ke halaman detail kegiatan utama.
+    - **Real Deletion**: Penghapusan permanen via AJAX dengan integrasi Spatie Media Library untuk pembersihan otomatis file fisik.
 
 ## 🚀 Optimasi Performa (Update 2026-05-03)
 - **N+1 Query Fix**: Menggunakan `with(['kategori', 'unitKerja'])` pada Repository.

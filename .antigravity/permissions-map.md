@@ -40,9 +40,9 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
 | `bulanan` | `laporan.bulanan` | **READ** | Laporan kegiatan bulanan & ekspor | `laporan.view` |
-| `toggleStatus` | `unit-kerja.api.toggle-status`| **UPDATE** | Aktif/Nonaktifkan unit | `unit_kerja.edit` |
-| `bulkDelete` | `unit-kerja.api.bulk-delete` | **DELETE** | Hapus banyak unit sekaligus | `unit_kerja.delete` |
-| `bulkToggleStatus` | `unit-kerja.api.bulk-toggle` | **UPDATE** | Ubah status banyak unit | `unit_kerja.edit` |
+
+> [!NOTE]
+> Halaman Laporan Bulanan juga menggunakan rute `kegiatan.show` dan `kegiatan.destroy` untuk aksi pada baris tabel.
 
 ---
 

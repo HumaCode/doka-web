@@ -59,6 +59,11 @@
 - **Server-Side Aggregation**: Memindahkan perhitungan statistik dari JavaScript ke query database SQL agregat (`selectRaw`) untuk respon yang lebih cepat.
 - **Frontend Optimization**: Menghilangkan perhitungan berat di sisi klien dengan memanfaatkan data statistik matang dari server.
 
+### 4. Laporan Bulanan Interactive Actions
+- **Redirection Logic**: Mengimplementasikan `viewKegiatan(id)` untuk mengarahkan tombol detail ke halaman `kegiatan.show` menggunakan injeksi `KEGIATAN_SHOW_URL` dari Blade.
+- **Functional Delete**: Mengimplementasikan penghapusan riil via AJAX (`DELETE` request) dengan proteksi CSRF dan integrasi `DKA.deleteConfirm`.
+- **Media Cleanup**: Memastikan penghapusan model `Kegiatan` memicu penghapusan otomatis file foto dan lampiran PDF dari storage via Spatie Media Library.
+
 ## 📄 Files Modified
 - `app/Http/Controllers/Laporan/LaporanController.php`
 - `app/Services/Laporan/LaporanService.php`
@@ -67,3 +72,4 @@
 - `public/assets/js/laporan-bulanan.js`
 - `public/assets/css/laporan-bulanan.css`
 - `.antigravity/laporan-bulanan.md`
+- `.antigravity/session-log.md`
