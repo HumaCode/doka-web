@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Laporan\LaporanController;
 use App\Http\Controllers\Kegiatan\KegiatanController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,11 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::post('/galeri/download-zip', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'downloadZip'])->name('galeri.download-zip');
     Route::delete('/galeri', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'destroy'])->name('galeri.destroy');
     Route::post('/galeri/upload', [\App\Http\Controllers\Kegiatan\GaleriController::class, 'store'])->name('galeri.store');
+
+    // Laporan
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/bulanan', [LaporanController::class, 'bulanan'])->name('bulanan');
+    });
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

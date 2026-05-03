@@ -20,7 +20,6 @@
     <!-- DKA Alert Library -->
     <link rel="stylesheet" href="{{ asset('assets/css/dka-alert.css') }}" />
 
-    @stack('css')
 
     <style>
         /* ═══════════════════════════════════════VARIABLES ═══════════════════════════════════════ */
@@ -1917,6 +1916,7 @@
             animation-delay: .20s;
         }
     </style>
+    @stack('css')
 </head>
 
 <body>

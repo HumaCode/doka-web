@@ -51,11 +51,10 @@
             </a>
         </div>
 
-        <!-- KEGIATAN -->
         <div class="nav-category">KEGIATAN</div>
         <div class="nav-item-wrap">
             <a href="{{ route('kegiatan.index') }}"
-                class="nav-link-item {{ request()->routeIs('kegiatan.*') ? 'active' : '' }}" data-label="Semua Kegiatan">
+                class="nav-link-item {{ (request()->routeIs('kegiatan.*') && !request()->routeIs('kegiatan.create')) ? 'active' : '' }}" data-label="Semua Kegiatan">
                 <i class="bi bi-calendar3-fill nav-icon"></i>
                 <span class="nav-label">Semua Kegiatan</span>
                 @if($sidebarNewKegiatanCount > 0)
@@ -81,7 +80,7 @@
         <!-- LAPORAN -->
         <div class="nav-category">LAPORAN</div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Laporan Bulanan">
+            <a href="{{ route('laporan.bulanan') }}" class="nav-link-item {{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}" data-label="Laporan Bulanan">
                 <i class="bi bi-bar-chart-fill nav-icon"></i>
                 <span class="nav-label">Laporan Bulanan</span>
             </a>
