@@ -108,9 +108,17 @@
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Pengaturan Sistem">
+            <a href="{{ route('setting.system.index') }}"
+                class="nav-link-item {{ request()->routeIs('setting.system.*') ? 'active' : '' }}" data-label="Pengaturan Sistem">
                 <i class="bi bi-gear-wide-connected nav-icon"></i>
                 <span class="nav-label">Pengaturan Sistem</span>
+            </a>
+        </div>
+        <div class="nav-item-wrap">
+            <a href="{{ route('setting.activity-log.index') }}"
+                class="nav-link-item {{ request()->routeIs('setting.activity-log.*') ? 'active' : '' }}" data-label="Log Aktivitas">
+                <i class="bi bi-clock-history nav-icon"></i>
+                <span class="nav-label">Log Aktivitas</span>
             </a>
         </div>
     </nav>

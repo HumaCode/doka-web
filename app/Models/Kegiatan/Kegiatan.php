@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
     'judul', 
@@ -29,7 +31,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class Kegiatan extends Model implements HasMedia
 {
-    use HasFactory, HasUlids, InteractsWithMedia;
+    use HasFactory, HasUlids, InteractsWithMedia, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->useLogName('kegiatan')
+            ->setDescriptionForEvent(fn(string $eventName) => "Kegiatan telah {$eventName}");
+    }
 
     /**
      * Get the attributes that should be cast.

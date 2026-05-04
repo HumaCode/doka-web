@@ -46,6 +46,18 @@ class AppServiceProvider extends ServiceProvider
         // Profile
         $this->app->bind(\App\Repositories\Master\Profile\ProfileRepositoryInterface::class, \App\Repositories\Master\Profile\ProfileRepository::class);
         $this->app->bind(\App\Services\Master\Profile\ProfileServiceInterface::class, \App\Services\Master\Profile\ProfileService::class);
+
+        // System Setting
+        $this->app->bind(\App\Repositories\Master\SystemSetting\SystemSettingRepositoryInterface::class, \App\Repositories\Master\SystemSetting\SystemSettingRepository::class);
+        $this->app->bind(\App\Services\Master\SystemSetting\SystemSettingServiceInterface::class, \App\Services\Master\SystemSetting\SystemSettingService::class);
+
+        // Activity Log
+        $this->app->bind(\App\Repositories\Master\ActivityLog\ActivityLogRepositoryInterface::class, \App\Repositories\Master\ActivityLog\ActivityLogRepository::class);
+        $this->app->bind(\App\Services\Master\ActivityLog\ActivityLogServiceInterface::class, \App\Services\Master\ActivityLog\ActivityLogService::class);
+
+        // Backup
+        $this->app->bind(\App\Repositories\Master\Backup\BackupRepositoryInterface::class, \App\Repositories\Master\Backup\BackupRepository::class);
+        $this->app->bind(\App\Services\Master\Backup\BackupServiceInterface::class, \App\Services\Master\Backup\BackupService::class);
     }
 
     /**
@@ -53,6 +65,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Handle Activity Log Global Switch
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {
+                $enabled = \App\Models\Master\SystemSetting::where('key', 'activity_log_enabled')->first();
+                if ($enabled && $enabled->value === '0') {
+                    config(['activitylog.enabled' => false]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Table might not exist yet during migration
+        }
+
         View::composer('layouts.partials.sidebar', function ($view) {
             $newUserCount = 0;
             $newKegiatanCount = 0;

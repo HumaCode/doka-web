@@ -85,6 +85,26 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::post('/profile/password', [\App\Http\Controllers\Master\ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::post('/profile/avatar', [\App\Http\Controllers\Master\ProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
     Route::post('/profile/cover', [\App\Http\Controllers\Master\ProfileController::class, 'updateCover'])->name('profile.update-cover');
+
+    // System Setting
+    Route::get('/setting/system', [\App\Http\Controllers\Master\SystemSettingController::class, 'index'])->name('setting.system.index');
+    Route::post('/setting/system', [\App\Http\Controllers\Master\SystemSettingController::class, 'update'])->name('setting.system.update');
+    Route::post('/setting/system/logo', [\App\Http\Controllers\Master\SystemSettingController::class, 'updateLogo'])->name('setting.system.update-logo');
+    Route::post('/setting/system/test-email', [\App\Http\Controllers\Master\SystemSettingController::class, 'testEmail'])->name('setting.system.test-email');
+    Route::get('/setting/security/stats', [\App\Http\Controllers\Master\SystemSettingController::class, 'getSecurityStats'])->name('setting.security.stats');
+    Route::get('/setting/security/activities', [\App\Http\Controllers\Master\SystemSettingController::class, 'getActivityLogs'])->name('setting.security.activities');
+
+    // Activity Log Routes
+    Route::get('/setting/activity-log', [\App\Http\Controllers\Master\ActivityLogController::class, 'index'])->name('setting.activity-log.index');
+    Route::get('/setting/activity-log/getallpagination', [\App\Http\Controllers\Master\ActivityLogController::class, 'getAllPagination'])->name('setting.activity-log.getallpagination');
+    Route::get('/setting/activity-log/{id}', [\App\Http\Controllers\Master\ActivityLogController::class, 'show'])->name('setting.activity-log.show');
+    Route::delete('/setting/activity-log/{id}', [\App\Http\Controllers\Master\ActivityLogController::class, 'destroy'])->name('setting.activity-log.destroy');
+
+    // Backup Routes
+    Route::get('/setting/backup', [\App\Http\Controllers\Master\BackupController::class, 'index'])->name('setting.backup.index');
+    Route::post('/setting/backup', [\App\Http\Controllers\Master\BackupController::class, 'create'])->name('setting.backup.create');
+    Route::get('/setting/backup/download/{id}', [\App\Http\Controllers\Master\BackupController::class, 'download'])->name('setting.backup.download');
+    Route::delete('/setting/backup/{id}', [\App\Http\Controllers\Master\BackupController::class, 'delete'])->name('setting.backup.delete');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

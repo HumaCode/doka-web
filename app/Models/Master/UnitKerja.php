@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
     'nama_instansi',
@@ -25,7 +27,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class UnitKerja extends Model
 {
-    use HasFactory, HasUlids;
+    use HasFactory, HasUlids, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->useLogName('unit_kerja')
+            ->setDescriptionForEvent(fn(string $eventName) => "Unit Kerja has been {$eventName}");
+    }
 
     protected $table = 'unit_kerja';
 

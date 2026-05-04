@@ -16,6 +16,7 @@ Gunakan checklist ini saat membuat modul baru untuk memastikan tidak ada layer y
 - [ ] Implementasikan **Server-Side Caching** untuk data statistik.
 - [ ] Implementasikan **Cache Invalidation** pada setiap operasi Write (Create/Update/Delete).
 - [ ] Buat `Resource` di `app/Http/Resources/Master`.
+- [ ] Gunakan `PaginateResource` di Service untuk standarisasi meta data paginasi.
 
 ## 3. Request & Controller
 - [ ] Buat `StoreRequest` & `UpdateRequest` di `app/Http/Requests/Master/{Module}`.
