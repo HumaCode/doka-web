@@ -42,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
         // Export
         $this->app->bind(\App\Repositories\Laporan\ExportRepositoryInterface::class, \App\Repositories\Laporan\ExportRepository::class);
         $this->app->bind(\App\Services\Laporan\ExportServiceInterface::class, \App\Services\Laporan\ExportService::class);
+
+        // Profile
+        $this->app->bind(\App\Repositories\Master\Profile\ProfileRepositoryInterface::class, \App\Repositories\Master\Profile\ProfileRepository::class);
+        $this->app->bind(\App\Services\Master\Profile\ProfileServiceInterface::class, \App\Services\Master\Profile\ProfileService::class);
     }
 
     /**

@@ -20,6 +20,8 @@
     <!-- DKA Alert Library -->
     <link rel="stylesheet" href="{{ asset('assets/css/dka-alert.css') }}" />
 
+    @stack('styles')
+
 
     <style>
         /* ═══════════════════════════════════════VARIABLES ═══════════════════════════════════════ */

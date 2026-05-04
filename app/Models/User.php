@@ -15,7 +15,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 
-#[Fillable(['unit_kerja_id', 'name', 'username', 'avatar', 'phone', 'nip', 'nik', 'jabatan', 'keterangan', 'gender', 'email', 'password', 'is_active', 'last_login_at', 'last_login_ip', 'google_id', 'google_token', 'google_refresh_token'])]
+#[Fillable(['unit_kerja_id', 'name', 'username', 'avatar', 'phone', 'address', 'bio', 'nip', 'nik', 'jabatan', 'keterangan', 'gender', 'email', 'password', 'is_active', 'last_login_at', 'last_login_ip', 'google_id', 'google_token', 'google_refresh_token'])]
 #[Hidden(['password', 'remember_token', 'google_token', 'google_refresh_token'])]
 class User extends Authenticatable implements HasMedia
 {
@@ -42,5 +42,29 @@ class User extends Authenticatable implements HasMedia
     public function unitKerja(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\App\Models\Master\UnitKerja::class, 'unit_kerja_id');
+    }
+
+    /**
+     * Get the kegiatans for the user.
+     */
+    public function kegiatans(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\Kegiatan\Kegiatan::class, 'petugas_id');
+    }
+
+    /**
+     * Register Media Collections
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+             ->singleFile()
+             ->useFallbackUrl(asset('assets/img/default-avatar.png'))
+             ->useFallbackPath(public_path('assets/img/default-avatar.png'));
+
+        $this->addMediaCollection('cover')
+             ->singleFile()
+             ->useFallbackUrl(asset('assets/img/default-cover.jpg'))
+             ->useFallbackPath(public_path('assets/img/default-cover.jpg'));
     }
 }

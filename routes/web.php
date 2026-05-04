@@ -78,12 +78,19 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('/export-pdf/{id}/download', [ExportController::class, 'download'])->name('export-pdf.download');
         Route::delete('/export-pdf/{id}', [ExportController::class, 'destroy'])->name('export-pdf.destroy');
     });
+
+    // Profile
+    Route::get('/profile', [\App\Http\Controllers\Master\ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/update', [\App\Http\Controllers\Master\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [\App\Http\Controllers\Master\ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    Route::post('/profile/avatar', [\App\Http\Controllers\Master\ProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
+    Route::post('/profile/cover', [\App\Http\Controllers\Master\ProfileController::class, 'updateCover'])->name('profile.update-cover');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile-default', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile-default', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update-default');
+    Route::delete('/profile-default', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

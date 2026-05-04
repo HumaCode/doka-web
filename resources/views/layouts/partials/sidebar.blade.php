@@ -95,7 +95,8 @@
         <!-- PENGATURAN -->
         <div class="nav-category">PENGATURAN</div>
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Profil Saya">
+            <a href="{{ route('profile.index') }}"
+                class="nav-link-item {{ request()->routeIs('profile.*') ? 'active' : '' }}" data-label="Profil Saya">
                 <i class="bi bi-person-fill-gear nav-icon"></i>
                 <span class="nav-label">Profil Saya</span>
             </a>
@@ -116,12 +117,12 @@
 
     <!-- Sidebar footer -->
     <div class="sidebar-footer">
-        <div class="sidebar-user-mini">
+        <a href="{{ route('profile.index') }}" class="sidebar-user-mini" style="text-decoration: none;">
             <div class="sidebar-avatar-sm">{{ auth()->user()->name[0] }}</div>
             <div class="sidebar-user-info">
                 <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
                 <div class="sidebar-user-role">Administrator</div>
             </div>
-        </div>
+        </a>
     </div>
 </aside>

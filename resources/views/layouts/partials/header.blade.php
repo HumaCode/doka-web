@@ -46,9 +46,9 @@
                      <div class="dropdown-email">{{ auth()->user()->email }}</div>
                  </div>
                  <div class="dropdown-items">
-                     <button class="dropdown-item-btn">
-                         <i class="bi bi-person-fill"></i> Profil Saya
-                     </button>
+                     <a href="{{ route('profile.index') }}" class="dropdown-item-btn" style="text-decoration: none;">
+                        <i class="bi bi-person-fill"></i> Profil Saya
+                    </a>
                      <button class="dropdown-item-btn">
                          <i class="bi bi-gear-fill"></i> Pengaturan
                      </button>
