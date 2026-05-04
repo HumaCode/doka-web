@@ -135,5 +135,65 @@
 
 ## ⚠️ Catatan Penting untuk Sesi Berikutnya
 1. **Konsistensi Switch**: Setiap perubahan pada switch di `export-pdf.blade.php` **HARUS** diperbarui di `previewFull()` dan `doExport()` di `export-pdf.js`.
-2. **Tipe Baru**: Untuk menambah jenis dokumen baru, tambahkan `@if($type == '...')` di bagian `doc-body` pada `preview-pdf.blade.php` dan sesuaikan `$perPage` di bagian PHP atas.
-3. **SSR Export**: Modul preview sudah stabil. Langkah selanjutnya adalah memastikan Browsershot/Puppeteer membaca parameter yang sama agar file PDF fisik identik dengan preview.
+2. **Tipe Baru**: Untuk menambah jenis dokumen baru, tambahkan `@if($type == '...')` di bagian `doc-body` pada `preview-pdf.blade.php` **DAN** `export-pdf-render.blade.php`, serta sesuaikan `$perPage` di masing-masing template.
+3. **DomPDF Limitations**: DomPDF tidak support CSS Grid, Flexbox terbatas, dan tidak bisa load external fonts/icons. Gunakan `<table>` untuk layout dan HTML entities untuk ikon.
+4. **PerPage Sync**: `preview-pdf.blade.php` dan `export-pdf-render.blade.php` memiliki `$perPage` berbeda (16 vs 13 untuk tabel). Jangan samakan karena rendering engine berbeda.
+
+# 📝 Session Log - 2026-05-04 (Sesi 3 — Server-Side PDF & Download)
+
+## 🔄 Updates Summary
+
+### 1. DomPDF Integration
+- **Install**: `composer require barryvdh/laravel-dompdf` (v3.1.2).
+- **Template Baru**: `export-pdf-render.blade.php` — Blade khusus DomPDF dengan CSS inline penuh, tanpa external fonts/icons/CSS Grid.
+- **Bar Chart**: Menggunakan 3-row `<table>` (value → bar → label) karena DomPDF tidak support flexbox vertical align.
+- **PerPage**: 13 baris (tabel), 4 (galeri), 2 (detail) — lebih kecil dari preview karena DomPDF render font lebih tinggi.
+
+### 2. Download Route & Controller
+- **Route**: `GET /export-pdf/{id}/download` → `ExportController@download`.
+- **Controller Method**: `download()` mengambil media file via `ExportService::getDownloadMedia()` dan return `response()->download()`.
+- **Error Handling**: Redirect dengan flash message jika file tidak ditemukan.
+
+### 3. History Download Button (JS)
+- **renderHistory()**: Tombol download diganti dari `<a>` ke `<button>` yang memanggil `downloadHist()`.
+- **downloadHist()**: Fungsi baru — buat hidden `<a>` tag → trigger click → file terunduh. Notifikasi via `DKA.notify`.
+- **Fallback**: Tombol disabled + opacity jika file tidak tersedia.
+- **URL Source**: Menggunakan `download_url` dari server (di-append oleh ExportService) atau fallback ke route template `EXPORT_DOWNLOAD_URL`.
+
+### 4. Real PDF Generation (Service Layer)
+- **processExport()**: Rombak total — sekarang:
+  1. Fetch kegiatan real dari database via repository.
+  2. Render `export-pdf-render.blade.php` via DomPDF.
+  3. Generate PDF binary, hitung page count dari content.
+  4. Simpan ke `storage/app/temp/`, attach ke Spatie Media Library.
+  5. Return ExportHistory dengan `download_url`.
+- **getDownloadMedia()**: Method baru — findHistory → getFirstMedia('export_files').
+
+### 5. Repository Updates
+- **findHistory()**: Method baru — `ExportHistory::findOrFail($id)`.
+- **Query Optimization**: Eager load `media` relation + `withCount('media as media_count')` dalam satu query.
+- **Clone Fix**: Semua sub-query menggunakan `(clone $query)` untuk menghindari mutasi query builder.
+
+### 6. Real Photo Display (Preview)
+- **Galeri Foto**: Placeholder icon diganti `<img>` dari `$keg->getFirstMediaUrl('foto_kegiatan')` dengan `object-fit:cover` + `position:absolute` untuk center-crop.
+- **Detail Kegiatan**: Thumbnail menampilkan foto asli dengan fallback icon.
+- **Eager Load**: Repository sekarang load `media` relation (`with(['kategori', 'unitKerja', 'media'])`).
+
+### 7. Blade Constants
+- **EXPORT_DOWNLOAD_URL**: Tambah JS constant di `export-pdf.blade.php` untuk route template download.
+
+## 📄 Files Modified
+- `composer.json` — Tambah `barryvdh/laravel-dompdf`
+- `routes/web.php` — Tambah route download
+- `app/Http/Controllers/Laporan/ExportController.php` — Tambah method `download()`
+- `app/Services/Laporan/ExportService.php` — Rombak `processExport()`, tambah `getDownloadMedia()`
+- `app/Services/Laporan/ExportServiceInterface.php` — Tambah contract `getDownloadMedia()`
+- `app/Repositories/Laporan/ExportRepository.php` — Tambah `findHistory()`, fix query
+- `app/Repositories/Laporan/ExportRepositoryInterface.php` — Tambah contract `findHistory()`
+- `resources/views/pages/laporan/export-pdf-render.blade.php` — **File baru** (template DomPDF)
+- `resources/views/pages/laporan/export-pdf.blade.php` — Tambah `EXPORT_DOWNLOAD_URL` constant
+- `resources/views/pages/laporan/preview-pdf.blade.php` — Real photo display + image centering fix
+- `public/assets/js/export-pdf.js` — `downloadHist()`, `renderHistory()` update, paper_size/orientation in payload
+- `.antigravity/export-pdf.md` — Update dokumentasi
+- `.antigravity/session-log.md` — Tambah log sesi ini
+

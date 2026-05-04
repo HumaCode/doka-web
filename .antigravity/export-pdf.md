@@ -9,7 +9,10 @@ Modul ini digunakan untuk mengekspor berbagai data sistem (Kegiatan, Statistik, 
 4. **PDF Options**: Pengaturan ukuran kertas (A4, A3, F4, Letter), orientasi (Portrait/Landscape), serta opsi watermark dan kompresi gambar.
 5. **Configuration Sync**: Semua switch (Cover, Grafik, Foto, Footer, Watermark) di halaman konfigurasi otomatis sinkron ke preview via URL params.
 6. **Print-Optimized**: Layout cetak yang rapi dengan 16 baris data per halaman, page break otomatis, dan UI chrome tersembunyi saat print.
-7. **Export History**: Mencatat riwayat unduhan PDF sebelumnya dengan fitur unduh ulang dan hapus riwayat.
+7. **Export History**: Mencatat riwayat unduhan PDF dengan fitur unduh ulang dan hapus riwayat.
+8. **Server-Side PDF Generation**: Menggunakan **DomPDF** (`barryvdh/laravel-dompdf`) untuk generate file PDF asli dari data real.
+9. **Download Route**: Route dedicated `GET /export-pdf/{id}/download` untuk unduh file PDF dari history.
+10. **Real Photo Display**: Galeri Foto dan Detail Kegiatan menampilkan foto asli dari Spatie Media Library (collection `foto_kegiatan`).
 
 ## 📐 Layout per Jenis Dokumen
 
@@ -29,9 +32,18 @@ Setiap jenis dokumen memiliki "karakter" tampilan yang berbeda:
 - **Laporan Bulanan, Rekap Unit, Kustom**: Halaman Ringkasan/Statistik **ditampilkan** dengan grafik dan data agregat.
 
 ## 🔧 Konfigurasi Data per Halaman
+
+### Preview (Browser - `preview-pdf.blade.php`)
 - **Tabel (Bulanan, Daftar, Rekap, Kustom)**: `16 baris per halaman`
 - **Galeri Foto**: `6 item per halaman` (grid 2x3)
 - **Detail Kegiatan**: `3 kartu per halaman`
+
+### Export PDF (DomPDF - `export-pdf-render.blade.php`)
+- **Tabel**: `13 baris per halaman` (DomPDF render lebih tinggi per baris)
+- **Galeri Foto**: `4 item per halaman`
+- **Detail Kegiatan**: `2 kartu per halaman`
+
+> **Catatan**: DomPDF dan browser memiliki metric font berbeda. Jika baris per halaman terlalu banyak, sisa data akan tumpah ke halaman baru yang nyaris kosong. Angka di atas sudah disesuaikan.
 
 ## 🎨 Thumbnail Sidebar (Preview)
 
@@ -69,18 +81,34 @@ Fungsi `previewFull()` dan `doExport()` di `export-pdf.js` membaca state checkbo
 
 ## 🛠️ Detail Teknis
 - **Controller**: `App\Http\Controllers\Laporan\ExportController`
-- **Route Name**: `laporan.export-pdf`
-- **Preview Route**: `laporan/export-pdf/preview-full` (GET with query params)
-- **Assets**: 
-    - CSS: `public/assets/css/export-pdf.css`
-    - JS: `public/assets/js/export-pdf.js`
+- **Service**: `App\Services\Laporan\ExportService` (implements `ExportServiceInterface`)
+- **Repository**: `App\Repositories\Laporan\ExportRepository` (implements `ExportRepositoryInterface`)
+- **Model**: `App\Models\Laporan\ExportHistory` (Spatie HasMedia, collection `export_files`)
+- **PDF Library**: `barryvdh/laravel-dompdf` v3.1
 - **Sidebar State**: Secara otomatis dalam posisi *collapsed* saat mengakses halaman ini.
 
+### Routes
+| Route | Method | Name | Deskripsi |
+|-------|--------|------|-----------|
+| `laporan/export-pdf` | GET | `laporan.export-pdf` | Halaman konfigurasi |
+| `laporan/export-pdf` | POST | `laporan.export-pdf.store` | Generate & simpan PDF |
+| `laporan/export-pdf/preview` | GET | `laporan.export-pdf.preview` | Preview stats (AJAX) |
+| `laporan/export-pdf/preview-full` | GET | `laporan.export-pdf.preview-full` | Preview full page |
+| `laporan/export-pdf/{id}/download` | GET | `laporan.export-pdf.download` | Download file PDF |
+| `laporan/export-pdf/{id}` | DELETE | `laporan.export-pdf.destroy` | Hapus history |
+
+### Assets
+- CSS: `public/assets/css/export-pdf.css`
+- JS: `public/assets/js/export-pdf.js`
+
 ## 📂 File Kunci
-- `resources/views/pages/laporan/preview-pdf.blade.php` — Master file untuk logika tampilan preview dan navigasi.
+- `resources/views/pages/laporan/preview-pdf.blade.php` — Preview interaktif (browser, dengan toolbar/sidebar).
+- `resources/views/pages/laporan/export-pdf-render.blade.php` — Template DomPDF (server-side, tanpa UI chrome).
 - `resources/views/pages/laporan/export-pdf.blade.php` — Halaman konfigurasi (switch, filter, tombol export).
-- `public/assets/js/export-pdf.js` — Engine utama yang menangani pengiriman parameter konfigurasi.
+- `public/assets/js/export-pdf.js` — Engine utama (preview, export AJAX, history management).
 - `public/assets/css/export-pdf.css` — Styling halaman konfigurasi.
+- `app/Services/Laporan/ExportService.php` — Logika generate PDF via DomPDF.
+- `app/Repositories/Laporan/ExportRepository.php` — Query data kegiatan + history management.
 
 ## 🚀 Riwayat Implementasi
 
@@ -98,3 +126,32 @@ Fungsi `previewFull()` dan `doExport()` di `export-pdf.js` membaca state checkbo
 - **Nomor Urut Sequential**: Penomoran tabel 1, 2, 3... berurutan antar halaman.
 - **Rekap Unit Grouped**: Data dikelompokkan per Unit Kerja dengan header pemisah.
 - **Detail Kegiatan Card Layout**: Tampilan kartu dengan foto + deskripsi lengkap.
+
+### Update 2026-05-04 (Sesi 3 — Server-Side PDF & Download)
+- **DomPDF Integration**: Install `barryvdh/laravel-dompdf` untuk generate PDF asli.
+- **Template `export-pdf-render.blade.php`**: Blade khusus DomPDF — CSS inline, tanpa external fonts/icons, table-based chart.
+- **Download Route**: `GET /export-pdf/{id}/download` dengan controller method `download()`.
+- **History Download Button**: Tombol download di tabel riwayat sekarang fungsional via `downloadHist()` JS.
+- **Real Data Export**: `processExport()` mengambil data real dari database (bukan dummy file).
+- **Page Count Accurate**: Jumlah halaman dihitung dari output PDF real (`preg_match_all`).
+- **PerPage Tuning**: Dikurangi ke 13/4/2 untuk DomPDF agar tidak overflow ke halaman kosong.
+- **Real Photo in Preview**: Galeri Foto & Detail Kegiatan menampilkan foto asli dari `foto_kegiatan` collection.
+- **Eager Load Media**: Repository query sekarang `with(['kategori', 'unitKerja', 'media'])` + `withCount('media as media_count')`.
+- **Service Layer**: Tambah method `getDownloadMedia()` di ExportService.
+- **Repository Layer**: Tambah method `findHistory()` di ExportRepository.
+
+## ⚠️ Alur Export PDF (Server-Side)
+```
+User klik "Export PDF Sekarang"
+→ JS POST ke /export-pdf (dengan filters + options)
+→ ExportService::processExport()
+  1. Query kegiatan dari DB (dengan filter)
+  2. Render export-pdf-render.blade.php via DomPDF
+  3. setPaper(size, orientation)
+  4. output() → binary PDF
+  5. Hitung page count dari PDF content
+  6. Simpan ke storage/app/temp/ → attach ke Spatie Media (collection: export_files)
+  7. Return ExportHistory + download_url
+→ JS update tabel riwayat + notifikasi sukses
+→ Tombol download → GET /export-pdf/{id}/download → response()->download()
+```
