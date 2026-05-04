@@ -309,10 +309,19 @@
         .galeri-thumb {
             height: 110px;
             background: #cbd5e1;
+            position: relative;
+            overflow: hidden;
             text-align: center;
-            line-height: 110px;
+        }
+        .galeri-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .galeri-thumb i {
             color: #94a3b8;
             font-size: 28pt;
+            line-height: 110px;
         }
         .galeri-info { padding: 10px; }
         .galeri-name {
@@ -355,13 +364,21 @@
             height: 110px;
             background: #f1f5f9;
             border-radius: 6px;
-            text-align: center;
-            line-height: 110px;
-            color: #cbd5e1;
-            font-size: 24pt;
+            overflow: hidden;
             float: left;
             margin-right: 16px;
             margin-bottom: 8px;
+            text-align: center;
+        }
+        .det-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .det-thumb i {
+            color: #cbd5e1;
+            font-size: 24pt;
+            line-height: 110px;
         }
 
         /* ═══ FOOTER ═══ */
@@ -527,7 +544,14 @@
             @foreach($row as $keg)
                 <td>
                     <div class="galeri-item">
-                        <div class="galeri-thumb">&#128247;</div>
+                        <div class="galeri-thumb">
+                            @php $foto = $keg->getFirstMedia('foto_kegiatan'); @endphp
+                            @if($foto)
+                                <img src="{{ $foto->getPath() }}" alt="Foto">
+                            @else
+                                <i>&#128247;</i>
+                            @endif
+                        </div>
                         <div class="galeri-info">
                             <div class="galeri-name">{{ $keg->judul }}</div>
                             <div class="galeri-meta">#{{ ($ci*$perPage)+$loop->parent->iteration*2-2+$loop->iteration }} &middot; {{ $keg->tanggal->format('d M Y') }} &middot; {{ $keg->media_count }} Foto</div>
@@ -544,7 +568,14 @@
         <div class="sec-title">&#128196; Detail Laporan Kegiatan</div>
         @foreach($chunk as $keg)
         <div class="det-card">
-            <div class="det-thumb">&#128247;</div>
+            <div class="det-thumb">
+                @php $foto = $keg->getFirstMedia('foto_kegiatan'); @endphp
+                @if($foto)
+                    <img src="{{ $foto->getPath() }}" alt="Foto">
+                @else
+                    <i>&#128247;</i>
+                @endif
+            </div>
             <div class="det-title">{{ $keg->judul }}</div>
             <div class="det-meta">{{ $keg->tanggal->format('d F Y') }} &middot; {{ $keg->unitKerja->nama_instansi ?? '-' }} &middot; {{ $keg->media_count ?: 0 }} Foto</div>
             <div class="det-desc">{{ $keg->deskripsi ?? 'Kegiatan ini didokumentasikan untuk keperluan laporan resmi Pemerintah Kota Pekalongan.' }}</div>
