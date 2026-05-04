@@ -66,6 +66,20 @@ class ExportController extends Controller
     }
 
     /**
+     * Download an export history file.
+     */
+    public function download($id)
+    {
+        try {
+            $media = $this->exportService->getDownloadMedia($id);
+            return response()->download($media->getPath(), $media->file_name);
+        } catch (\Exception $e) {
+            return redirect()->route('laporan.export-pdf')
+                ->with('error', 'File tidak ditemukan atau sudah dihapus.');
+        }
+    }
+
+    /**
      * Delete history record.
      */
     public function destroy($id)

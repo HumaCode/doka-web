@@ -635,12 +635,13 @@
                             <div class="doc-section-title"><i class="bi bi-images"></i> Album Foto Kegiatan</div>
                             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                                 @foreach($chunk as $keg)
+                                    @php $fotoUrl = $keg->getFirstMediaUrl('foto_kegiatan'); @endphp
                                     <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc;">
-                                        <div style="aspect-ratio: 16/9; background: #cbd5e1; display: grid; place-items: center; color: #fff; overflow:hidden;">
-                                            @if($keg->media_count > 0)
-                                                <i class="bi bi-camera-fill" style="font-size: 2rem; opacity: 0.2;"></i>
+                                        <div style="aspect-ratio: 16/9; background: #cbd5e1; position:relative; overflow:hidden;">
+                                            @if($fotoUrl)
+                                                <img src="{{ $fotoUrl }}" alt="{{ $keg->judul }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;" />
                                             @else
-                                                <i class="bi bi-image" style="font-size: 2rem; opacity: 0.2;"></i>
+                                                <div style="width:100%; height:100%; display:grid; place-items:center;"><i class="bi bi-image" style="font-size: 2rem; color:#fff; opacity: 0.2;"></i></div>
                                             @endif
                                         </div>
                                         <div style="padding: 10px;">
@@ -656,10 +657,15 @@
                         @elseif($type == 'detail-kegiatan')
                             <div class="doc-section-title"><i class="bi bi-file-text"></i> Detail Laporan Kegiatan</div>
                             @foreach($chunk as $keg)
+                                @php $fotoUrl = $keg->getFirstMediaUrl('foto_kegiatan'); @endphp
                                 <div style="margin-bottom:25px; padding-bottom:20px; border-bottom:1px dashed #e2e8f0;">
                                     <div style="display:flex; gap:15px;">
-                                        <div style="width:180px; height:120px; background:#f1f5f9; border-radius:8px; flex-shrink:0; display:grid; place-items:center;">
-                                            <i class="bi bi-images" style="font-size:1.5rem; color:#cbd5e1;"></i>
+                                        <div style="width:180px; height:120px; background:#f1f5f9; border-radius:8px; flex-shrink:0; display:grid; place-items:center; overflow:hidden;">
+                                            @if($fotoUrl)
+                                                <img src="{{ $fotoUrl }}" alt="{{ $keg->judul }}" style="width:100%; height:100%; object-fit:cover;" />
+                                            @else
+                                                <i class="bi bi-images" style="font-size:1.5rem; color:#cbd5e1;"></i>
+                                            @endif
                                         </div>
                                         <div style="flex-grow:1;">
                                             <div style="font-size:10pt; font-weight:900; color:var(--c-primary); margin-bottom:4px;">{{ $keg->judul }}</div>

@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('/export-pdf/preview', [ExportController::class, 'getPreview'])->name('export-pdf.preview');
         Route::get('/export-pdf/preview-full', [ExportController::class, 'previewFull'])->name('export-pdf.preview-full');
         Route::post('/export-pdf', [ExportController::class, 'store'])->name('export-pdf.store');
+        Route::get('/export-pdf/{id}/download', [ExportController::class, 'download'])->name('export-pdf.download');
         Route::delete('/export-pdf/{id}', [ExportController::class, 'destroy'])->name('export-pdf.destroy');
     });
 });

@@ -28,6 +28,14 @@ interface ExportServiceInterface
     public function processExport(array $data);
 
     /**
+     * Get the media file for downloading.
+     *
+     * @param string $id
+     * @return \Spatie\MediaLibrary\MediaCollections\Models\Media
+     */
+    public function getDownloadMedia(string $id);
+
+    /**
      * Delete history record and its associated file.
      *
      * @param string $id

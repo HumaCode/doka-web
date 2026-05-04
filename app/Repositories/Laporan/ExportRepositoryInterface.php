@@ -21,6 +21,14 @@ interface ExportRepositoryInterface
     public function getPreviewStats(array $filters);
 
     /**
+     * Find an export history record by ID.
+     *
+     * @param string $id
+     * @return \App\Models\Laporan\ExportHistory
+     */
+    public function findHistory(string $id);
+
+    /**
      * Create a new export history record.
      *
      * @param array $data

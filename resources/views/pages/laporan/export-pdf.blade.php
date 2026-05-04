@@ -516,6 +516,7 @@
         const EXPORT_PREVIEW_URL = "{{ route('laporan.export-pdf.preview') }}";
         const EXPORT_PREVIEW_FULL_URL = "{{ route('laporan.export-pdf.preview-full') }}";
         const EXPORT_STORE_URL = "{{ route('laporan.export-pdf.store') }}";
+        const EXPORT_DOWNLOAD_URL = "{{ route('laporan.export-pdf.download', ':id') }}";
         const EXPORT_DESTROY_URL = "{{ route('laporan.export-pdf.destroy', ':id') }}";
         const INITIAL_HISTORY = @json($history);
     </script>

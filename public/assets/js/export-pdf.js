@@ -79,7 +79,9 @@ function renderHistory() {
     const t = HIST_TYPES[h.type] || HIST_TYPES['kustom'];
     const media = h.media?.[0];
     const size = media ? (media.size / 1024 / 1024).toFixed(1) + ' MB' : '—';
-    const downloadUrl = media ? media.original_url : '#';
+    // Use download_url from server (appended by Service), fallback to route template
+    const downloadUrl = h.download_url || (typeof EXPORT_DOWNLOAD_URL !== 'undefined' ? EXPORT_DOWNLOAD_URL.replace(':id', h.id) : '#');
+    const hasFile = !!(h.download_url || media);
 
     return `
       <tr>
@@ -98,7 +100,9 @@ function renderHistory() {
         <td style="font-size:.78rem;color:var(--c-muted);white-space:nowrap;">${formatWaktu(h.created_at)}</td>
         <td>
           <div class="ht-actions">
-            <a href="${downloadUrl}" class="ht-btn htb-dl" target="_blank" title="Unduh"><i class="bi bi-download"></i></a>
+            <button class="ht-btn htb-dl" onclick="downloadHist('${h.id}', '${downloadUrl}')" title="Unduh" ${!hasFile ? 'disabled style="opacity:.4;cursor:not-allowed;"' : ''}>
+              <i class="bi bi-download"></i>
+            </button>
             <button class="ht-btn htb-del" onclick="deleteHist('${h.id}')" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
           </div>
         </td>
@@ -274,7 +278,9 @@ function doExport() {
           show_page_number: document.getElementById('optPageNum')?.checked,
           use_watermark: document.getElementById('optWatermark')?.checked,
           include_cover: document.getElementById('optCover')?.checked,
-          compress_image: document.getElementById('optCompress')?.checked
+          compress_image: document.getElementById('optCompress')?.checked,
+          paper_size: document.getElementById('fKertas')?.value || 'a4',
+          orientation: document.getElementById('fOrientasi')?.value || 'portrait'
       }
   };
 
@@ -378,6 +384,28 @@ function deleteHist(id) {
         });
     });
   }
+}
+
+function downloadHist(id, url) {
+  if (!url || url === '#') {
+    if (typeof DKA !== 'undefined') {
+      DKA.notify({ type: 'warning', title: 'File Tidak Tersedia', message: 'File PDF belum tersedia untuk diunduh.', duration: 4000 });
+    }
+    return;
+  }
+
+  // Show download notification
+  if (typeof DKA !== 'undefined') {
+    DKA.notify({ type: 'info', title: 'Mengunduh...', message: 'File PDF sedang diunduh.', duration: 3000 });
+  }
+
+  // Trigger download via hidden link
+  const a = document.createElement('a');
+  a.href = url;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function previewFull() {

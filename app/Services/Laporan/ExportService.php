@@ -5,7 +5,9 @@ namespace App\Services\Laporan;
 use App\Repositories\Laporan\ExportRepositoryInterface;
 use App\Models\Master\Kategori;
 use App\Models\Master\UnitKerja;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ExportService implements ExportServiceInterface
 {
@@ -18,10 +20,17 @@ class ExportService implements ExportServiceInterface
 
     public function getExportPageData()
     {
+        $history = $this->exportRepository->getHistory(Auth::id());
+
+        // Append download_url to each history item
+        $history->each(function ($item) {
+            $item->download_url = route('laporan.export-pdf.download', $item->id);
+        });
+
         return [
             'categories' => Kategori::where('status', 'active')->get(),
             'units' => UnitKerja::where('status', 'active')->get(),
-            'history' => $this->exportRepository->getHistory(Auth::id())
+            'history' => $history
         ];
     }
 
@@ -32,33 +41,75 @@ class ExportService implements ExportServiceInterface
 
     public function processExport(array $data)
     {
-        // 1. Prepare data for record
-        $historyData = [
+        $filters = $data['filters'] ?? [];
+        $options = $data['options'] ?? [];
+        $type = $data['type'] ?? 'laporan-bulanan';
+        $title = $data['title'] ?? 'Laporan Export';
+
+        // 1. Fetch real data from repository
+        $previewData = $this->exportRepository->getPreviewStats($filters);
+        $kegiatans = $previewData['kegiatans'];
+
+        // 2. Determine paper config
+        $paperSize = $options['paper_size'] ?? 'a4';
+        $orientation = $options['orientation'] ?? 'portrait';
+
+        // 3. Render the PDF via DomPDF
+        $pdf = Pdf::loadView('pages.laporan.export-pdf-render', [
+            'kegiatans' => $kegiatans,
+            'type' => $type,
+            'title' => $title,
+            'filters' => $filters,
+            'options' => $options,
+        ]);
+
+        $pdf->setPaper($paperSize, $orientation);
+
+        // Render to get page count
+        $pdfContent = $pdf->output();
+        $pageCount = preg_match_all('/\/Type\s*\/Page[^s]/', $pdfContent);
+        if ($pageCount < 1) $pageCount = 1;
+
+        // 4. Create history record
+        $history = $this->exportRepository->createHistory([
             'user_id' => Auth::id(),
-            'type' => $data['type'],
-            'title' => $data['title'] ?? 'Laporan Export',
-            'params' => $data['filters'],
-            'page_count' => rand(1, 10), // Dummy for now
-        ];
+            'type' => $type,
+            'title' => $title,
+            'params' => $filters,
+            'page_count' => $pageCount,
+        ]);
 
-        // 2. Create record
-        $history = $this->exportRepository->createHistory($historyData);
-
-        // 3. TODO: Generate actual PDF here
-        // For now, we'll simulate by adding a dummy file to Spatie Media Library
-        // In a real scenario, you'd use Browsershot/DomPDF and addMedia() from string/disk
-        
-        // Simulating a file for Spatie
-        $dummyPath = storage_path('app/public/dummy_export.pdf');
-        if (!file_exists($dummyPath)) {
-            file_put_contents($dummyPath, '%PDF-1.4 dummy content');
+        // 5. Save PDF to temp file
+        $tempDir = storage_path('app/temp');
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
         }
+        $fileName = Str::slug($title) . '-' . now()->format('Ymd-His') . '.pdf';
+        $tempPath = $tempDir . '/' . $fileName;
+        file_put_contents($tempPath, $pdfContent);
 
-        $history->addMedia($dummyPath)
-            ->preservingOriginal()
+        // 6. Attach to Spatie Media Library
+        $history->addMedia($tempPath)
+            ->usingFileName($fileName)
             ->toMediaCollection('export_files');
 
+        // 7. Reload with media and append download_url
+        $history->load('media');
+        $history->download_url = route('laporan.export-pdf.download', $history->id);
+
         return $history;
+    }
+
+    public function getDownloadMedia(string $id)
+    {
+        $history = $this->exportRepository->findHistory($id);
+        $media = $history->getFirstMedia('export_files');
+
+        if (!$media) {
+            throw new \Exception('File media tidak ditemukan.');
+        }
+
+        return $media;
     }
 
     public function deleteHistory(string $id)

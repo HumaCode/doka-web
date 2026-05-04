@@ -43,12 +43,14 @@ class ExportRepository implements ExportRepositoryInterface
             $query->where('status', $filters['status']);
         }
 
-        $totalKegiatan = $query->count();
-        $totalFoto = $query->withCount('media')->get()->sum('media_count');
+        $totalKegiatan = (clone $query)->count();
         $unitAktif = (clone $query)->distinct('unit_id')->count('unit_id');
         
-        // Get all activities for full preview (or at least a larger sample)
-        $kegiatans = (clone $query)->with(['kategori', 'unitKerja'])->latest()->get();
+        // Get all activities for full preview with media_count
+        $kegiatans = (clone $query)->with(['kategori', 'unitKerja', 'media'])->withCount('media as media_count')->latest()->get();
+
+        // Derive totalFoto from the loaded collection
+        $totalFoto = $kegiatans->sum('media_count');
 
         // Calculations for "Informasi Export" card
         $estimatedPages = ceil($totalKegiatan / 4) + 1; // 1 cover + activities
@@ -66,6 +68,11 @@ class ExportRepository implements ExportRepositoryInterface
                 'waktu' => $estimatedTime . ' detik'
             ]
         ];
+    }
+
+    public function findHistory(string $id)
+    {
+        return ExportHistory::findOrFail($id);
     }
 
     public function createHistory(array $data)
