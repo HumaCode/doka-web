@@ -35,61 +35,73 @@
         </nav>
     </div>
 
-    <!-- Mini Stats (Style from unit-kerja) -->
-    <div class="mini-stats fade-up">
-        <div class="mini-stat ms1">
-            <div class="mini-stat-icon"><i class="bi bi-list-check"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc1">{{ \Spatie\Activitylog\Models\Activity::count() }}</div>
-                <div class="mini-stat-lbl">Total Seluruh Log</div>
+    <!-- Mini Stats -->
+    <div class="row g-3 fade-up mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms1">
+                <div class="mini-stat-icon"><i class="bi bi-list-check"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc1">{{ \Spatie\Activitylog\Models\Activity::count() }}</div>
+                    <div class="mini-stat-lbl">Total Log</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms2">
-            <div class="mini-stat-icon"><i class="bi bi-calendar-event"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc2">{{ \Spatie\Activitylog\Models\Activity::whereDate('created_at', today())->count() }}</div>
-                <div class="mini-stat-lbl">Log Hari Ini</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms2">
+                <div class="mini-stat-icon"><i class="bi bi-calendar-event"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc2">{{ \Spatie\Activitylog\Models\Activity::whereDate('created_at', today())->count() }}</div>
+                    <div class="mini-stat-lbl">Hari Ini</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms3">
-            <div class="mini-stat-icon"><i class="bi bi-person-badge"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc3">{{ \Spatie\Activitylog\Models\Activity::whereNotNull('causer_id')->count() }}</div>
-                <div class="mini-stat-lbl">Aktivitas User</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms3">
+                <div class="mini-stat-icon"><i class="bi bi-person-badge"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc3">{{ \Spatie\Activitylog\Models\Activity::whereNotNull('causer_id')->count() }}</div>
+                    <div class="mini-stat-lbl">User</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms4">
-            <div class="mini-stat-icon"><i class="bi bi-cpu-fill"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc4">{{ \Spatie\Activitylog\Models\Activity::whereNull('causer_id')->count() }}</div>
-                <div class="mini-stat-lbl">Sistem / Auto</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms4">
+                <div class="mini-stat-icon"><i class="bi bi-cpu-fill"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc4">{{ \Spatie\Activitylog\Models\Activity::whereNull('causer_id')->count() }}</div>
+                    <div class="mini-stat-lbl">Sistem</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Toolbar (Style from unit-kerja) -->
-    <div class="toolbar fade-up">
-        <div class="toolbar-search">
+    <!-- Toolbar -->
+    <div class="toolbar fade-up mb-4 d-flex flex-wrap gap-2">
+        <div class="toolbar-search flex-grow-1" style="min-width: 200px;">
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari deskripsi log..." oninput="renderTable(1)" />
+            <input type="text" id="searchInput" class="form-control" placeholder="Cari deskripsi log..." oninput="renderTable(1)" />
         </div>
-        <select class="toolbar-select" name="log_name" onchange="renderTable(1)">
-            <option value="">Semua Modul</option>
-            <option value="kegiatan">Kegiatan</option>
-            <option value="user">User & Akun</option>
-            <option value="unit_kerja">Unit Kerja</option>
-        </select>
-        <select class="toolbar-select" name="event" onchange="renderTable(1)">
-            <option value="">Semua Aksi</option>
-            <option value="created">Tambah (Created)</option>
-            <option value="updated">Ubah (Updated)</option>
-            <option value="deleted">Hapus (Deleted)</option>
-        </select>
-        <button class="btn-reset" onclick="resetFilters()" title="Reset Filter">
-            <i class="bi bi-arrow-counterclockwise"></i>
-        </button>
-        <div class="toolbar-right">
-            <button class="btn-toolbar btn-export" onclick="DKA.notify({type:'info', message:'Fitur export sedang disiapkan'})"><i class="bi bi-download"></i> Export CSV</button>
+        <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+            <select class="toolbar-select form-select" name="log_name" onchange="renderTable(1)" style="min-width: 130px;">
+                <option value="">Semua Modul</option>
+                <option value="kegiatan">Kegiatan</option>
+                <option value="user">User & Akun</option>
+                <option value="unit_kerja">Unit Kerja</option>
+            </select>
+            <select class="toolbar-select form-select" name="event" onchange="renderTable(1)" style="min-width: 130px;">
+                <option value="">Semua Aksi</option>
+                <option value="created">Tambah</option>
+                <option value="updated">Ubah</option>
+                <option value="deleted">Hapus</option>
+            </select>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()" title="Reset Filter">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+        </div>
+        <div class="ms-auto-md">
+            <button class="btn btn-primary" onclick="DKA.notify({type:'info', message:'Fitur export sedang disiapkan'})">
+                <i class="bi bi-download me-1"></i> Export CSV
+            </button>
         </div>
     </div>
 

@@ -299,3 +299,49 @@
 - Memperbaiki ketidakkonsistenan antara modul Kategori dan modul Pengaturan.
 - Menstandarisasi format response JSON di seluruh aplikasi.
 
+
+# 📝 Session Log - 2026-05-05 (Frontend, Search, & Shield Enhancement)
+
+## 🔄 Updates Summary
+
+### 1. Frontend Landing Page Implementation
+- **Blade Conversion**: Transformasi `index.html` statis menjadi `frontend/index.blade.php` yang dinamis.
+- **Asset Separation**: Memisahkan CSS internal ke `public/assets/css/frontend.css` dan JS ke `public/assets/js/frontend.js`.
+- **Dynamic SEO**: Integrasi Meta Title, Description, dan Keywords yang mengambil data dari `system_settings` dengan fitur fallback.
+- **Real-time Statistics**: Menghubungkan counter OPD, Kegiatan, Foto, dan Pengguna langsung ke database via `DashboardController`.
+- **Premium UX**: 
+    - Implementasi smooth scroll kustom dengan durasi 1200ms dan efek `easeOutBack` (bounce) di akhir scroll.
+    - Pembersihan layout (penghapusan bagian testimoni sesuai permintaan).
+    - Animasi partikel canvas yang dioptimalkan untuk performa.
+
+### 2. Global Live Search Module
+- **Live Search Dashboard**: Menambahkan fitur pencarian instan pada topbar dashboard.
+- **Backend Search Logic**: Implementasi pencarian kegiatan berdasarkan judul di `DashboardController@search`.
+- **UI Integration**: Menampilkan hasil pencarian dalam bentuk dropdown dinamis di bawah kolom input search dengan tombol detail yang mengarah ke `kegiatan.show`.
+- **AJAX Driven**: Menggunakan AJAX untuk fetching data tanpa reload halaman.
+
+### 3. Shield (Role & Permission) Enhancement
+- **Permission Grouping**: Menambahkan kolom `group` dan `description` pada tabel `permissions` untuk pengorganisasian yang lebih baik pada UI Matrix.
+- **Role Branding**: Menambahkan kolom `icon` dan `grad_id` pada tabel `roles` untuk memberikan identitas visual (ikon dan warna gradient) pada setiap role.
+- **UI Matrix Update**: Rombak tampilan Matrix Permission agar dikelompokkan per group (misal: "Unit Kerja", "Kegiatan", "Sistem") untuk meningkatkan kemudahan manajemen akses.
+
+### 4. General Fixes
+- **Dashboard Statistics**: Memperbaiki masalah tumpang tindih pada widget statistik di perangkat mobile.
+- **Alert System**: Memperbaiki kejelasan informasi pada alert sukses/gagal di dashboard aksi cepat.
+- **Sidebar Mobile**: Memperbaiki responsivitas sidebar pada halaman export PDF saat dibuka di smartphone.
+- **Menu Cleanup**: Menghapus menu-menu yang tidak digunakan untuk menyederhanakan navigasi admin.
+
+## 📄 Files Modified
+- `resources/views/frontend/index.blade.php` (New)
+- `public/assets/css/frontend.css` (New)
+- `public/assets/js/frontend.js` (New)
+- `app/Http/Controllers/DashboardController.php`
+- `routes/web.php`
+- `database/migrations/2026_05_05_085052_add_icon_and_grad_id_to_roles_table.php`
+- `database/migrations/2026_05_05_085058_add_group_and_desc_to_permissions_table.php`
+- `resources/views/layouts/partials/sidebar.blade.php`
+- `resources/views/layouts/partials/topbar.blade.php`
+- `resources/views/pages/role-permission/index.blade.php`
+- `app/Services/Shield/RolePermission/RolePermissionService.php`
+- `.antigravity/development-status.md`
+- `.antigravity/session-log.md`

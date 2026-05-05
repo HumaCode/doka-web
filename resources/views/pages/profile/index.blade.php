@@ -143,26 +143,26 @@
                             <div class="info-icon" style="background:rgba(16,185,129,.1);color:var(--c-green);"><i class="bi bi-clock-fill"></i></div>
                             <div>
                                 <div class="info-label">Login Terakhir</div>
-                                <div class="info-value" style="color:var(--c-green);">Hari ini, {{ now()->format('H:i') }}</div>
+                                <div class="info-value" style="color:var(--c-green);">{{ $user->last_login_at ? $user->last_login_at->translatedFormat('d M Y, H:i') : 'Belum pernah login' }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Skills (Placeholder) -->
+            <!-- Skills (Documentation Performance) -->
             <div class="panel">
                 <div class="panel-head">
                     <div class="panel-title"><i class="bi bi-graph-up"></i> Performa Dokumentasi</div>
                 </div>
                 <div class="panel-body">
                     <div class="skill-row">
-                        <div class="skill-top"><span class="skill-name">Konsistensi Upload</span><span class="skill-pct">92%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:92%;background:linear-gradient(90deg,var(--c-primary),var(--c-secondary));animation-delay:.1s;"></div></div>
+                        <div class="skill-top"><span class="skill-name">Konsistensi Upload</span><span class="skill-pct">{{ $stats['consistency'] }}%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:{{ $stats['consistency'] }}%;background:linear-gradient(90deg,var(--c-primary),var(--c-secondary));animation-delay:.1s;"></div></div>
                     </div>
                     <div class="skill-row">
-                        <div class="skill-top"><span class="skill-name">Kelengkapan Data</span><span class="skill-pct">87%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:87%;background:linear-gradient(90deg,var(--c-green),#34d399);animation-delay:.2s;"></div></div>
+                        <div class="skill-top"><span class="skill-name">Kelengkapan Data</span><span class="skill-pct">{{ $stats['completeness'] }}%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:{{ $stats['completeness'] }}%;background:linear-gradient(90deg,var(--c-green),#34d399);animation-delay:.2s;"></div></div>
                     </div>
                 </div>
             </div>

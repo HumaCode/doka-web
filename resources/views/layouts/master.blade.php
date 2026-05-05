@@ -300,6 +300,11 @@
             display: none;
         }
 
+        body.collapsed .brand-text,
+        body.collapsed .sidebar-user-info {
+            display: none;
+        }
+
         body.collapsed .nav-item-wrap {
             padding: 2px 8px;
         }
@@ -1830,6 +1835,21 @@
 
             body.mobile-open .sidebar {
                 transform: translateX(0);
+                width: 280px !important;
+            }
+
+            body.mobile-open .sidebar .nav-label,
+            body.mobile-open .sidebar .nav-category,
+            body.mobile-open .sidebar .brand-text,
+            body.mobile-open .sidebar .sidebar-user-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+
+            body.mobile-open .sidebar .nav-link-item {
+                justify-content: flex-start !important;
+                gap: 12px !important;
+                padding: 10px 12px !important;
             }
 
             body.mobile-open .sidebar-overlay {

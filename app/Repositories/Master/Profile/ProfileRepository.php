@@ -14,7 +14,12 @@ class ProfileRepository implements ProfileRepositoryInterface
      */
     public function findById(string $id)
     {
-        return User::with(['unitKerja'])->findOrFail($id);
+        return User::with([
+            'unitKerja',
+            'kegiatans' => function($q) {
+                $q->withCount('media');
+            }
+        ])->findOrFail($id);
     }
 
     /**
@@ -29,5 +34,13 @@ class ProfileRepository implements ProfileRepositoryInterface
         $user = User::findOrFail($id);
         $user->update($data);
         return $user;
+    }
+
+    public function getActivities(string $userId, int $perPage = 10)
+    {
+        return \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)
+            ->where('causer_type', User::class)
+            ->latest()
+            ->paginate($perPage);
     }
 }

@@ -42,4 +42,5 @@ interface ProfileServiceInterface
      * @return string
      */
     public function updateCover($file);
+    public function getActivities(int $perPage = 10);
 }

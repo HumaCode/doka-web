@@ -88,7 +88,7 @@ class GaleriController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function upload(Request $request)
     {
         try {
             $request->validate([
@@ -97,10 +97,12 @@ class GaleriController extends Controller
                 'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
             ]);
 
+            // Pass tanggal and keterangan to service
             $newPhotos = $this->galeriService->uploadPhotos(
                 $request->kegiatan_id,
                 $request->file('photos'),
-                $request->keterangan
+                $request->keterangan,
+                $request->tanggal
             );
 
             return response()->json([

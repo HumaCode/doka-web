@@ -24,8 +24,8 @@ class GaleriService implements GaleriServiceInterface
         $photos = $this->galeriRepo->getAllPhotos($filters);
         $stats = $this->galeriRepo->getStatistics($photos, $filters);
         
-        $unitsQuery = UnitKerja::query();
-        $kegiatansQuery = Kegiatan::latest();
+        $unitsQuery = UnitKerja::select(['id', 'nama_instansi']);
+        $kegiatansQuery = Kegiatan::select(['id', 'judul'])->latest();
 
         if (!empty($filters['unit_id'])) {
             $unitsQuery->where('id', $filters['unit_id']);
@@ -33,7 +33,7 @@ class GaleriService implements GaleriServiceInterface
         }
 
         $units = $unitsQuery->get();
-        $kegiatans = $kegiatansQuery->get();
+        $kegiatans = $kegiatansQuery->limit(100)->get();
 
         return [
             'photos' => GaleriResource::collection($photos)->resolve(),
@@ -93,9 +93,9 @@ class GaleriService implements GaleriServiceInterface
     /**
      * Upload photos.
      */
-    public function uploadPhotos(string $kegiatanId, array $files, string $caption = null)
+    public function uploadPhotos(string $kegiatanId, array $files, string $caption = null, string $date = null)
     {
-        $media = $this->galeriRepo->uploadMedia($kegiatanId, $files, $caption);
+        $media = $this->galeriRepo->uploadMedia($kegiatanId, $files, $caption, $date);
         return GaleriResource::collection($media)->resolve();
     }
 }

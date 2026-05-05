@@ -25,7 +25,10 @@
         </div>
 
         <!-- MASTER -->
+        @if(auth()->user()->canAny(['user.view', 'kategori.manage', 'unitkerja.manage']))
         <div class="nav-category">MASTER</div>
+        
+        @can('user.view')
         <div class="nav-item-wrap">
             <a href="{{ route('pengguna.index') }}"
                 class="nav-link-item {{ request()->routeIs('pengguna.index') ? 'active' : '' }}" data-label="Pengguna">
@@ -36,6 +39,9 @@
                 @endif
             </a>
         </div>
+        @endcan
+
+        @can('kategori.manage')
         <div class="nav-item-wrap">
             <a href="{{ route('kategori.index') }}"
                 class="nav-link-item {{ request()->routeIs('kategori.index') ? 'active' : '' }}" data-label="Kategori">
@@ -43,6 +49,9 @@
                 <span class="nav-label">Kategori</span>
             </a>
         </div>
+        @endcan
+
+        @can('unitkerja.manage')
         <div class="nav-item-wrap">
             <a href="{{ route('unit-kerja.index') }}"
                 class="nav-link-item {{ request()->routeIs('unit-kerja.index') ? 'active' : '' }}" data-label="Unit Kerja">
@@ -50,8 +59,14 @@
                 <span class="nav-label">Unit Kerja</span>
             </a>
         </div>
+        @endcan
+        @endif
 
+        <!-- KEGIATAN -->
+        @if(auth()->user()->canAny(['kegiatan.view', 'kegiatan.create', 'foto.view']))
         <div class="nav-category">KEGIATAN</div>
+        
+        @can('kegiatan.view')
         <div class="nav-item-wrap">
             <a href="{{ route('kegiatan.index') }}"
                 class="nav-link-item {{ (request()->routeIs('kegiatan.*') && !request()->routeIs('kegiatan.create')) ? 'active' : '' }}" data-label="Semua Kegiatan">
@@ -62,6 +77,9 @@
                 @endif
             </a>
         </div>
+        @endcan
+
+        @can('kegiatan.create')
         <div class="nav-item-wrap">
             <a href="{{ route('kegiatan.create') }}"
                 class="nav-link-item {{ request()->routeIs('kegiatan.create') ? 'active' : '' }}" data-label="Tambah Kegiatan">
@@ -69,6 +87,9 @@
                 <span class="nav-label">Tambah Kegiatan</span>
             </a>
         </div>
+        @endcan
+
+        @can('foto.view')
         <div class="nav-item-wrap">
             <a href="{{ route('galeri.index') }}"
                 class="nav-link-item {{ request()->routeIs('galeri.index') ? 'active' : '' }}" data-label="Galeri Foto">
@@ -76,8 +97,11 @@
                 <span class="nav-label">Galeri Foto</span>
             </a>
         </div>
+        @endcan
+        @endif
 
         <!-- LAPORAN -->
+        @can('laporan.view')
         <div class="nav-category">LAPORAN</div>
         <div class="nav-item-wrap">
             <a href="{{ route('laporan.bulanan') }}" class="nav-link-item {{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}" data-label="Laporan Bulanan">
@@ -86,11 +110,12 @@
             </a>
         </div>
         <div class="nav-item-wrap">
-            <a href="{{ route('laporan.export-pdf') }}" class="nav-link-item {{ request()->routeIs('laporan.export-pdf') ? 'active' : '' }}" data-label="Export PDF">
+            <a href="{{ route('laporan.export') }}" class="nav-link-item {{ request()->routeIs('laporan.export') ? 'active' : '' }}" data-label="Export PDF">
                 <i class="bi bi-file-earmark-pdf-fill nav-icon"></i>
                 <span class="nav-label">Export PDF</span>
             </a>
         </div>
+        @endcan
 
         <!-- PENGATURAN -->
         <div class="nav-category">PENGATURAN</div>
@@ -101,12 +126,18 @@
                 <span class="nav-label">Profil Saya</span>
             </a>
         </div>
+
+        @can('settings.role')
         <div class="nav-item-wrap">
-            <a href="#" class="nav-link-item" data-label="Akses & Role">
+            <a href="{{ route('setting.role-permission.index') }}"
+                class="nav-link-item {{ request()->routeIs('setting.role-permission.*') ? 'active' : '' }}" data-label="Akses & Role">
                 <i class="bi bi-shield-lock-fill nav-icon"></i>
                 <span class="nav-label">Akses & Role</span>
             </a>
         </div>
+        @endcan
+
+        @can('settings.view')
         <div class="nav-item-wrap">
             <a href="{{ route('setting.system.index') }}"
                 class="nav-link-item {{ request()->routeIs('setting.system.*') ? 'active' : '' }}" data-label="Pengaturan Sistem">
@@ -114,6 +145,9 @@
                 <span class="nav-label">Pengaturan Sistem</span>
             </a>
         </div>
+        @endcan
+
+        @can('settings.view')
         <div class="nav-item-wrap">
             <a href="{{ route('setting.activity-log.index') }}"
                 class="nav-link-item {{ request()->routeIs('setting.activity-log.*') ? 'active' : '' }}" data-label="Log Aktivitas">
@@ -121,6 +155,7 @@
                 <span class="nav-label">Log Aktivitas</span>
             </a>
         </div>
+        @endcan
     </nav>
 
     <!-- Sidebar footer -->
@@ -129,7 +164,7 @@
             <div class="sidebar-avatar-sm">{{ auth()->user()->name[0] }}</div>
             <div class="sidebar-user-info">
                 <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
-                <div class="sidebar-user-role">Administrator</div>
+                <div class="sidebar-user-role">{{ auth()->user()->roles->pluck('name')->implode(', ') }}</div>
             </div>
         </a>
     </div>

@@ -28,13 +28,13 @@
     </div>
 
     <!-- Main Form Container -->
-    <form id="mainForm" novalidate onsubmit="return false;">
-        <div class="form-grid">
+    <form id="mainForm" novalidate onsubmit="return false;" class="container-fluid">
+        <div class="row g-4">
 
-            <!-- ═══ LEFT COLUMN ═══ -->
-            <div class="form-left-col">
+            <!-- ═══ LEFT COLUMN (Main Content) ═══ -->
+            <div class="col-lg-8">
                 <!-- 1. Informasi Utama -->
-                <div class="form-card">
+                <div class="form-card mb-4">
                     <div class="fc-head indigo">
                         <div>
                             <div class="fc-title"><i class="bi bi-info-circle-fill"></i> Informasi Utama</div>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="fc-body">
                         <!-- Judul -->
-                        <div class="fgroup" id="grp-judul">
+                        <div class="fgroup mb-4" id="grp-judul">
                             <label for="f-judul" class="flabel"><i class="bi bi-type" style="color:var(--c-muted);font-size:.85rem;"></i> Judul Kegiatan <span class="req">*</span></label>
                             <div class="fwrap">
                                 <i class="bi bi-type ficon"></i>
@@ -55,26 +55,30 @@
                         </div>
 
                         <!-- Tanggal & Waktu -->
-                        <div class="frow2">
-                            <div class="fgroup" id="grp-tanggal">
-                                <label for="f-tanggal" class="flabel"><i class="bi bi-calendar3" style="color:var(--c-muted);font-size:.85rem;"></i> Tanggal Kegiatan <span class="req">*</span></label>
-                                <div class="fwrap">
-                                    <i class="bi bi-calendar3 ficon"></i>
-                                    <input type="date" class="fctrl" id="f-tanggal" name="tanggal" onchange="clearErr('grp-tanggal')" required />
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="fgroup" id="grp-tanggal">
+                                    <label for="f-tanggal" class="flabel"><i class="bi bi-calendar3" style="color:var(--c-muted);font-size:.85rem;"></i> Tanggal Kegiatan <span class="req">*</span></label>
+                                    <div class="fwrap">
+                                        <i class="bi bi-calendar3 ficon"></i>
+                                        <input type="date" class="fctrl" id="f-tanggal" name="tanggal" onchange="clearErr('grp-tanggal')" required />
+                                    </div>
+                                    <div class="finvalid">Tanggal kegiatan wajib diisi.</div>
                                 </div>
-                                <div class="finvalid">Tanggal kegiatan wajib diisi.</div>
                             </div>
-                            <div class="fgroup" id="grp-waktu">
-                                <label for="f-waktu" class="flabel"><i class="bi bi-clock" style="color:var(--c-muted);font-size:.85rem;"></i> Waktu Mulai <span class="opt">(opsional)</span></label>
-                                <div class="fwrap">
-                                    <i class="bi bi-clock ficon"></i>
-                                    <input type="text" class="fctrl" id="f-waktu" name="waktu" placeholder="--:--" readonly />
+                            <div class="col-md-6 mb-4">
+                                <div class="fgroup" id="grp-waktu">
+                                    <label for="f-waktu" class="flabel"><i class="bi bi-clock" style="color:var(--c-muted);font-size:.85rem;"></i> Waktu Mulai <span class="opt">(opsional)</span></label>
+                                    <div class="fwrap">
+                                        <i class="bi bi-clock ficon"></i>
+                                        <input type="text" class="fctrl" id="f-waktu" name="waktu" placeholder="--:--" readonly />
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Lokasi -->
-                        <div class="fgroup">
+                        <div class="fgroup mb-4">
                             <label for="f-lokasi" class="flabel"><i class="bi bi-geo-alt-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Lokasi Kegiatan <span class="opt">(opsional)</span></label>
                             <div class="fwrap">
                                 <i class="bi bi-geo-alt-fill ficon"></i>
@@ -83,36 +87,40 @@
                         </div>
 
                         <!-- Kategori & Unit Kerja -->
-                        <div class="frow2">
-                            <div class="fgroup" id="grp-kategori">
-                                <label for="f-kategori" class="flabel"><i class="bi bi-tags-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Kategori <span class="req">*</span></label>
-                                <div class="fwrap">
-                                    <i class="bi bi-tags-fill ficon"></i>
-                                    <select class="fctrl" id="f-kategori" name="kategori_id" onchange="clearErr('grp-kategori')" required>
-                                        <option value="">-- Pilih Kategori --</option>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
-                                        @endforeach
-                                    </select>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="fgroup" id="grp-kategori">
+                                    <label for="f-kategori" class="flabel"><i class="bi bi-tags-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Kategori <span class="req">*</span></label>
+                                    <div class="fwrap">
+                                        <i class="bi bi-tags-fill ficon"></i>
+                                        <select class="fctrl" id="f-kategori" name="kategori_id" onchange="clearErr('grp-kategori')" required>
+                                            <option value="">-- Pilih Kategori --</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="finvalid">Kategori wajib dipilih.</div>
                                 </div>
-                                <div class="finvalid">Kategori wajib dipilih.</div>
                             </div>
-                            <div class="fgroup">
-                                <label for="f-unit" class="flabel"><i class="bi bi-building-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Unit Kerja <span class="opt">(opsional)</span></label>
-                                <div class="fwrap">
-                                    <i class="bi bi-building-fill ficon"></i>
-                                    <select class="fctrl" id="f-unit" name="unit_id">
-                                        <option value="">-- Pilih Unit --</option>
-                                        @foreach($units as $unit)
-                                            <option value="{{ $unit->id }}">{{ $unit->nama_instansi }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="col-md-6 mb-4">
+                                <div class="fgroup">
+                                    <label for="f-unit" class="flabel"><i class="bi bi-building-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Unit Kerja <span class="opt">(opsional)</span></label>
+                                    <div class="fwrap">
+                                        <i class="bi bi-building-fill ficon"></i>
+                                        <select class="fctrl" id="f-unit" name="unit_id">
+                                            <option value="">-- Pilih Unit --</option>
+                                            @foreach($units as $unit)
+                                                <option value="{{ $unit->id }}">{{ $unit->nama_instansi }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Tags -->
-                        <div class="fgroup">
+                        <div class="fgroup mb-0">
                             <label for="tagInput" class="flabel"><i class="bi bi-hash" style="color:var(--c-muted);font-size:.85rem;"></i> Tag <span class="opt">(opsional, tekan Enter)</span></label>
                             <div class="tags-wrap" id="tagsWrap" onclick="document.getElementById('tagInput').focus()">
                                 <input type="text" class="tags-input" id="tagInput" placeholder="Ketik tag lalu Enter..." />
@@ -123,7 +131,7 @@
                 </div>
 
                 <!-- 2. Uraian Kegiatan -->
-                <div class="form-card">
+                <div class="form-card mb-4">
                     <div class="fc-head green">
                         <div>
                             <div class="fc-title"><i class="bi bi-file-text-fill"></i> Uraian Kegiatan</div>
@@ -142,7 +150,7 @@
                 </div>
 
                 <!-- 3. Upload Foto -->
-                <div class="form-card">
+                <div class="form-card mb-4">
                     <div class="fc-head amber">
                         <div>
                             <div class="fc-title"><i class="bi bi-images"></i> Upload Foto Dokumentasi</div>
@@ -181,10 +189,10 @@
                 </div>
             </div>
 
-            <!-- ═══ RIGHT COLUMN ═══ -->
-            <aside class="form-right-col">
+            <!-- ═══ RIGHT COLUMN (Sidebar) ═══ -->
+            <aside class="col-lg-4">
                 <!-- Status Dokumentasi -->
-                <div class="side-card">
+                <div class="side-card mb-4">
                     <div class="sc-head">
                         <div class="sc-title"><i class="bi bi-check2-circle"></i> Status Dokumentasi</div>
                     </div>
@@ -192,19 +200,19 @@
                         <div class="status-options">
                             <div class="status-opt">
                                 <input type="radio" name="status" id="st-draft" value="draft" checked />
-                                <label for="st-draft" class="draft">
+                                <label for="st-draft" class="draft w-100">
                                     <i class="bi bi-file-earmark-text"></i> Draft
                                 </label>
                             </div>
                             <div class="status-opt">
                                 <input type="radio" name="status" id="st-berjalan" value="berjalan" />
-                                <label for="st-berjalan" class="berjalan">
+                                <label for="st-berjalan" class="berjalan w-100">
                                     <i class="bi bi-play-circle"></i> Berjalan
                                 </label>
                             </div>
                             <div class="status-opt">
                                 <input type="radio" name="status" id="st-selesai" value="selesai" />
-                                <label for="st-selesai" class="selesai">
+                                <label for="st-selesai" class="selesai w-100">
                                     <i class="bi bi-check-all"></i> Selesai
                                 </label>
                             </div>
@@ -216,19 +224,19 @@
                 </div>
 
                 <!-- Detail Peserta -->
-                <div class="side-card">
+                <div class="side-card mb-4">
                     <div class="sc-head">
                         <div class="sc-title"><i class="bi bi-people-fill"></i> Detail Peserta</div>
                     </div>
                     <div class="sc-body">
-                        <div class="fgroup">
+                        <div class="fgroup mb-3">
                             <label for="f-peserta" class="flabel">Jumlah Peserta <span class="opt">(opsional)</span></label>
                             <div class="fwrap">
                                 <i class="bi bi-people-fill ficon"></i>
                                 <input type="number" class="fctrl" id="f-peserta" name="jumlah_peserta" placeholder="0" min="0" />
                             </div>
                         </div>
-                        <div class="fgroup" style="margin-bottom:0;">
+                        <div class="fgroup mb-0">
                             <label for="f-narasumber" class="flabel">Narasumber / Pemateri <span class="opt">(opsional)</span></label>
                             <div class="fwrap">
                                 <i class="bi bi-person-video3 ficon"></i>
@@ -239,12 +247,12 @@
                 </div>
 
                 <!-- Petugas Dokumentasi -->
-                <div class="side-card">
+                <div class="side-card mb-4">
                     <div class="sc-head">
                         <div class="sc-title"><i class="bi bi-person-badge"></i> Petugas Dokumentasi</div>
                     </div>
                     <div class="sc-body" style="padding: 12px 18px;">
-                        <div class="fgroup" style="margin-bottom: 12px;">
+                        <div class="fgroup mb-3">
                             <div class="fwrap">
                                 <i class="bi bi-search ficon"></i>
                                 <input type="text" class="fctrl" id="searchPetugas" placeholder="Cari nama petugas..." onkeyup="filterPetugas()" style="padding: 8px 12px 8px 36px; font-size: .8rem; border-radius: 8px;">
@@ -274,7 +282,7 @@
                 </div>
 
                 <!-- Lampiran Dokumen -->
-                <div class="side-card">
+                <div class="side-card mb-4">
                     <div class="sc-head">
                         <div class="sc-title"><i class="bi bi-paperclip"></i> Lampiran Dokumen</div>
                     </div>

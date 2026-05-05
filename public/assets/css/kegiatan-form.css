@@ -459,10 +459,59 @@ select.fctrl { cursor: pointer; }
 }
 
 /* Responsive Form */
-@media(max-width:1100px) { .form-grid { grid-template-columns: 1fr; } }
-@media(max-width:992px)  { .frow2,.frow3 { grid-template-columns:1fr; } }
+@media(max-width:1100px) { 
+  .form-grid { grid-template-columns: 1fr; } 
+  .form-right-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .side-card { margin-bottom: 0; }
+}
+
+@media(max-width:992px)  { 
+  .frow2,.frow3 { grid-template-columns:1fr; } 
+}
+
+@media(max-width:768px) {
+  .form-right-col { grid-template-columns: 1fr; }
+  .side-card { margin-bottom: 16px; }
+  
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 18px; }
+  .page-header h1 { font-size: 1.4rem; }
+  .page-header p { font-size: 0.8rem; }
+  .breadcrumb-nav { margin-left: 0; font-size: 0.75rem; }
+
+  .fc-body { padding: 16px; }
+  .fc-head { padding: 12px 16px; }
+  .fc-title { font-size: 0.85rem; }
+  
+  .photo-upload-zone { padding: 24px 16px; }
+  .upload-icon-wrap { width: 50px; height: 50px; font-size: 1.2rem; }
+  .upload-title { font-size: 0.85rem; }
+}
+
 @media(max-width:576px) {
-  .form-actions-bar{flex-direction:column;align-items:stretch;}
-  .form-actions-bar .btn-submit,.form-actions-bar .btn-draft,.form-actions-bar .btn-cancel-form{justify-content:center;}
-  .photo-preview-wrap{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
+  .form-actions-bar { 
+    flex-direction: column-reverse; 
+    align-items: stretch; 
+    padding: 16px;
+    gap: 12px;
+  }
+  .form-actions-bar div {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .form-actions-bar .btn-submit,
+  .form-actions-bar .btn-draft,
+  .form-actions-bar .btn-cancel-form {
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+  .photo-preview-wrap { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+  
+  .status-options { display: grid; grid-template-columns: 1fr; }
+  .status-opt label { justify-content: center; }
+  
+  .photo-counter { flex-direction: column; gap: 10px; text-align: center; }
+  .photo-counter-bar-wrap { max-width: none; width: 100%; }
 }

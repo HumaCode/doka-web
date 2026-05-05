@@ -5,32 +5,30 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 ---
 
 ## 👥 Modul: Pengguna (Users)
-**Controller**: `App\Http\Controllers\Master\UserController`
+**Controller**: `App\Http\Controllers\Master\Pengguna\UserController`
 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
-| `index` | `pengguna.index` | **READ** | Halaman manajemen pengguna | `pengguna.view` |
-| `getAllPagination` | `pengguna.api.index` | **READ** | Ambil data pengguna (AJAX) | `pengguna.view` |
-| `store` | `pengguna.api.store` | **CREATE** | Tambah pengguna baru | `pengguna.create` |
-| `show` | `pengguna.api.show` | **READ** | Detail pengguna untuk Edit | `pengguna.view` |
-| `update` | `pengguna.api.update` | **UPDATE** | Perbarui data pengguna | `pengguna.edit` |
-| `destroy` | `pengguna.api.destroy` | **DELETE** | Hapus satu pengguna | `pengguna.delete` |
-| `destroyBulk` | `pengguna.api.destroy-bulk` | **DELETE** | Hapus banyak pengguna sekaligus | `pengguna.delete` |
-| `toggleStatus` | `pengguna.api.toggle-status`| **UPDATE** | Aktif/Nonaktifkan akun | `pengguna.edit` |
+| `index` | `pengguna.index` | **READ** | Halaman manajemen pengguna | `user.view` |
+| `getAllPagination` | `pengguna.getallpagination` | **READ** | Ambil data pengguna (AJAX) | `user.view` |
+| `store` | `pengguna.store` | **CREATE** | Tambah pengguna baru | `user.create` |
+| `show` | `pengguna.show` | **READ** | Detail pengguna untuk Edit | `user.view` |
+| `update` | `pengguna.update` | **UPDATE** | Perbarui data pengguna | `user.edit` |
+| `destroy` | `pengguna.destroy` | **DELETE** | Hapus satu pengguna | `user.delete` |
 
 ---
 
 ## 🏛️ Modul: Unit Kerja
-**Controller**: `App\Http\Controllers\Master\UnitKerjaController`
+**Controller**: `App\Http\Controllers\Master\UnitKerja\UnitKerjaController`
 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
-| `index` | `unit-kerja.index` | **READ** | Halaman manajemen unit kerja | `unit_kerja.view` |
-| `getAllPagination` | `unit-kerja.api.index` | **READ** | Ambil data unit (AJAX) | `unit_kerja.view` |
-| `store` | `unit-kerja.api.store` | **CREATE** | Tambah unit kerja baru | `unit_kerja.create` |
-| `show` | `unit-kerja.api.show` | **READ** | Detail unit untuk Edit | `unit_kerja.view` |
-| `update` | `unit-kerja.api.update` | **UPDATE** | Perbarui data unit | `unit_kerja.edit` |
-| `destroy` | `unit-kerja.api.destroy` | **DELETE** | Hapus unit kerja | `unit_kerja.delete` |
+| `index` | `unit-kerja.index` | **READ** | Halaman manajemen unit kerja | `unitkerja.manage` |
+| `getAllPagination` | `unit-kerja.getallpagination` | **READ** | Ambil data unit (AJAX) | `unitkerja.manage` |
+| `store` | `unit-kerja.store` | **CREATE** | Tambah unit kerja baru | `unitkerja.manage` |
+| `show` | `unit-kerja.show` | **READ** | Detail unit untuk Edit | `unitkerja.manage` |
+| `update` | `unit-kerja.update` | **UPDATE** | Perbarui data unit | `unitkerja.manage` |
+| `destroy` | `unit-kerja.destroy` | **DELETE** | Hapus unit kerja | `unitkerja.manage` |
  
 ---
 
@@ -39,25 +37,21 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
-| `bulanan` | `laporan.bulanan` | **READ** | Laporan kegiatan bulanan & ekspor | `laporan.view` |
-| `index` | `laporan.export-pdf` | **READ** | Halaman konfigurasi ekspor PDF | `laporan.export` |
-
-> [!NOTE]
-> Halaman Laporan Bulanan juga menggunakan rute `kegiatan.show` dan `kegiatan.destroy` untuk aksi pada baris tabel.
+| `bulanan` | `laporan.bulanan` | **READ** | Laporan kegiatan bulanan | `laporan.view` |
+| `exportPdf` | `laporan.export` | **EXPORT** | Ekspor laporan ke PDF | `laporan.export` |
 
 ---
 
 ## 🏷️ Modul: Kategori
-**Controller**: `App\Http\Controllers\Master\CategoryController`
+**Controller**: `App\Http\Controllers\Master\Kategori\CategoryController`
 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
-| `index` | `kategori.index` | **READ** | Halaman manajemen kategori | `kategori.view` |
-| `getAllPagination` | `kategori.api.index` | **READ** | Ambil data kategori (AJAX) | `kategori.view` |
-| `store` | `kategori.api.store` | **CREATE** | Tambah kategori baru | `kategori.create` |
-| `update` | `kategori.api.update` | **UPDATE** | Perbarui data kategori | `kategori.edit` |
-| `destroy` | `kategori.api.destroy` | **DELETE** | Hapus kategori | `kategori.delete` |
-| `toggleStatus` | `kategori.api.toggle-status`| **UPDATE** | Aktif/Nonaktifkan kategori | `kategori.edit` |
+| `index` | `kategori.index` | **READ** | Halaman manajemen kategori | `kategori.manage` |
+| `getAllPagination` | `kategori.getallpagination` | **READ** | Ambil data kategori (AJAX) | `kategori.manage` |
+| `store` | `kategori.store` | **CREATE** | Tambah kategori baru | `kategori.manage` |
+| `update` | `kategori.update` | **UPDATE** | Perbarui data kategori | `kategori.manage` |
+| `destroy` | `kategori.destroy` | **DELETE** | Hapus kategori | `kategori.manage` |
 
 ---
 
@@ -73,8 +67,6 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 | `edit` | `kegiatan.edit` | **UPDATE** | Halaman form edit kegiatan | `kegiatan.edit` |
 | `update` | `kegiatan.update` | **UPDATE** | Perbarui data kegiatan | `kegiatan.edit` |
 | `destroy` | `kegiatan.destroy` | **DELETE** | Hapus kegiatan | `kegiatan.delete` |
-| `bulkDelete` | `kegiatan.bulk-delete` | **DELETE** | Hapus banyak kegiatan | `kegiatan.delete` |
-| `download` | `kegiatan.download` | **READ** | Unduh lampiran private | `kegiatan.download` |
 
 ---
 
@@ -83,14 +75,26 @@ Dokumen ini mencatat seluruh rute dan method untuk keperluan konfigurasi **Role 
 
 | Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
 | :--- | :--- | :--- | :--- | :--- |
-| `index` | `galeri.index` | **READ** | Halaman galeri foto | `galeri.view` |
-| `store` | `galeri.store` | **CREATE** | Upload foto ke kegiatan | `galeri.upload` |
-| `destroy` | `galeri.destroy` | **DELETE** | Hapus satu/banyak foto | `galeri.delete` |
-| `downloadZip` | `galeri.download-zip` | **EXPORT** | Unduh ZIP per folder | `galeri.download` |
+| `index` | `galeri.index` | **READ** | Halaman galeri foto | `foto.view` |
+| `upload` | `galeri.upload` | **CREATE** | Upload foto ke kegiatan | `foto.upload` |
+| `destroy` | `galeri.destroy` | **DELETE** | Hapus satu/banyak foto | `foto.delete` |
+
+---
+
+## ⚙️ Modul: Pengaturan Role & Permission
+**Controller**: `App\Http\Controllers\Shield\RolePermissionController`
+
+| Method | Route Name | Action | Deskripsi | Rekomendasi Permission |
+| :--- | :--- | :--- | :--- | :--- |
+| `index` | `setting.role-permission.index` | **READ** | Dashboard akses & role | `settings.role` |
+| `store` | `setting.role-permission.store` | **CREATE** | Tambah role baru | `settings.role` |
+| `update` | `setting.role-permission.update` | **UPDATE** | Edit role | `settings.role` |
+| `destroy` | `setting.role-permission.destroy` | **DELETE** | Hapus role | `settings.role` |
+| `sync` | `setting.role-permission.sync` | **UPDATE** | Simpan hak akses | `settings.role` |
 
 ---
 
 ## 📝 Catatan Implementasi
-- Semua rute dengan suffix `.api` mengembalikan JSON.
-- Pastikan Middleware `PermissionMiddleware` dari Spatie sudah didaftarkan di `Kernel.php`.
-- Gunakan `$this->middleware('permission:name')` di constructor controller untuk proteksi level method.
+- Gunakan `@can('permission.name')` di Blade untuk membatasi UI.
+- Gunakan `->middleware('can:permission.name')` di Route untuk keamanan sisi server.
+- Role `dev` dan `super-admin` memiliki akses penuh otomatis.

@@ -23,13 +23,40 @@ class ProfileService implements ProfileServiceInterface
     public function getProfileData()
     {
         $user = $this->profileRepository->findById(Auth::id());
+        $kegiatans = $user->kegiatans;
         
+        // Calculate Consistency (Days active in last 30 days)
+        $activeDays = \Spatie\Activitylog\Models\Activity::where('causer_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->distinct()
+            ->selectRaw('DATE(created_at)')
+            ->count();
+        $consistency = min(100, round(($activeDays / 20) * 100)); // 20 days/month = 100%
+
+        // Calculate Completeness (Avg completeness of fields in kegiatan)
+        $totalCompleteness = 0;
+        if ($kegiatans->count() > 0) {
+            foreach ($kegiatans as $k) {
+                $score = 0;
+                if (!empty($k->judul)) $score += 20;
+                if (!empty($k->uraian)) $score += 20;
+                if (!empty($k->lokasi)) $score += 20;
+                if (!empty($k->tags)) $score += 20;
+                if ($k->media_count > 0) $score += 20;
+                $totalCompleteness += $score;
+            }
+            $completeness = round($totalCompleteness / $kegiatans->count());
+        } else {
+            $completeness = 0;
+        }
+
         return [
             'user' => $user,
-            // Add other relevant data if needed (e.g. activity stats)
             'stats' => [
-                'total_kegiatan' => $user->kegiatans()->count(),
+                'total_kegiatan' => $kegiatans->count(),
                 'total_foto' => $user->media()->count(),
+                'consistency' => $consistency,
+                'completeness' => $completeness
             ]
         ];
     }
@@ -90,5 +117,10 @@ class ProfileService implements ProfileServiceInterface
         $user = Auth::user();
         $media = $user->addMedia($file)->toMediaCollection('cover');
         return $media->getUrl();
+    }
+
+    public function getActivities(int $perPage = 10)
+    {
+        return $this->profileRepository->getActivities(Auth::id(), $perPage);
     }
 }

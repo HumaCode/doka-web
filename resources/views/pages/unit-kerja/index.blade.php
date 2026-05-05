@@ -18,67 +18,74 @@
     </div>
 
     <!-- Mini Stats -->
-    <div class="mini-stats fade-up">
-        <div class="mini-stat ms1">
-            <div class="mini-stat-icon"><i class="bi bi-building-fill"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc1">0</div>
-                <div class="mini-stat-lbl">Total Unit Kerja</div>
+    <div class="row g-3 fade-up mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms1">
+                <div class="mini-stat-icon"><i class="bi bi-building-fill"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc1">0</div>
+                    <div class="mini-stat-lbl">Total Unit</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms2">
-            <div class="mini-stat-icon"><i class="bi bi-check-circle-fill"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc2">0</div>
-                <div class="mini-stat-lbl">Aktif</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms2">
+                <div class="mini-stat-icon"><i class="bi bi-check-circle-fill"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc2">0</div>
+                    <div class="mini-stat-lbl">Aktif</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms3">
-            <div class="mini-stat-icon"><i class="bi bi-calendar3-fill"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc3">0</div>
-                <div class="mini-stat-lbl">Total Kegiatan</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms3">
+                <div class="mini-stat-icon"><i class="bi bi-calendar3-fill"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc3">0</div>
+                    <div class="mini-stat-lbl">Kegiatan</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms4">
-            <div class="mini-stat-icon"><i class="bi bi-people-fill"></i></div>
-            <div class="mini-stat-info">
-                <div class="mini-stat-val" id="sc4">0</div>
-                <div class="mini-stat-lbl">Total Pengguna</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms4">
+                <div class="mini-stat-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="mini-stat-info">
+                    <div class="mini-stat-val" id="sc4">0</div>
+                    <div class="mini-stat-lbl">Pengguna</div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Toolbar -->
-    <div class="toolbar fade-up">
-        <div class="toolbar-search">
-            <label for="searchInput" class="visually-hidden">Cari Unit Kerja</label>
+    <div class="toolbar fade-up mb-4 d-flex flex-wrap gap-2">
+        <div class="toolbar-search flex-grow-1" style="min-width: 200px;">
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama / singkatan..." oninput="filterData()" aria-label="Cari unit kerja" />
+            <input type="text" id="searchInput" class="form-control" placeholder="Cari nama / singkatan..." oninput="filterData()" />
         </div>
-        <label for="filterStatus" class="visually-hidden">Filter Status</label>
-        <select class="toolbar-select" id="filterStatus" onchange="filterData()" aria-label="Filter berdasarkan status">
-            <option value="">Semua Status</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Nonaktif</option>
-        </select>
-        <label for="filterJenis" class="visually-hidden">Filter Jenis OPD</label>
-        <select class="toolbar-select" id="filterJenis" onchange="filterData()" aria-label="Filter berdasarkan jenis OPD">
-            <option value="">Semua Jenis</option>
-            <option value="Dinas">Dinas</option>
-            <option value="Badan">Badan</option>
-            <option value="Bagian">Bagian</option>
-            <option value="Inspektorat">Inspektorat</option>
-            <option value="Sekretariat">Sekretariat</option>
-            <option value="Kantor">Kantor</option>
-            <option value="RSUD">RSUD</option>
-        </select>
-        <button class="btn-reset" onclick="resetFilters()" title="Reset Filter" aria-label="Reset semua filter">
-            <i class="bi bi-arrow-counterclockwise"></i>
-        </button>
-        <div class="toolbar-right">
-            <button class="btn-toolbar btn-export" onclick="exportData()"><i class="bi bi-download"></i> Export</button>
-            <button class="btn-toolbar btn-add" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> Tambah Unit Kerja</button>
+        <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+            <select class="toolbar-select form-select" id="filterStatus" onchange="filterData()" style="min-width: 130px;">
+                <option value="">Semua Status</option>
+                <option value="active">Aktif</option>
+                <option value="inactive">Nonaktif</option>
+            </select>
+            <select class="toolbar-select form-select" id="filterJenis" onchange="filterData()" style="min-width: 130px;">
+                <option value="">Semua Jenis</option>
+                <option value="Dinas">Dinas</option>
+                <option value="Badan">Badan</option>
+                <option value="Bagian">Bagian</option>
+                <option value="Inspektorat">Inspektorat</option>
+                <option value="Sekretariat">Sekretariat</option>
+                <option value="Kantor">Kantor</option>
+                <option value="RSUD">RSUD</option>
+            </select>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()" title="Reset Filter">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+        </div>
+        <div class="ms-auto-md d-flex gap-2 w-100-sm">
+            <button class="btn btn-outline-primary flex-grow-1" onclick="exportData()"><i class="bi bi-download"></i> Export</button>
+            <button class="btn btn-primary flex-grow-1" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> Tambah Unit</button>
         </div>
     </div>
 

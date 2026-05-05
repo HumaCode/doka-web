@@ -58,6 +58,13 @@ class AppServiceProvider extends ServiceProvider
         // Backup
         $this->app->bind(\App\Repositories\Master\Backup\BackupRepositoryInterface::class, \App\Repositories\Master\Backup\BackupRepository::class);
         $this->app->bind(\App\Services\Master\Backup\BackupServiceInterface::class, \App\Services\Master\Backup\BackupService::class);
+
+        // Role Permission
+        $this->app->bind(\App\Repositories\Shield\RolePermission\RolePermissionRepositoryInterface::class, \App\Repositories\Shield\RolePermission\RolePermissionRepository::class);
+        $this->app->bind(\App\Services\Shield\RolePermission\RolePermissionServiceInterface::class, \App\Services\Shield\RolePermission\RolePermissionService::class);
+
+        // Dashboard
+        $this->app->bind(\App\Services\Dashboard\DashboardServiceInterface::class, \App\Services\Dashboard\DashboardService::class);
     }
 
     /**
@@ -65,6 +72,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // 0. Super Admin / Dev Bypass
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            return $user->hasRole(['dev', 'super-admin']) ? true : null;
+        });
+
         // Handle Dynamic System Settings
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {
@@ -101,33 +113,39 @@ class AppServiceProvider extends ServiceProvider
         }
 
         View::composer('layouts.partials.sidebar', function ($view) {
-            $newUserCount = 0;
-            $newKegiatanCount = 0;
-
             if (auth()->check()) {
                 $user = auth()->user();
-                $isDev = $user->hasRole('dev');
-                $fiveDaysAgo = now()->subDays(5);
+                $cacheKey = 'sidebar_counts_' . $user->id;
 
-                // Count new users in last 5 days
-                $userQuery = User::where('created_at', '>=', $fiveDaysAgo);
-                if (!$isDev) {
-                    $userQuery->where('unit_kerja_id', $user->unit_kerja_id);
-                }
-                $newUserCount = $userQuery->count();
+                $counts = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function() use ($user) {
+                    $isDev = $user->hasRole('dev');
+                    $fiveDaysAgo = now()->subDays(5);
 
-                // Count new activities in last 5 days
-                $kegiatanQuery = Kegiatan::where('created_at', '>=', $fiveDaysAgo);
-                if (!$isDev) {
-                    $kegiatanQuery->where('unit_id', $user->unit_kerja_id);
-                }
-                $newKegiatanCount = $kegiatanQuery->count();
+                    // Count new users in last 5 days
+                    $userQuery = User::where('created_at', '>=', $fiveDaysAgo);
+                    if (!$isDev) {
+                        $userQuery->where('unit_kerja_id', $user->unit_kerja_id);
+                    }
+                    $newUserCount = $userQuery->count();
+
+                    // Count new activities in last 5 days
+                    $kegiatanQuery = Kegiatan::where('created_at', '>=', $fiveDaysAgo);
+                    if (!$isDev) {
+                        $kegiatanQuery->where('unit_id', $user->unit_kerja_id);
+                    }
+                    $newKegiatanCount = $kegiatanQuery->count();
+
+                    return [
+                        'newUserCount' => $newUserCount,
+                        'newKegiatanCount' => $newKegiatanCount,
+                    ];
+                });
+
+                $view->with([
+                    'sidebarNewUserCount' => $counts['newUserCount'],
+                    'sidebarNewKegiatanCount' => $counts['newKegiatanCount'],
+                ]);
             }
-
-            $view->with([
-                'sidebarNewUserCount' => $newUserCount,
-                'sidebarNewKegiatanCount' => $newKegiatanCount,
-            ]);
         });
     }
 }

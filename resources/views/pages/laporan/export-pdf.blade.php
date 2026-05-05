@@ -20,45 +20,53 @@
     </div>
 
     <!-- Stats -->
-    <div class="mini-stats">
-        <div class="mini-stat ms1">
-            <div class="ms-icon"><i class="bi bi-file-earmark-pdf-fill"></i></div>
-            <div>
-                <div class="ms-val" id="sc1">0</div>
-                <div class="ms-lbl">Total Export</div>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms1">
+                <div class="ms-icon"><i class="bi bi-file-earmark-pdf-fill"></i></div>
+                <div>
+                    <div class="ms-val" id="sc1">0</div>
+                    <div class="ms-lbl">Total Export</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms2">
-            <div class="ms-icon"><i class="bi bi-cloud-arrow-down-fill"></i></div>
-            <div>
-                <div class="ms-val" id="sc2">0</div>
-                <div class="ms-lbl">Bulan Ini</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms2">
+                <div class="ms-icon"><i class="bi bi-cloud-arrow-down-fill"></i></div>
+                <div>
+                    <div class="ms-val" id="sc2">0</div>
+                    <div class="ms-lbl">Bulan Ini</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms3">
-            <div class="ms-icon"><i class="bi bi-hdd-fill"></i></div>
-            <div>
-                <div class="ms-val" id="sc3">0</div>
-                <div class="ms-lbl">Total Ukuran (MB)</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms3">
+                <div class="ms-icon"><i class="bi bi-hdd-fill"></i></div>
+                <div>
+                    <div class="ms-val" id="sc3">0</div>
+                    <div class="ms-lbl">Ukuran (MB)</div>
+                </div>
             </div>
         </div>
-        <div class="mini-stat ms4">
-            <div class="ms-icon"><i class="bi bi-calendar-check-fill"></i></div>
-            <div>
-                <div class="ms-val" id="sc4">0</div>
-                <div class="ms-lbl">Export Hari Ini</div>
+        <div class="col-6 col-lg-3">
+            <div class="mini-stat ms4">
+                <div class="ms-icon"><i class="bi bi-calendar-check-fill"></i></div>
+                <div>
+                    <div class="ms-val" id="sc4">0</div>
+                    <div class="ms-lbl">Hari Ini</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Export Grid -->
-    <div class="export-grid">
+    <!-- Export Content -->
+    <div class="row g-4">
 
-        <!-- ═══ LEFT: Config ═══ -->
-        <div>
+        <!-- ═══ LEFT: Config (col-lg-8) ═══ -->
+        <div class="col-lg-8">
 
             <!-- 1. Pilih Jenis Dokumen -->
-            <div class="form-card">
+            <div class="form-card mb-4">
                 <div class="fc-head fch-red">
                     <div class="fc-title"><i class="bi bi-file-earmark-pdf-fill"></i> Pilih Jenis Dokumen</div>
                 </div>
@@ -105,87 +113,99 @@
             </div>
 
             <!-- 2. Konfigurasi Filter -->
-            <div class="form-card">
+            <div class="form-card mb-4">
                 <div class="fc-head fch-indigo">
                     <div class="fc-title" style="color:var(--c-text);"><i class="bi bi-funnel-fill" style="color:var(--c-primary);"></i> Filter & Rentang Data</div>
                 </div>
                 <div class="fc-body">
-                    <div class="frow2">
-                        <div class="fgroup">
-                            <div class="flabel"><i class="bi bi-calendar3" style="color:var(--c-muted);font-size:.85rem;"></i> Bulan Mulai</div>
-                            <div class="fwrap">
-                                <i class="bi bi-calendar3 f-icon"></i>
-                                <select class="fctrl" id="fBulanMulai" onchange="updatePreviewInfo()">
-                                    @foreach(range(1, 12) as $m)
-                                        <option value="{{ $m }}" {{ date('m') == $m ? 'selected' : '' }}>
-                                            {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-calendar3" style="color:var(--c-muted);font-size:.85rem;"></i> Bulan Mulai</div>
+                                <div class="fwrap">
+                                    <i class="bi bi-calendar3 f-icon"></i>
+                                    <select class="fctrl" id="fBulanMulai" onchange="updatePreviewInfo()">
+                                        @foreach(range(1, 12) as $m)
+                                            <option value="{{ $m }}" {{ date('m') == $m ? 'selected' : '' }}>
+                                                {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="fgroup">
-                            <div class="flabel"><i class="bi bi-calendar3" style="color:var(--c-muted);font-size:.85rem;"></i> Bulan Akhir</div>
-                            <div class="fwrap">
-                                <i class="bi bi-calendar3 f-icon"></i>
-                                <select class="fctrl" id="fBulanAkhir" onchange="updatePreviewInfo()">
-                                    @foreach(range(1, 12) as $m)
-                                        <option value="{{ $m }}" {{ date('m') == $m ? 'selected' : '' }}>
-                                            {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="frow2">
-                        <div class="fgroup">
-                            <div class="flabel"><i class="bi bi-calendar-year" style="color:var(--c-muted);font-size:.85rem;"></i> Tahun</div>
-                            <div class="fwrap">
-                                <i class="bi bi-calendar-year f-icon"></i>
-                                <select class="fctrl" id="fTahun" onchange="updatePreviewInfo()">
-                                    @foreach(range(date('Y'), date('Y') - 3) as $y)
-                                        <option value="{{ $y }}" {{ date('Y') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="fgroup">
-                            <div class="flabel"><i class="bi bi-building-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Unit Kerja <span class="opt">(opsional)</span></div>
-                            <div class="fwrap">
-                                <i class="bi bi-building-fill f-icon"></i>
-                                <select class="fctrl" id="fUnit" onchange="updatePreviewInfo()">
-                                    <option value="">Semua Unit Kerja</option>
-                                    @foreach($units as $unit)
-                                        <option value="{{ $unit->id }}">{{ $unit->nama_instansi }}</option>
-                                    @endforeach
-                                </select>
+                        <div class="col-md-6 mb-3">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-calendar3" style="color:var(--c-muted);font-size:.85rem;"></i> Bulan Akhir</div>
+                                <div class="fwrap">
+                                    <i class="bi bi-calendar3 f-icon"></i>
+                                    <select class="fctrl" id="fBulanAkhir" onchange="updatePreviewInfo()">
+                                        @foreach(range(1, 12) as $m)
+                                            <option value="{{ $m }}" {{ date('m') == $m ? 'selected' : '' }}>
+                                                {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="frow2">
-                        <div class="fgroup">
-                            <div class="flabel"><i class="bi bi-tags-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Kategori <span class="opt">(opsional)</span></div>
-                            <div class="fwrap">
-                                <i class="bi bi-tags-fill f-icon"></i>
-                                <select class="fctrl" id="fKategori" onchange="updatePreviewInfo()">
-                                    <option value="">Semua Kategori</option>
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
-                                    @endforeach
-                                </select>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-calendar-year" style="color:var(--c-muted);font-size:.85rem;"></i> Tahun</div>
+                                <div class="fwrap">
+                                    <i class="bi bi-calendar-year f-icon"></i>
+                                    <select class="fctrl" id="fTahun" onchange="updatePreviewInfo()">
+                                        @foreach(range(date('Y'), date('Y') - 3) as $y)
+                                            <option value="{{ $y }}" {{ date('Y') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="fgroup">
-                            <div class="flabel"><i class="bi bi-circle-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Status <span class="opt">(opsional)</span></div>
-                            <div class="fwrap">
-                                <i class="bi bi-circle-fill f-icon"></i>
-                                <select class="fctrl" id="fStatus" onchange="updatePreviewInfo()">
-                                    <option value="">Semua Status</option>
-                                    <option value="selesai">Selesai</option>
-                                    <option value="berjalan">Sedang Berjalan</option>
-                                    <option value="draft">Draft</option>
-                                </select>
+                        <div class="col-md-6 mb-3">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-building-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Unit Kerja <span class="opt">(opsional)</span></div>
+                                <div class="fwrap">
+                                    <i class="bi bi-building-fill f-icon"></i>
+                                    <select class="fctrl" id="fUnit" onchange="updatePreviewInfo()">
+                                        <option value="">Semua Unit Kerja</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}">{{ $unit->nama_instansi }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-tags-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Kategori <span class="opt">(opsional)</span></div>
+                                <div class="fwrap">
+                                    <i class="bi bi-tags-fill f-icon"></i>
+                                    <select class="fctrl" id="fKategori" onchange="updatePreviewInfo()">
+                                        <option value="">Semua Kategori</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-circle-fill" style="color:var(--c-muted);font-size:.85rem;"></i> Status <span class="opt">(opsional)</span></div>
+                                <div class="fwrap">
+                                    <i class="bi bi-circle-fill f-icon"></i>
+                                    <select class="fctrl" id="fStatus" onchange="updatePreviewInfo()">
+                                        <option value="">Semua Status</option>
+                                        <option value="selesai">Selesai</option>
+                                        <option value="berjalan">Sedang Berjalan</option>
+                                        <option value="draft">Draft</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -193,31 +213,35 @@
             </div>
 
             <!-- 3. Opsi Tampilan PDF -->
-            <div class="form-card">
+            <div class="form-card mb-4">
                 <div class="fc-head fch-green">
                     <div class="fc-title" style="color:var(--c-text);"><i class="bi bi-layout-text-window" style="color:var(--c-green);"></i> Opsi Tampilan PDF</div>
                 </div>
                 <div class="fc-body">
-                    <div class="frow2" style="margin-bottom:16px;">
-                        <div class="fgroup" style="margin-bottom:0;">
-                            <div class="flabel"><i class="bi bi-file-break" style="color:var(--c-muted);font-size:.85rem;"></i> Ukuran Kertas</div>
-                            <div class="fwrap">
-                                <i class="bi bi-file-break f-icon"></i>
-                                <select class="fctrl" id="fKertas">
-                                    <option value="A4" selected>A4 (210×297 mm)</option>
-                                    <option value="A3">A3 (297×420 mm)</option>
-                                    <option value="Letter">Letter (216×279 mm)</option>
-                                </select>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-file-break" style="color:var(--c-muted);font-size:.85rem;"></i> Ukuran Kertas</div>
+                                <div class="fwrap">
+                                    <i class="bi bi-file-break f-icon"></i>
+                                    <select class="fctrl" id="fKertas">
+                                        <option value="A4" selected>A4 (210×297 mm)</option>
+                                        <option value="A3">A3 (297×420 mm)</option>
+                                        <option value="Letter">Letter (216×279 mm)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="fgroup" style="margin-bottom:0;">
-                            <div class="flabel"><i class="bi bi-phone-landscape" style="color:var(--c-muted);font-size:.85rem;"></i> Orientasi</div>
-                            <div class="fwrap">
-                                <i class="bi bi-phone-landscape f-icon"></i>
-                                <select class="fctrl" id="fOrientasi">
-                                    <option value="portrait" selected>Portrait</option>
-                                    <option value="landscape">Landscape</option>
-                                </select>
+                        <div class="col-md-6">
+                            <div class="fgroup mb-0">
+                                <div class="flabel"><i class="bi bi-phone-landscape" style="color:var(--c-muted);font-size:.85rem;"></i> Orientasi</div>
+                                <div class="fwrap">
+                                    <i class="bi bi-phone-landscape f-icon"></i>
+                                    <select class="fctrl" id="fOrientasi">
+                                        <option value="portrait" selected>Portrait</option>
+                                        <option value="landscape">Landscape</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -290,7 +314,7 @@
                     </div>
 
                     <!-- Judul Dokumen -->
-                    <div class="fgroup" style="margin-top:16px;margin-bottom:0;">
+                    <div class="fgroup mb-0 mt-3">
                         <div class="flabel"><i class="bi bi-type" style="color:var(--c-muted);font-size:.85rem;"></i> Judul Dokumen <span class="opt">(opsional)</span></div>
                         <div class="fwrap">
                             <i class="bi bi-type f-icon"></i>
@@ -302,12 +326,12 @@
             </div>
 
             <!-- 4. Riwayat Export -->
-            <div class="form-card">
+            <div class="form-card mb-4">
                 <div class="fc-head" style="position:relative;">
                     <div class="fc-title" style="color:var(--c-text);"><i class="bi bi-clock-history" style="color:var(--c-primary);"></i> Riwayat Export</div>
                     <span style="font-size:.75rem;color:var(--c-muted);" id="historyCount">— dokumen</span>
                 </div>
-                <div style="overflow-x:auto;">
+                <div class="table-responsive">
                     <table class="history-table">
                         <thead>
                             <tr>
@@ -315,7 +339,6 @@
                                 <th>Jenis</th>
                                 <th>Periode</th>
                                 <th>Ukuran</th>
-                                <th>Dibuat</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -326,8 +349,8 @@
 
         </div>
 
-        <!-- ═══ RIGHT: Preview & Action ═══ -->
-        <div>
+        <!-- ═══ RIGHT: Preview & Action (col-lg-4) ═══ -->
+        <div class="col-lg-4">
 
             <!-- Preview PDF -->
             <div class="preview-card">

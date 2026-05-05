@@ -6,6 +6,99 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
   document.getElementById('panel-' + tabId.replace('tab-', '')).classList.add('active');
+
+  if (tabId === 'tab-aktivitas') {
+    loadActivities(1);
+  }
+}
+
+let actPage = 1;
+let actLoading = false;
+
+async function loadActivities(page = 1) {
+  if (actLoading) return;
+  actLoading = true;
+  actPage = page;
+
+  const container = document.getElementById('actTimeline');
+  if (page === 1) container.innerHTML = '<div class="text-center py-4"><span class="spinner-border spinner-border-sm text-primary"></span> Memuat aktivitas...</div>';
+
+  try {
+    const response = await fetch(`/profile/activities?page=${page}`);
+    const data = await response.json();
+
+    if (page === 1) container.innerHTML = '';
+
+    if (data.data.length === 0 && page === 1) {
+      container.innerHTML = '<p class="text-center text-muted py-4">Belum ada riwayat aktivitas.</p>';
+      return;
+    }
+
+    renderActivities(data.data);
+
+    // Pagination button
+    let moreBtn = document.getElementById('btnLoadMoreAct');
+    if (data.next_page_url) {
+      if (!moreBtn) {
+        moreBtn = document.createElement('button');
+        moreBtn.id = 'btnLoadMoreAct';
+        moreBtn.className = 'btn-cancel w-100 mt-3';
+        moreBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Muat Lebih Banyak';
+        moreBtn.onclick = () => loadActivities(actPage + 1);
+        container.after(moreBtn);
+      }
+      moreBtn.style.display = 'block';
+    } else if (moreBtn) {
+      moreBtn.style.display = 'none';
+    }
+
+  } catch (err) {
+    container.innerHTML = '<p class="text-center text-danger py-4">Gagal memuat aktivitas.</p>';
+  } finally {
+    actLoading = false;
+  }
+}
+
+function renderActivities(items) {
+  const container = document.getElementById('actTimeline');
+
+  const icons = {
+    created: { icon: 'bi-plus-circle-fill', color: 'var(--c-green)' },
+    updated: { icon: 'bi-pencil-square', color: 'var(--c-primary)' },
+    deleted: { icon: 'bi-trash3-fill', color: 'var(--c-red)' },
+    uploaded: { icon: 'bi-cloud-arrow-up-fill', color: 'var(--c-secondary)' },
+    default: { icon: 'bi-lightning-fill', color: 'var(--c-accent)' }
+  };
+
+  items.forEach(item => {
+    const type = item.description.toLowerCase();
+    const cfg = icons[type] || icons.default;
+    const dateObj = new Date(item.created_at);
+    const time = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const date = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+
+    const html = `
+            <div class="act-item" style="animation:fadeUp .4s ease both;">
+                <div class="act-dot-wrap">
+                    <div class="act-dot" style="background:${cfg.color}"><i class="bi ${cfg.icon}"></i></div>
+                    <div class="act-line"></div>
+                </div>
+                <div class="act-content">
+                    <div class="act-title">${formatActDesc(item)}</div>
+                    <div class="act-detail">${item.properties?.old ? 'Melakukan pembaruan data' : (item.subject_type ? 'Berhasil memproses ' + item.subject_type.split('\\').pop() : 'Berhasil melakukan aksi')}</div>
+                </div>
+                <div class="act-time">${date}, ${time}</div>
+            </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+  });
+}
+
+function formatActDesc(item) {
+  let desc = item.description;
+  if (desc === 'created') return '<span style="color:var(--c-green);font-weight:800;">Menambah</span> data baru';
+  if (desc === 'updated') return '<span style="color:var(--c-primary);font-weight:800;">Memperbarui</span> data';
+  if (desc === 'deleted') return '<span style="color:var(--c-red);font-weight:800;">Menghapus</span> data';
+  return desc.charAt(0).toUpperCase() + desc.slice(1);
 }
 
 /* ════════════════════════════════════

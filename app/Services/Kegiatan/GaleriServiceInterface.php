@@ -22,5 +22,5 @@ interface GaleriServiceInterface
     /**
      * Upload photos.
      */
-    public function uploadPhotos(string $kegiatanId, array $files, string $caption = null);
+    public function uploadPhotos(string $kegiatanId, array $files, string $caption = null, string $date = null);
 }

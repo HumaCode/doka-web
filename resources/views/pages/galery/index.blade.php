@@ -7,7 +7,13 @@
         ═══════════════════════════════════ */
         
         /* ─── Mini Stats ─── */
-        .mini-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; animation:fadeUp .45s ease .05s both; }
+        .mini-stats { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 16px; 
+            margin-bottom: 22px; 
+            animation: fadeUp .45s ease .05s both; 
+        }
         .mini-stat { background:#fff; border:1px solid var(--c-border); border-radius:var(--radius-md); padding:16px 18px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); transition:transform var(--trans),box-shadow var(--trans); cursor:default; position:relative; overflow:hidden; }
         .mini-stat:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
         .mini-stat::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; }
@@ -22,6 +28,23 @@
         .ms4 .ms-icon { background:linear-gradient(135deg,var(--c-pink),#f472b6); box-shadow:0 3px 10px rgba(236,72,153,.28); }
         .ms-val { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.5rem; color:var(--c-text); line-height:1; }
         .ms-lbl { font-size:.75rem; color:var(--c-muted); font-weight:600; margin-top:2px; }
+
+        @media (max-width: 1200px) {
+            .mini-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 576px) {
+            .mini-stats { grid-template-columns: 1fr; gap: 12px; }
+            .mini-stat { padding: 14px; }
+            .ms-val { font-size: 1.35rem; }
+            .ms-icon { width: 38px; height: 38px; font-size: 1rem; }
+            
+            .toolbar { flex-direction: column; align-items: stretch; gap: 12px; }
+            .toolbar-search { max-width: none; }
+            .toolbar-right { margin-left: 0; justify-content: space-between; }
+            .btn-toolbar { flex: 1; justify-content: center; padding: 10px; font-size: 0.8rem; }
+            
+            .select2-container { width: 100% !important; }
+        }
 
         /* ─── Toolbar ─── */
         .toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; animation:fadeUp .45s ease .1s both; }
@@ -743,7 +766,7 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengunggah...';
 
             try {
-                const response = await fetch('{{ route("galeri.store") }}', {
+                const response = await fetch('{{ route("galeri.upload") }}', {
                     method: 'POST',
                     body: formData
                 });

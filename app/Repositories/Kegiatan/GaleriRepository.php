@@ -161,14 +161,17 @@ class GaleriRepository implements GaleriRepositoryInterface
     /**
      * Upload media items.
      */
-    public function uploadMedia(string $kegiatanId, array $files, string $caption = null)
+    public function uploadMedia(string $kegiatanId, array $files, string $caption = null, string $date = null)
     {
         $kegiatan = Kegiatan::findOrFail($kegiatanId);
         $newMedia = [];
 
         foreach ($files as $file) {
             $media = $kegiatan->addMedia($file)
-                ->withCustomProperties(['caption' => $caption ?? $kegiatan->judul])
+                ->withCustomProperties([
+                    'caption' => $caption ?? $kegiatan->judul,
+                    'date' => $date ?? $kegiatan->tanggal->format('Y-m-d')
+                ])
                 ->toMediaCollection('foto_kegiatan');
             
             $newMedia[] = (object)[
@@ -178,9 +181,9 @@ class GaleriRepository implements GaleriRepositoryInterface
                 'kegiatan' => $kegiatan->judul,
                 'kegiatanId' => $kegiatan->id,
                 'unit' => $kegiatan->unitKerja->nama_instansi ?? 'Umum',
-                'tanggal' => $kegiatan->tanggal ? $kegiatan->tanggal->format('d M Y') : '-',
-                'bulan' => $kegiatan->tanggal ? $kegiatan->tanggal->format('m') : null,
-                'size' => round((abs(crc32($media->id)) % 4000 + 500) / 1024, 1), // Consistent size based on ID
+                'tanggal' => $date ? date('d M Y', strtotime($date)) : ($kegiatan->tanggal ? $kegiatan->tanggal->format('d M Y') : '-'),
+                'bulan' => $date ? date('m', strtotime($date)) : ($kegiatan->tanggal ? $kegiatan->tanggal->format('m') : null),
+                'size' => round($media->size / 1024 / 1024, 1),
                 'caption' => $caption ?? $kegiatan->judul,
                 'is_main' => false,
                 'gradId' => (abs(crc32($media->id)) % 8),

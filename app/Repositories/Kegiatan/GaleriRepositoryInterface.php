@@ -27,5 +27,5 @@ interface GaleriRepositoryInterface
     /**
      * Upload media items.
      */
-    public function uploadMedia(string $kegiatanId, array $files, string $caption = null);
+    public function uploadMedia(string $kegiatanId, array $files, string $caption = null, string $date = null);
 }

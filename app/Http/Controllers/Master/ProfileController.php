@@ -117,4 +117,13 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get user activities.
+     */
+    public function getActivities(Request $request)
+    {
+        $activities = $this->profileService->getActivities(10);
+        return response()->json($activities);
+    }
 }

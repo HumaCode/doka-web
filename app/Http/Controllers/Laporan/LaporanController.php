@@ -35,8 +35,8 @@ class LaporanController extends Controller
             return response()->json($reportData);
         }
         
-        $categories = Kategori::orderBy('nama_kategori')->get();
-        $units = UnitKerja::orderBy('nama_instansi')->get();
+        $categories = Kategori::select(['id', 'nama_kategori'])->orderBy('nama_kategori')->get();
+        $units = UnitKerja::select(['id', 'nama_instansi'])->orderBy('nama_instansi')->get();
 
         return view('pages.laporan.bulanan', compact('reportData', 'categories', 'units'));
     }

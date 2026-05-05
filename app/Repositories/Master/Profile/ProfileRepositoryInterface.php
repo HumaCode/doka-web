@@ -22,4 +22,13 @@ interface ProfileRepositoryInterface
      * @return User
      */
     public function update(string $id, array $data);
+
+    /**
+     * Get paginated activities for a user.
+     *
+     * @param string $userId
+     * @param int $perPage
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getActivities(string $userId, int $perPage = 10);
 }
