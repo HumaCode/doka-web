@@ -33,6 +33,10 @@ class UserSeeder extends Seeder
             'password' => Hash::make($rawPassword),
             'remember_token' => Str::random(10),
             'is_active' => '1',
+            'phone' => '086774446633',
+            'gender' => 'l',
+            'nik' => '3334445555666677',
+            'jabatan' => '-',
             'unit_kerja_id' => $unitKerjaIds[0], // Set default ke instansi pertama untuk user utama
         ];
 
@@ -44,7 +48,7 @@ class UserSeeder extends Seeder
                 'id' => (string) Str::ulid(),
                 'name' => ucwords($value),
                 'username' => $value,
-                'email' => $value.'@gmail.com',
+                'email' => $value . '@gmail.com',
             ]);
 
             $user->assignRole($value);
@@ -56,33 +60,33 @@ class UserSeeder extends Seeder
         User::factory()
             ->count(100)
             ->create([
-                'unit_kerja_id' => fn () => fake()->randomElement($unitKerjaIds),
+                'unit_kerja_id' => fn() => fake()->randomElement($unitKerjaIds),
             ])
             ->each(function ($u) {
                 $u->assignRole('user');
             });
 
         // 3. Output Laporan Rapi di Terminal
-        $this->command->info("\n".str_repeat('-', 60));
+        $this->command->info("\n" . str_repeat('-', 60));
         $this->command->info('   USER SEEDER SELESAI');
         $this->command->info(str_repeat('-', 60));
 
         $this->command->line('   [ AKUN DEV ]');
         $this->command->line('   Username : dev');
-        $this->command->line('   Password : '.$rawPassword);
+        $this->command->line('   Password : ' . $rawPassword);
         $this->command->line('');
 
         $this->command->line('   [ AKUN ADMIN ]');
         $this->command->line('   Username : admin');
-        $this->command->line('   Password : '.$rawPassword);
+        $this->command->line('   Password : ' . $rawPassword);
         $this->command->line('');
 
         $this->command->line('   [ AKUN USER (CONTOH 1 DARI 1000) ]');
         $this->command->line('   Username : user');
-        $this->command->line('   Password : '.$rawPassword);
+        $this->command->line('   Password : ' . $rawPassword);
 
         $this->command->info(str_repeat('-', 60));
-        $this->command->warn(' Total data berhasil di-seed: '.(User::count()).' Users');
-        $this->command->info(str_repeat('-', 60)."\n");
+        $this->command->warn(' Total data berhasil di-seed: ' . (User::count()) . ' Users');
+        $this->command->info(str_repeat('-', 60) . "\n");
     }
 }

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriSeeder::class,
             \Database\Seeders\Master\KegiatanSeeder::class,
+            \Database\Seeders\Master\SystemSettingSeeder::class,
         ]);
     }
 }

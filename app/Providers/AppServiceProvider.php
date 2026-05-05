@@ -65,12 +65,35 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Handle Activity Log Global Switch
+        // Handle Dynamic System Settings
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {
-                $enabled = \App\Models\Master\SystemSetting::where('key', 'activity_log_enabled')->first();
-                if ($enabled && $enabled->value === '0') {
+                $settings = \Illuminate\Support\Facades\Cache::remember('system_settings_config', 3600, function() {
+                    return \App\Models\Master\SystemSetting::all()->pluck('value', 'key')->toArray();
+                });
+
+                // 1. Activity Log
+                if (isset($settings['activity_log_enabled']) && $settings['activity_log_enabled'] === '0') {
                     config(['activitylog.enabled' => false]);
+                }
+
+                // 2. SMTP Configuration
+                if (isset($settings['mail_host']) && !empty($settings['mail_host'])) {
+                    config([
+                        'mail.default' => $settings['mail_mailer'] ?? 'smtp',
+                        'mail.mailers.smtp.host' => $settings['mail_host'],
+                        'mail.mailers.smtp.port' => (int)($settings['mail_port'] ?? 587),
+                        'mail.mailers.smtp.encryption' => $settings['mail_encryption'] ?? 'tls',
+                        'mail.mailers.smtp.username' => $settings['mail_username'] ?? '',
+                        'mail.mailers.smtp.password' => $settings['mail_password'] ?? '',
+                        'mail.from.address' => $settings['mail_from_address'] ?? config('mail.from.address'),
+                        'mail.from.name' => $settings['mail_from_name'] ?? config('mail.from.name'),
+                    ]);
+                }
+
+                // 3. App Settings
+                if (isset($settings['app_name'])) {
+                    config(['app.name' => $settings['app_name']]);
                 }
             }
         } catch (\Exception $e) {

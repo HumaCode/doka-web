@@ -47,6 +47,7 @@ class SystemSettingService implements SystemSettingServiceInterface
         ]);
 
         Cache::forget('system_settings');
+        Cache::forget('system_settings_config');
         return true;
     }
 
@@ -68,6 +69,7 @@ class SystemSettingService implements SystemSettingServiceInterface
         ]);
 
         Cache::forget('system_settings');
+        Cache::forget('system_settings_config');
         return $setting->getFirstMediaUrl($type);
     }
 
