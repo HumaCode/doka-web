@@ -872,7 +872,7 @@ canvas {
     display: flex;
     align-items: flex-end;
     gap: 5px;
-    height: 100px;
+    height: 120px;
     padding: 0 4px 10px;
     margin-top: 15px;
     overflow-x: auto;
@@ -1188,7 +1188,7 @@ canvas {
     .ph-left p { font-size: .75rem; }
     
     .mini-bar-chart {
-        height: 80px;
+        height: 100px;
     }
     .rep-card-body { padding: 15px; }
 }

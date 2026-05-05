@@ -35,6 +35,8 @@ class KegiatanController extends Controller
     public function show($id)
     {
         $kegiatan = $this->kegiatanService->getActivityById($id);
+        $this->authorize('view', $kegiatan);
+
         $data = (new KegiatanResource($kegiatan))->toArray(request());
         
         $related = $this->kegiatanService->getRelatedActivities($id, 8);
@@ -121,6 +123,7 @@ class KegiatanController extends Controller
     public function edit($id)
     {
         $kegiatan = $this->kegiatanService->getActivityById($id);
+        $this->authorize('update', $kegiatan);
         $categories = \App\Models\Master\Kategori::select('id', 'nama_kategori')->where('status', 'active')->get();
         $unitsQuery = \App\Models\Master\UnitKerja::select('id', 'nama_instansi');
         $usersQuery = \App\Models\User::select('id', 'name');
@@ -148,6 +151,9 @@ class KegiatanController extends Controller
             ];
 
             $deletedMedia = $request->filled('deleted_media') ? explode(',', $request->deleted_media) : [];
+            
+            $kegiatan = $this->kegiatanService->getActivityById($id);
+            $this->authorize('update', $kegiatan);
 
             $this->kegiatanService->updateActivity($id, $request->validated(), $files, $deletedMedia);
 
@@ -165,6 +171,9 @@ class KegiatanController extends Controller
     public function destroy($id)
     {
         try {
+            $kegiatan = $this->kegiatanService->getActivityById($id);
+            $this->authorize('delete', $kegiatan);
+
             $this->kegiatanService->deleteActivity($id);
             return $this->success('Kegiatan berhasil dihapus.');
         } catch (\Exception $e) {
@@ -180,6 +189,14 @@ class KegiatanController extends Controller
         try {
             if (!$request->filled('ids') || !is_array($request->ids)) {
                 return $this->error('Tidak ada data terpilih.');
+            }
+
+            // Security: Check authorization for each activity before bulk deleting
+            foreach ($request->ids as $id) {
+                $kegiatan = $this->kegiatanService->getActivityById($id);
+                if ($kegiatan) {
+                    $this->authorize('delete', $kegiatan);
+                }
             }
 
             $this->kegiatanService->deleteBulkActivities($request->ids);

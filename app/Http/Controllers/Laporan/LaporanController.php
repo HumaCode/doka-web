@@ -24,8 +24,8 @@ class LaporanController extends Controller
     {
         $filters = $request->only(['bulan', 'tahun', 'unit_id', 'kategori_id']);
         
-        // Apply unit work filter for admin (Dev can see everything)
-        if (auth()->user()->hasRole('admin') && !auth()->user()->hasRole('dev')) {
+        // Apply unit work filter for non-dev/non-super-admin (Dev/Super Admin can see everything)
+        if (!auth()->user()->hasRole(['dev', 'super-admin'])) {
             $filters['unit_id'] = auth()->user()->unit_kerja_id;
         }
 

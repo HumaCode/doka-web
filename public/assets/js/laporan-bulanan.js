@@ -540,7 +540,7 @@ function renderWeek(bulan, tahun) {
     });
     const maxVal = Math.max(...days.map(d => d.val), 1);
     document.getElementById('miniBarChart').innerHTML = days.map(d => {
-        const pct = Math.round((d.val / maxVal) * 75);
+        const pct = Math.round((d.val / maxVal) * 60);
         return `
 <div class="mbc-bar-wrap">
 <div class="mbc-val">${d.val > 0 ? d.val : ''}</div>

@@ -71,6 +71,18 @@ class GaleriController extends Controller
                 throw new \Exception('Pilih foto yang ingin dihapus.');
             }
 
+            // Authorization: Check if user can delete photos of these activities
+            // We get the activity IDs from the media
+            $mediaItems = \Spatie\MediaLibrary\MediaCollections\Models\Media::whereIn('id', $ids)->get();
+            $activityIds = $mediaItems->pluck('model_id')->unique();
+            
+            foreach ($activityIds as $actId) {
+                $kegiatan = \App\Models\Kegiatan\Kegiatan::find($actId);
+                if ($kegiatan) {
+                    $this->authorize('delete', [\App\Policies\GaleriPolicy::class, $kegiatan]);
+                }
+            }
+
             $this->galeriService->deletePhotos($ids);
 
             return response()->json([
@@ -96,6 +108,9 @@ class GaleriController extends Controller
                 'photos' => 'required|array',
                 'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
             ]);
+
+            $kegiatan = \App\Models\Kegiatan\Kegiatan::findOrFail($request->kegiatan_id);
+            $this->authorize('upload', [\App\Policies\GaleriPolicy::class, $kegiatan]);
 
             // Pass tanggal and keterangan to service
             $newPhotos = $this->galeriService->uploadPhotos(
