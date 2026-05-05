@@ -15,8 +15,8 @@ Route::post('/pending-activation/submit', [\App\Http\Controllers\Auth\AccountAct
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/search', [DashboardController::class, 'search'])->name('search.global');
-    Route::get('/api/search', [DashboardController::class, 'apiSearch'])->name('search.api');
+    Route::get('/search', [DashboardController::class, 'search'])->name('search.global')->middleware('throttle:20,1');
+    Route::get('/api/search', [DashboardController::class, 'apiSearch'])->name('search.api')->middleware('throttle:30,1');
     
     // MASTER DATA
     Route::middleware('can:user.view')->group(function () {

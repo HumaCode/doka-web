@@ -20,6 +20,16 @@ const ROLE_ICONS = [
     'bi-star-fill', 'bi-trophy-fill', 'bi-clipboard-fill', 'bi-lock-fill',
 ];
 
+/**
+ * Simple HTML Escape Function for Security
+ */
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 let ROLES = [];
 let PERM_MODULES = [];
 let permState = {};
@@ -92,10 +102,10 @@ function renderRoleCards() {
                 <div class="role-card-top">
                     <div class="role-icon-wrap" style="background:${grad};"><i class="bi ${r.icon || 'bi-shield-fill'}"></i></div>
                     <div class="role-name">
-                        ${r.name}
+                        ${escapeHtml(r.name)}
                         ${isSelected ? '<span class="selected-badge" style="margin-left:6px;">Aktif</span>' : ''}
                     </div>
-                    <div class="role-desc">${r.description || '-'}</div>
+                    <div class="role-desc">${escapeHtml(r.description) || '-'}</div>
                 </div>
                 <div class="role-card-stats">
                     <div class="role-stat"><div class="role-stat-val">${r.users_count || 0}</div><div class="role-stat-lbl">Pengguna</div></div>
@@ -127,7 +137,7 @@ function renderMatrixTabs() {
     tabs.innerHTML = ROLES.map(r => `
         <button class="matrix-tab ${r.id == activeRoleId ? 'active' : ''}" onclick="selectRole('${r.id}')">
             <div class="tab-dot" style="background:${ROLE_GRADS[r.grad_id] || ROLE_GRADS[0]};border-radius:50%;width:8px;height:8px;"></div>
-            ${r.name}
+            ${escapeHtml(r.name)}
         </button>`).join('');
 }
 
@@ -147,7 +157,7 @@ function renderMatrix() {
             <th>
                 <div class="role-th">
                     <div class="role-th-icon" style="background:${ROLE_GRADS[r.grad_id] || ROLE_GRADS[0]};"><i class="bi ${r.icon || 'bi-shield-fill'}" style="font-size:.8rem;"></i></div>
-                    <div class="role-th-name">${r.name}</div>
+                    <div class="role-th-name">${escapeHtml(r.name)}</div>
                 </div>
             </th>`).join('')}
     </tr>`;
@@ -158,7 +168,7 @@ function renderMatrix() {
         rows.push(`
             <tr class="module-group-row">
                 <td colspan="${ROLES.length + 1}">
-                    <div class="module-group-label"><i class="bi bi-grid-3x3-gap-fill"></i> ${group}</div>
+                    <div class="module-group-label"><i class="bi bi-grid-3x3-gap-fill"></i> ${escapeHtml(group)}</div>
                 </td>
             </tr>`);
 
@@ -168,10 +178,10 @@ function renderMatrix() {
                 <tr>
                     <td>
                         <div class="perm-name">
-                            <code class="perm-code">${perm.name}</code>
-                            ${perm.name.split('.').pop().replace(/_/g, ' ')}
+                            <code class="perm-code">${escapeHtml(perm.name)}</code>
+                            ${escapeHtml(perm.name.split('.').pop().replace(/_/g, ' '))}
                         </div>
-                        <div class="perm-name-sub">${perm.description || 'Hak akses ' + perm.name}</div>
+                        <div class="perm-name-sub">${escapeHtml(perm.description) || 'Hak akses ' + escapeHtml(perm.name)}</div>
                     </td>
                     ${ROLES.map(r => {
                         const has = (permState[r.id] || new Set()).has(perm.id);

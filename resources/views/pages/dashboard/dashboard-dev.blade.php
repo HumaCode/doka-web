@@ -129,7 +129,7 @@
                             <span><i class="bi bi-clock"></i> ${ev.waktu || '--:--'}</span>
                             <span><i class="bi bi-geo-alt"></i> ${ev.lokasi || 'Lokasi -'}</span>
                         </div>
-                        <a href="/kegiatan/${ev.id}" class="btn-cal-detail">Lihat Detail</a>
+                        <a href="/kegiatan/show/${ev.id}" class="btn-cal-detail">Lihat Detail</a>
                     </div>
                 `;
             });

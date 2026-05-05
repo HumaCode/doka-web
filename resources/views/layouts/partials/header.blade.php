@@ -59,6 +59,13 @@
             const dropdown = document.getElementById('searchDropdown');
             let timeout = null;
 
+             // Simple HTML Escape Function for Security
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
             searchInput.addEventListener('input', function() {
                 const q = this.value.trim();
                 clearTimeout(timeout);
@@ -70,17 +77,19 @@
 
                 timeout = setTimeout(async () => {
                     try {
-                        const res = await fetch(`{{ route('search.api') }}?q=${q}`);
+                        const res = await fetch(`{{ route('search.api') }}?q=${encodeURIComponent(q)}`);
                         const data = await res.json();
                         
                         if (data.length > 0) {
                             let html = '';
                             data.forEach(item => {
+                                // Escaping judul for XSS protection
+                                const safeJudul = escapeHtml(item.judul);
                                 html += `
                                     <div class="search-item">
                                         <div class="s-icon"><i class="bi bi-calendar-event"></i></div>
                                         <div class="s-info">
-                                            <div class="s-name">${item.judul}</div>
+                                            <div class="s-name">${safeJudul}</div>
                                             <div class="s-meta"><i class="bi bi-clock"></i> ${new Date(item.tanggal).toLocaleDateString('id-ID')}</div>
                                         </div>
                                         <a href="/kegiatan/show/${item.id}" class="btn-s-detail">Detail</a>
